@@ -87,8 +87,12 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Back button resets the robot pose
     controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition, drivetrainSubsystem));
+    
     controller.b().whileTrue(chaseTagCommand);
+    
     controller.start().toggleOnTrue(fieldHeadingDriveCommand);
+    
+    controller.a().onTrue(Commands.runOnce(poseEstimator::resetGyro, drivetrainSubsystem));
   }
 
   /**
