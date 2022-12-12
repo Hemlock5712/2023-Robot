@@ -7,7 +7,15 @@ package frc.robot.swerve;
  * Mk4 swerve module has four gear configurations, and therefore should have multiple configurations
  * ({@link ModuleConfiguration#MK4_L1} and {@link ModuleConfiguration#MK4_L2}, for example).
  */
+//Can get information from here https://github.com/SwerveDriveSpecialties/swerve-lib/blob/f6f4de65808d468ed01cc5ca39bf322383838fcd/src/main/java/com/swervedrivespecialties/swervelib/SdsModuleConfigurations.java
 public enum ModuleConfiguration {
+
+  MK3_Standard(
+    0.1016,
+    (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 60.0),
+    true,
+    (15.0 / 32.0) * (10.0 / 60.0),
+    true),
 
   MK4_L1(
     0.10033,
