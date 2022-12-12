@@ -5,7 +5,6 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.degreesToRadians;
-import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 
@@ -40,33 +39,33 @@ public final class Constants {
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = inchesToMeters(20.5);
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.6;
     /**
      * The front-to-back distance between the drivetrain wheels.
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = inchesToMeters(20.5);
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.7;
 
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 0;
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 10;
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 20;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(75.5859375);
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2;
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 9;
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(95.5);
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 1;
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 11;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 21;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(104.501953125);
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 4;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 10;
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(241);
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 2;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 12;
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 22;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(165.234375);
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 5;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(102.744);
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 3;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 13;
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 7;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 8;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(74.8828125);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(279.13);
     
     public static final int PIGEON_ID = 30;
 
@@ -142,7 +141,7 @@ public final class Constants {
      * Physical location of the camera on the robot, relative to the center of the robot.
      */
     public static final Transform3d CAMERA_TO_ROBOT =
-        new Transform3d(new Translation3d(-0.3425, 0.0, -0.233), new Rotation3d());
+        new Transform3d(new Translation3d(0.0, 0.0, 0.0), new Rotation3d());
     public static final Transform3d ROBOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
   }
 
