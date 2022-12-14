@@ -1,0 +1,19 @@
+{
+    "fileName": "brain-lib.json",
+    "name": "brain-lib",
+    "version": "2023.0.6",
+    "uuid": "bc7bbfa8-b262-4478-aac0-27d1901d9ae0",
+    "mavenUrls": [
+        "https://jitpack.io"
+    ],
+    "jsonUrl": "https://raw.githubusercontent.com/Hemlock5712/brain-lib/main/brain-lib.json",
+    "javaDependencies": [
+        {
+            "groupId": "com.github.Hemlock5712",
+            "artifactId": "brain-lib",
+            "version": "2023.0.6"
+        }
+    ],
+    "jniDependencies": [],
+    "cppDependencies": []
+}
