@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.ChaseTagCommand;
@@ -90,7 +91,7 @@ public class RobotContainer {
     // Back button resets the robot pose
     controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition, drivetrainSubsystem));
     
-    controller.b().whileTrue(chaseTagCommand);
+    controller.b().whileTrue(new SequentialCommandGroup(new PrintCommand("Chase"), chaseTagCommand));
     
     controller.start().toggleOnTrue(fieldHeadingDriveCommand);
     

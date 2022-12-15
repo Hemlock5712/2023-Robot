@@ -35,9 +35,9 @@ public class ChaseTagCommand extends CommandBase {
   private final DrivetrainSubsystem drivetrainSubsystem;
   private final Supplier<Pose2d> poseProvider;
 
-  private final ProfiledPIDController xController = new ProfiledPIDController(3, 0, 0, X_CONSTRAINTS);
-  private final ProfiledPIDController yController = new ProfiledPIDController(3, 0, 0, Y_CONSTRAINTS);
-  private final ProfiledPIDController omegaController = new ProfiledPIDController(2, 0, 0, OMEGA_CONSTRAINTS);
+  private final ProfiledPIDController xController = new ProfiledPIDController(2, 0, 0, X_CONSTRAINTS);
+  private final ProfiledPIDController yController = new ProfiledPIDController(2, 0, 0, Y_CONSTRAINTS);
+  private final ProfiledPIDController omegaController = new ProfiledPIDController(1.5, 0, 0, OMEGA_CONSTRAINTS);
 
   private PhotonTrackedTarget lastTarget;
 
@@ -81,7 +81,7 @@ public class ChaseTagCommand extends CommandBase {
       // Find the tag we want to chase
       var targetOpt = photonRes.getTargets().stream()
           .filter(t -> t.getFiducialId() == TAG_TO_CHASE)
-          .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() <= .2 && t.getPoseAmbiguity() != -1)
+          .filter(t -> /* !t.equals(lastTarget) && */ t.getPoseAmbiguity() <= .2 && t.getPoseAmbiguity() != -1)
           .findFirst();
       if (targetOpt.isPresent()) {
         var target = targetOpt.get();
