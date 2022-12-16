@@ -13,6 +13,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
@@ -136,9 +137,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   }
 
   public void resetGyro(){
-    poseEstimator.update(
-      drivetrainSubsystem.resetGyro(),
-      drivetrainSubsystem.getModulePositions());
+    //poseEstimator.resetPosition(Rotation2d.fromDegrees(90), null, getCurrentPose());
+    poseEstimator.resetPosition(Rotation2d.fromDegrees(0), drivetrainSubsystem.getModulePositions(), getCurrentPose());
   }
 
 }
