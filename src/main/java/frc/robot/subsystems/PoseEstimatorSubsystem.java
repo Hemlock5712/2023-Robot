@@ -136,7 +136,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   }
 
   public void resetGyro(){
-    drivetrainSubsystem.resetGyro();
+    poseEstimator.update(
+      drivetrainSubsystem.resetGyro(),
+      drivetrainSubsystem.getModulePositions());
   }
 
 }
