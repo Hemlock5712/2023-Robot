@@ -167,14 +167,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // return Rotation2d.fromDegrees(360.0 - navx.getYaw());
   }
 
-  public Rotation2d setGyroscopeRotation(double angleDeg){
+  public void setGyroscopeRotation(double angleDeg){
     pigeon.setYaw(angleDeg);
-    return pigeon.getRotation2d();
   }
 
-  public Rotation2d resetGyro(){
-    pigeon.setYaw(0);
-    return pigeon.getRotation2d();
+  public void resetGyro(){
+    setGyroscopeRotation(0);
   }
 
 
