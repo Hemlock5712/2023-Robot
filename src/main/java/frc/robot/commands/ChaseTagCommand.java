@@ -81,7 +81,7 @@ public class ChaseTagCommand extends CommandBase {
       // Find the tag we want to chase
       var targetOpt = photonRes.getTargets().stream()
           .filter(t -> t.getFiducialId() == TAG_TO_CHASE)
-          .filter(t -> /* !t.equals(lastTarget) && */ t.getPoseAmbiguity() <= .2 && t.getPoseAmbiguity() != -1)
+          .filter(t -> t != null && !t.equals(lastTarget) && t.getPoseAmbiguity() <= .2 && t.getPoseAmbiguity() != -1)
           .findFirst();
       if (targetOpt.isPresent()) {
         var target = targetOpt.get();

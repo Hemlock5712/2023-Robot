@@ -13,7 +13,6 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
@@ -73,7 +72,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         stateStdDevs,
         visionMeasurementStdDevs);
     
-    tab.addString("Pose", this::getFomattedPose).withPosition(0, 0).withSize(2, 0);
+    tab.addString("Pose", this::getFormattedPose).withPosition(0, 0).withSize(2, 0);
     tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
   }
 
@@ -103,7 +102,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     field2d.setRobotPose(getCurrentPose());
   }
 
-  private String getFomattedPose() {
+  private String getFormattedPose() {
     var pose = getCurrentPose();
     return String.format("(%.2f, %.2f) %.2f degrees", 
         pose.getX(), 
@@ -137,8 +136,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   }
 
   public void resetGyro(){
+    drivetrainSubsystem.setGyroscopeRotation(0);
     //poseEstimator.resetPosition(Rotation2d.fromDegrees(90), null, getCurrentPose());
-    poseEstimator.resetPosition(Rotation2d.fromDegrees(0), drivetrainSubsystem.getModulePositions(), getCurrentPose());
+    poseEstimator.resetPosition(drivetrainSubsystem.getGyroscopeRotation(), drivetrainSubsystem.getModulePositions(), getCurrentPose());
   }
 
 }
