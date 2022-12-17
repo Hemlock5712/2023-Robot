@@ -29,6 +29,8 @@ import java.util.stream.IntStream;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -49,8 +51,10 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.commands.autonomous.util.PathPlannerCommand;
 import frc.robot.swerve.ModuleConfiguration;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSpeedController;
@@ -265,5 +269,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
             this);
             
       return swerveControllerCommand;
+  }
+
+  public static Command followTrajectory(DrivetrainSubsystem d, PoseEstimatorSubsystem s, PathPlannerTrajectory traj) {
+    return new PPSwerveControllerCommand(
+            traj,
+            s::getCurrentPose,
+            Constants.DrivetrainConstants.KINEMATICS,
+            PathPlannerCommand.m_translationController,
+            PathPlannerCommand.m_strafeController,
+            PathPlannerCommand.m_thetaController,
+            d::setModuleStates,
+            d, s);
   }
 }
