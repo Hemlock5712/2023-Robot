@@ -48,11 +48,11 @@ public class DriveWithPathPlanner extends CommandBase {
       }
       restOfPoints[restOfPoints.length - 1] = finalPoint;
 
-      trajectory = PathPlanner.generatePath(constraints, new PathPoint(pose.getTranslation(), pose.getRotation()), internalPoints[0], restOfPoints);
+      trajectory = PathPlanner.generatePath(constraints, new PathPoint(pose.getTranslation(), pose.getRotation(), pose.getRotation()), internalPoints[0], restOfPoints);
     }
     else
     {
-      trajectory = PathPlanner.generatePath(constraints, new PathPoint(pose.getTranslation(), pose.getRotation()), finalPoint);
+      trajectory = PathPlanner.generatePath(constraints, new PathPoint(pose.getTranslation(), pose.getRotation(), pose.getRotation()), finalPoint);
     }
 
     poseEstimatorSystem.addTrajectory(trajectory);

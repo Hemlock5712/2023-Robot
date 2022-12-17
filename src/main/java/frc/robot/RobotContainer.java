@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.DriveToPoint;
 import frc.robot.commands.DriveWithPathPlanner;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -102,8 +101,8 @@ public class RobotContainer {
     
     controller.a().onTrue(Commands.runOnce(() -> poseEstimator.initializeGyro(0), drivetrainSubsystem));
 
-    controller.x().whileTrue(new DriveToPoint(drivetrainSubsystem, poseEstimator, 3, 3));
-    controller.y().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), new PathPoint(new Translation2d(3, 3), Rotation2d.fromDegrees(10)), new PathPoint(new Translation2d(2, 2), Rotation2d.fromDegrees(0))));
+    controller.y().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(10)), new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(0))));
+    controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), new PathPoint(new Translation2d(4, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(100)), new PathPoint(new Translation2d(1.8, 3.1), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(50)), new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(70))));
   }
 
   /**
