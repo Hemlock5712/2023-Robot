@@ -4,7 +4,7 @@ import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static frc.robot.Constants.VisionConstants.CAMERA_TO_ROBOT;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
 import org.photonvision.PhotonCamera;
 
@@ -30,10 +30,11 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   // Ordered list of target poses by ID (WPILib is adding some functionality for
   // this)
-  private static final List<Pose3d> targetPoses = Collections.unmodifiableList(List.of(
-      new Pose3d(3.0, 1.165, 0.287 + 0.165, new Rotation3d(0, 0, degreesToRadians(180.0))),
-      new Pose3d(3.0, 0.0, 0.287 + .165, new Rotation3d(0, 0, degreesToRadians(180.0)))));
-  
+  private static final Map<Integer, Pose3d> targetPoses = Collections.unmodifiableMap(Map.of(
+      0, new Pose3d(0.0, 2.13, 0.0, new Rotation3d(0, 0, degreesToRadians(0.0))),
+          1, new Pose3d(2.40, 0.0, 0.0, new Rotation3d(0, 0, degreesToRadians(90.0))),
+          2, new Pose3d(0.0, 3.97, 0.0, new Rotation3d(0, 0, degreesToRadians(0.0)))));
+   
   // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
   // you trust your various sensors. Smaller numbers will cause the filter to
   // "trust" the estimate from that particular component more than the others. 
@@ -135,9 +136,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     setCurrentPose(new Pose2d());
   }
 
-  public void resetGyro(){
-    drivetrainSubsystem.setGyroscopeRotation(0);
-    //poseEstimator.resetPosition(Rotation2d.fromDegrees(90), null, getCurrentPose());
+  public void initializeGyro(double angleDegree){
+    drivetrainSubsystem.setGyroscopeRotation(angleDegree);
     poseEstimator.resetPosition(drivetrainSubsystem.getGyroscopeRotation(), drivetrainSubsystem.getModulePositions(), getCurrentPose());
   }
 
