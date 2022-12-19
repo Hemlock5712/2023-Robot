@@ -334,37 +334,16 @@ public class Pathfinding {
   public static List<Translation2d> generatePath(int startRow, int startCol, int endRow, int endCol) {
     Node initialNode = new Node(startRow,startCol);
     Node finalNode = new Node(endRow, endCol);
-    int rows = 10;
-    int cols = 10;
+    int rows = 32;
+    int cols = 65;
     AStar aStar = new AStar(rows, cols, initialNode, finalNode);
+
+    //Put in blocks Array to block cells {0, 1}, {1, 1}
     int[][] blocksArray = new int[][]{};
-    //{0, 1}, {1, 1}
+    
     aStar.setBlocks(blocksArray);
     List<Node> path = aStar.findPath();
-    //Cool
     List<Node> midPoints = path.subList(1, path.size()-1);
-    // for(Node node : midPoints) {
-    //   System.out.println("row=" + node.getRow() + " col=" + node.getCol());
-    // }
-    
     return midPoints.stream().map((p) -> new Translation2d(p.getRow(), p.getCol())).collect(Collectors.toList()); 
-    // Welcome to java
-  
-    //Search Area
-    //      0   1   2   3   4   5   6
-    // 0    -   -   -   -   -   -   -
-    // 1    -   -   -   B   -   -   -
-    // 2    -   I   -   B   -   F   -
-    // 3    -   -   -   B   -   -   -
-    // 4    -   -   -   -   -   -   -
-    // 5    -   -   -   -   -   -   -
-
-    //Expected output with diagonals
-    //Node [row=2, col=1]
-    //Node [row=1, col=2]
-    //Node [row=0, col=3]
-    //Node [row=1, col=4]
-    //Node [row=2, col=5]
-
   }
 }
