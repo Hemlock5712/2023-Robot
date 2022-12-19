@@ -8,6 +8,7 @@ import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -158,6 +159,10 @@ public final class Constants {
     public static double Y_kP = 1.5;
     public static double Y_kI = 0.0;
     public static double Y_kD = 0.0;
+
+    public static PIDController m_translationController = new PIDController(Constants.AutoConstants.X_kP, Constants.AutoConstants.X_kI, Constants.AutoConstants.X_kD);
+    public static PIDController m_strafeController = new PIDController(Constants.AutoConstants.Y_kP, Constants.AutoConstants.Y_kI, Constants.AutoConstants.Y_kD);
+    public static PIDController m_thetaController = new PIDController(Constants.AutoConstants.THETA_kP, Constants.AutoConstants.THETA_kI, Constants.AutoConstants.THETA_kD);
 
   }
 }
