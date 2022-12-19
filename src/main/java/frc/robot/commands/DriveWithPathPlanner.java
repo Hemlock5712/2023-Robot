@@ -36,8 +36,6 @@ public class DriveWithPathPlanner extends CommandBase {
   public void initialize()
   {
     var pose = poseEstimatorSystem.getCurrentPose();
-    System.out.println(pose.getX() + " " + pose.getY() + " " + pose.getRotation().getDegrees());
-
     // Depending on if internal points are present, make a new array of the other points in the path.
     if (internalPoints.length > 0)
     {

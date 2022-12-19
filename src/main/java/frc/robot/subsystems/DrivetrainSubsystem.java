@@ -54,7 +54,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.commands.autonomous.util.PathPlannerCommand;
 import frc.robot.swerve.ModuleConfiguration;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSpeedController;
@@ -276,9 +275,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
             traj,
             s::getCurrentPose,
             Constants.DrivetrainConstants.KINEMATICS,
-            PathPlannerCommand.m_translationController,
-            PathPlannerCommand.m_strafeController,
-            PathPlannerCommand.m_thetaController,
+            Constants.AutoConstants.m_translationController,
+            Constants.AutoConstants.m_strafeController,
+            Constants.AutoConstants.m_thetaController,
             d::setModuleStates,
             d, s);
   }
