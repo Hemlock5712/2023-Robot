@@ -4,8 +4,8 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
@@ -14,7 +14,7 @@ public class DriveWithPathPlanner extends CommandBase {
   private final DrivetrainSubsystem driveSystem;
   private final PoseEstimatorSubsystem poseEstimatorSystem;
 
-  private Command otherCommand;
+  private PPSwerveControllerCommand pathDrivingCommand;
 
   private PathPlannerTrajectory trajectory;
   private final PathConstraints constraints;
@@ -52,17 +52,15 @@ public class DriveWithPathPlanner extends CommandBase {
     {
       trajectory = PathPlanner.generatePath(constraints, new PathPoint(pose.getTranslation(), pose.getRotation(), pose.getRotation()), finalPoint);
     }
-
-    poseEstimatorSystem.addTrajectory(trajectory);
     
-    otherCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
-    otherCommand.schedule();
+    pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
+    pathDrivingCommand.schedule();
   }
 
   @Override
   public void end(boolean interrupted)
   {
-    otherCommand.cancel();
+    pathDrivingCommand.cancel();
     driveSystem.stop();
   }
 }

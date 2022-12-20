@@ -215,7 +215,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         IntStream.range(0, currentStates.length).forEach(i -> desiredStates[i].angle = currentStates[i].angle);
       }
 
-      SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND);
       setModuleStates(desiredStates);
     }
     // Always reset desiredChassisSpeeds to null to prevent latching to the last state (aka motor safety)!!
@@ -243,6 +242,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * @param states array of states. Must be ordered frontLeft, frontRight, backLeft, backRight
    */
   private void setModuleStates(SwerveModuleState[] states) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND);
     IntStream.range(0, swerveModules.length).forEach(i -> swerveModules[i].setDesiredState(states[i]));
   }
 
@@ -270,7 +270,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
       return swerveControllerCommand;
   }
 
-  public static Command followTrajectory(DrivetrainSubsystem d, PoseEstimatorSubsystem s, PathPlannerTrajectory traj) {
+  public static PPSwerveControllerCommand followTrajectory(DrivetrainSubsystem d, PoseEstimatorSubsystem s, PathPlannerTrajectory traj) {
     return new PPSwerveControllerCommand(
             traj,
             s::getCurrentPose,
@@ -278,7 +278,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             Constants.AutoConstants.m_translationController,
             Constants.AutoConstants.m_strafeController,
             Constants.AutoConstants.m_thetaController,
-            d::setModuleStates,
-            d, s);
+            d::setModuleStates);
   }
 }

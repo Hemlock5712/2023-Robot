@@ -8,8 +8,6 @@ import java.util.Map;
 
 import org.photonvision.PhotonCamera;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -19,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -80,7 +79,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
   }
 
-  public void addTrajectory(PathPlannerTrajectory traj)
+  public void addTrajectory(Trajectory traj)
   {
     field2d.getObject("Trajectory").setTrajectory(traj);
   }

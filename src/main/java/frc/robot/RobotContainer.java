@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -101,10 +102,12 @@ public class RobotContainer {
     
     controller.a().onTrue(Commands.runOnce(() -> poseEstimator.initializeGyro(0), drivetrainSubsystem));
 
-    // controller.leftBumper()
-
     controller.y().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)), new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180))));
-    controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), new PathPoint(new Translation2d(4, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)), new PathPoint(new Translation2d(1.8, 3.1), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)), new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180))));
+    controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), 
+      new PathPoint(new Translation2d(2.33, 2.03), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)), 
+      new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)), 
+      new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)), 
+      new PathPoint(new Translation2d(Units.inchesToMeters(200), 2.03), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270))));
   }
 
   /**
