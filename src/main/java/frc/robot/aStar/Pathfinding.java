@@ -331,9 +331,9 @@ class AStar {
 public class Pathfinding {
 
   
-  public static List<Translation2d> generatePath(int startRow, int startCol, int endRow, int endCol) {
-    Node initialNode = new Node(startRow,startCol);
-    Node finalNode = new Node(endRow, endCol);
+  public static List<Translation2d> generatePath(int startX, int startY, int endX, int endY) {
+    Node initialNode = new Node(startX,startY);
+    Node finalNode = new Node(endX, endY);
     int rows = 32;
     int cols = 65;
     AStar aStar = new AStar(rows, cols, initialNode, finalNode);
@@ -343,7 +343,7 @@ public class Pathfinding {
     
     aStar.setBlocks(blocksArray);
     List<Node> path = aStar.findPath();
-    List<Node> midPoints = path.subList(1, path.size()-1);
+    List<Node> midPoints = path.subList(3, path.size()-1);
     return midPoints.stream().map((p) -> new Translation2d(p.getRow(), p.getCol())).collect(Collectors.toList()); 
   }
 }

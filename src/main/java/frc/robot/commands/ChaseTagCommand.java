@@ -14,18 +14,18 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class ChaseTagCommand extends CommandBase {
   
-  private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
-  private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
-  private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(8, 8);
-  
-  private static final int TAG_TO_CHASE = 2;
+  private final ProfiledPIDController xController = Constants.TeleopDriveConstants.xController;
+  private final ProfiledPIDController yController = Constants.TeleopDriveConstants.yController;
+  private final ProfiledPIDController omegaController = Constants.TeleopDriveConstants.omegaController;
+
+  private static int TAG_TO_CHASE = 2;
   private static final Transform3d TAG_TO_GOAL = 
       new Transform3d(
           new Translation3d(1.5, 0.0, 0.0),
@@ -34,10 +34,6 @@ public class ChaseTagCommand extends CommandBase {
   private final PhotonCamera photonCamera;
   private final DrivetrainSubsystem drivetrainSubsystem;
   private final Supplier<Pose2d> poseProvider;
-
-  private final ProfiledPIDController xController = new ProfiledPIDController(2, 0, 0, X_CONSTRAINTS);
-  private final ProfiledPIDController yController = new ProfiledPIDController(2, 0, 0, Y_CONSTRAINTS);
-  private final ProfiledPIDController omegaController = new ProfiledPIDController(1.5, 0, 0, OMEGA_CONSTRAINTS);
 
   private PhotonTrackedTarget lastTarget;
 
@@ -48,6 +44,7 @@ public class ChaseTagCommand extends CommandBase {
     this.photonCamera = photonCamera;
     this.drivetrainSubsystem = drivetrainSubsystem;
     this.poseProvider = poseProvider;
+
 
     xController.setTolerance(0.2);
     yController.setTolerance(0.2);
@@ -133,6 +130,10 @@ public class ChaseTagCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drivetrainSubsystem.stop();
+  }
+
+  public void setTagToChase(int tagToChase){
+    TAG_TO_CHASE = tagToChase;
   }
 
 }
