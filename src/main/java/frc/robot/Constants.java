@@ -9,6 +9,7 @@ import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -134,6 +135,14 @@ public final class Constants {
 
     public static final double HEADING_TOLERANCE = degreesToRadians(1.5);
 
+    private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+    private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
+    private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(8, 8);
+
+    public static final ProfiledPIDController xController = new ProfiledPIDController(2, 0, 0, X_CONSTRAINTS);
+    public static final ProfiledPIDController yController = new ProfiledPIDController(2, 0, 0, Y_CONSTRAINTS);
+    public static final ProfiledPIDController omegaController = new ProfiledPIDController(1.5, 0, 0, OMEGA_CONSTRAINTS);
+
   }
 
   public static class VisionConstants {
@@ -148,15 +157,15 @@ public final class Constants {
 
   public static class AutoConstants {
     public static TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(PI, 2 / PI);
-    public static double THETA_kP = 1.0;
+    public static double THETA_kP = 0.8;
     public static double THETA_kI = 0.0;
     public static double THETA_kD = 0.0;
     
-    public static double X_kP = 1.5;
+    public static double X_kP = 1.2;
     public static double X_kI = 0.0;
     public static double X_kD = 0.0;
 
-    public static double Y_kP = 1.5;
+    public static double Y_kP = 1.2;
     public static double Y_kI = 0.0;
     public static double Y_kD = 0.0;
 

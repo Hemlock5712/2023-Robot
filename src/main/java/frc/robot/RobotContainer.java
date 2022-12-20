@@ -101,8 +101,10 @@ public class RobotContainer {
     
     controller.a().onTrue(Commands.runOnce(() -> poseEstimator.initializeGyro(0), drivetrainSubsystem));
 
-    controller.y().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(10)), new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(0))));
-    controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), new PathPoint(new Translation2d(4, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(100)), new PathPoint(new Translation2d(1.8, 3.1), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(50)), new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(70))));
+    // controller.leftBumper()
+
+    controller.y().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)), new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180))));
+    controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), new PathPoint(new Translation2d(4, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)), new PathPoint(new Translation2d(1.8, 3.1), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)), new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180))));
   }
 
   /**
