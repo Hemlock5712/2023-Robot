@@ -124,7 +124,7 @@ public class RobotContainer {
     // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270))));
     controller.x().
         whileTrue(new PPAStar(drivetrainSubsystem, poseEstimator, 
-            new PathConstraints(2, 2), 3, 3, 90));
+            new PathConstraints(2, 2), 3, 3, 180));
   }
 
   /**

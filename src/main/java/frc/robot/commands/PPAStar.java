@@ -6,10 +6,10 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.aStar.Pathfinding;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -18,8 +18,7 @@ import frc.robot.subsystems.PoseEstimatorSubsystem;
 public class PPAStar extends CommandBase {
   private final DrivetrainSubsystem driveSystem;
   private final PoseEstimatorSubsystem poseEstimatorSystem;
-
-  private Command otherCommand;
+  private PPSwerveControllerCommand pathDrivingCommand;
 
   private PathPlannerTrajectory trajectory;
   private final PathConstraints constraints;
@@ -68,13 +67,14 @@ public class PPAStar extends CommandBase {
 
     poseEstimatorSystem.addTrajectory(trajectory);
 
-    otherCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
-    otherCommand.schedule();
+    pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
+    pathDrivingCommand.schedule();
   }
 
   @Override
-  public void end(boolean interrupted) {
-    otherCommand.cancel();
+  public void end(boolean interrupted)
+  {
+    pathDrivingCommand.cancel();
     driveSystem.stop();
   }
 }
