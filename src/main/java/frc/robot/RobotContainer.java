@@ -8,10 +8,10 @@ import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
 import java.util.List;
 
+import org.photonvision.PhotonCamera;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPoint;
-
-import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
