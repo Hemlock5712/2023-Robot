@@ -8,10 +8,10 @@ import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
 import java.util.List;
 
-import org.photonvision.PhotonCamera;
-
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPoint;
+
+import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,7 +20,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,33 +33,37 @@ import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DriveWithPathPlanner;
 import frc.robot.commands.FieldHeadingDriveCommand;
+import frc.robot.commands.PPAStar;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
 
   private final CommandXboxController controller = new CommandXboxController(0);
-  //Set IP to 10.57.12.11
-  //Set RoboRio to 10.57.12.2
+  // Set IP to 10.57.12.11
+  // Set RoboRio to 10.57.12.2
   private final PhotonCamera photonCamera = new PhotonCamera("photonvision");
 
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
   private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
-  
-  private final ChaseTagCommand chaseTagCommand = 
-      new ChaseTagCommand(photonCamera, drivetrainSubsystem, poseEstimator::getCurrentPose);
-  
+
+  private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
+      poseEstimator::getCurrentPose);
+
   private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new FieldHeadingDriveCommand(
       drivetrainSubsystem,
       () -> poseEstimator.getCurrentPose().getRotation(),
       () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-      () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND, 
+      () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
       () -> -controller.getRightY(),
       () -> -controller.getRightX());
 
@@ -74,8 +77,7 @@ public class RobotContainer {
         () -> poseEstimator.getCurrentPose().getRotation(),
         () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
         () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2
-    ));
+        () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -87,27 +89,40 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
     // Back button resets the robot pose
     controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition, drivetrainSubsystem));
-    
+
     controller.b().whileTrue(chaseTagCommand);
-    
+
     controller.start().toggleOnTrue(fieldHeadingDriveCommand);
-    
+
     controller.a().onTrue(Commands.runOnce(() -> poseEstimator.initializeGyro(0), drivetrainSubsystem));
 
-    controller.y().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)), new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180))));
-    controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), 
-      new PathPoint(new Translation2d(2.33, 2.03), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)), 
-      new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)), 
-      new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)), 
-      new PathPoint(new Translation2d(Units.inchesToMeters(200), 2.03), drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270))));
+    controller.y()
+        .whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
+            new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(),
+                Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(),
+                Rotation2d.fromDegrees(180))));
+    // controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem,
+    // poseEstimator, new PathConstraints(2, 2),
+    // new PathPoint(new Translation2d(2.33, 2.03),
+    // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)),
+    // new PathPoint(new Translation2d(3, 3),
+    // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)),
+    // new PathPoint(new Translation2d(2, 2),
+    // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)),
+    // new PathPoint(new Translation2d(Units.inchesToMeters(200), 2.03),
+    // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270))));
+    controller.x().whileTrue(new PPAStar(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), 3, 3, 90));
   }
 
   /**
@@ -117,24 +132,22 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // Create config for trajectory
-    TrajectoryConfig config =
-        new TrajectoryConfig(
-                1,
-                1)
+    TrajectoryConfig config = new TrajectoryConfig(
+        1,
+        1)
             // Add kinematics to ensure max speed is actually obeyed
             .setKinematics(DrivetrainConstants.KINEMATICS);
 
-    // An example trajectory to follow.  All units in meters.
-    Trajectory exampleTrajectory =
-        TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
-            // Pass through these no interior waypoints
-            List.of(),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(3, 0, Rotation2d.fromDegrees(90)),
-            config);
-    
+    // An example trajectory to follow. All units in meters.
+    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+        // Start at the origin facing the +X direction
+        new Pose2d(0, 0, new Rotation2d(0)),
+        // Pass through these no interior waypoints
+        List.of(),
+        // End 3 meters straight ahead of where we started, facing forward
+        new Pose2d(3, 0, Rotation2d.fromDegrees(90)),
+        config);
+
     return new PrintCommand("Starting auto")
         .andThen(new InstantCommand(
             () -> poseEstimator.setCurrentPose(new Pose2d(0, 0, new Rotation2d(0))), drivetrainSubsystem))
