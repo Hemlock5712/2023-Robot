@@ -18,15 +18,15 @@ public class DriveWithPathPlanner extends CommandBase {
 
   private PathPlannerTrajectory trajectory;
   private final PathConstraints constraints;
-  private final PathPoint finalPoint;
+  private final PathPoint pointOne;
   private final PathPoint[] internalPoints;
 
 
-  public DriveWithPathPlanner(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, PathPoint finalPoint, PathPoint... internalPts) {
+  public DriveWithPathPlanner(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, PathPoint pointOne, PathPoint... internalPts) {
     this.driveSystem = d;
     this.poseEstimatorSystem = p;
     this.constraints = constraints;
-    this.finalPoint = finalPoint;
+    this.pointOne = pointOne;
     this.internalPoints = internalPts;
 
     addRequirements(driveSystem, poseEstimatorSystem);
@@ -42,15 +42,15 @@ public class DriveWithPathPlanner extends CommandBase {
       PathPoint[] restOfPoints = new PathPoint[internalPoints.length];
       for (int i = 1; i < internalPoints.length; i++)
       {
-        restOfPoints[i - 1] = internalPoints[i];
+        restOfPoints[i] = internalPoints[i];
       }
-      restOfPoints[restOfPoints.length - 1] = finalPoint;
+      restOfPoints[0] = pointOne;
 
       trajectory = PathPlanner.generatePath(constraints, new PathPoint(pose.getTranslation(), pose.getRotation(), pose.getRotation()), internalPoints[0], restOfPoints);
     }
     else
     {
-      trajectory = PathPlanner.generatePath(constraints, new PathPoint(pose.getTranslation(), pose.getRotation(), pose.getRotation()), finalPoint);
+      trajectory = PathPlanner.generatePath(constraints, new PathPoint(pose.getTranslation(), pose.getRotation(), pose.getRotation()), pointOne);
     }
     
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
