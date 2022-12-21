@@ -348,8 +348,9 @@ public class Pathfinding {
     aStar.setBlocks(blocksArray);
     List<Node> path = aStar.findPath();
     List<Node> midPoints = path.subList(2, path.size() - 1);
-    return midPoints.stream()
-        .map((p) -> new Translation2d(Units.inchesToMeters(p.getRow() * 10), Units.inchesToMeters(p.getCol() * 10)))
+    List<Translation2d> points = midPoints.stream()
+        .map((p) -> new Translation2d(Units.inchesToMeters(p.getCol() * 10), Units.inchesToMeters(p.getRow() * 10)))
         .collect(Collectors.toList());
+    return points;
   }
 }
