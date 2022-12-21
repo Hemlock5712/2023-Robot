@@ -108,9 +108,9 @@ public class RobotContainer {
 
     controller.y()
         .whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
-            new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(),
-                Rotation2d.fromDegrees(180)),
             new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(),
+                Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(),
                 Rotation2d.fromDegrees(180))));
     // controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem,
     // poseEstimator, new PathConstraints(2, 2),
@@ -122,7 +122,9 @@ public class RobotContainer {
     // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)),
     // new PathPoint(new Translation2d(Units.inchesToMeters(200), 2.03),
     // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270))));
-    controller.x().whileTrue(new PPAStar(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), 3, 3, 90));
+    controller.x().
+        whileTrue(new PPAStar(drivetrainSubsystem, poseEstimator, 
+            new PathConstraints(2, 2), 3, 3, 90));
   }
 
   /**
