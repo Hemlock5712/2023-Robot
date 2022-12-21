@@ -340,7 +340,7 @@ public class Pathfinding {
     Node finalNode = new Node((int) (Units.metersToInches(endX) / 10), (int) (Units.metersToInches(endY) / 10));
     int rows = 32;
     int cols = 65;
-    AStar aStar = new AStar(rows, cols, initialNode, finalNode);
+    AStar aStar = new AStar(cols, rows, initialNode, finalNode);
 
     // Put in blocks Array to block cells {0, 1}, {1, 1}
     int[][] blocksArray = new int[][] {};
