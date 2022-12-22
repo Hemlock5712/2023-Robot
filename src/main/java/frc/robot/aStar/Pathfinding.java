@@ -132,8 +132,8 @@ class AStar {
   private Node finalNode;
 
   public AStar(int rows, int cols, Node initialNode, Node finalNode, int hvCost, int diagonalCost) {
-    this.hvCost = hvCost;
-    this.diagonalCost = diagonalCost;
+    setHvCost(hvCost);
+    setDiagonalCost(diagonalCost);
     setInitialNode(initialNode);
     setFinalNode(finalNode);
     this.searchArea = new Node[rows][cols];
@@ -324,13 +324,14 @@ class AStar {
     this.hvCost = hvCost;
   }
 
+  private void setDiagonalCost(int diagonalCost) {
+    this.diagonalCost = diagonalCost;
+  }
+
   private int getDiagonalCost() {
     return diagonalCost;
   }
 
-  private void setDiagonalCost(int diagonalCost) {
-    this.diagonalCost = diagonalCost;
-  }
 }
 
 public class Pathfinding {
