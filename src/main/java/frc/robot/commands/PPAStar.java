@@ -52,7 +52,7 @@ public class PPAStar extends CommandBase {
     {
       PathPoint[] restOfPoints = new PathPoint[internalPoints.size() - 1];
 
-      PathPoint secondPoint = new PathPoint(internalPoints.get(0), internalPoints.get(1).minus(internalPoints.get(0)).getAngle());
+      PathPoint secondPoint = new PathPoint(internalPoints.get(0), internalPoints.get(1).minus(internalPoints.get(0)).getAngle(), endRotationObj);
 
       for (int i = 0; i < internalPoints.size() - 1; i++)
       {
