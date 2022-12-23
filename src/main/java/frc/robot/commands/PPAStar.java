@@ -56,11 +56,15 @@ public class PPAStar extends CommandBase {
 
       for (int i = 0; i < internalPoints.size() - 1; i++)
       {
-        Rotation2d angleOfSecantLineToYAxis = internalPoints.get(i + 1).minus(internalPoints.get(i)).getAngle();
-        restOfPoints[i] = new PathPoint(internalPoints.get(i + 1), angleOfSecantLineToYAxis,
-        endRotationObj);
+        double y1 = internalPoints.get(i+1).getY();
+        double x1 = internalPoints.get(i+1).getY();
+        double y0 = internalPoints.get(i).getY();
+        double x0 = internalPoints.get(i).getY();
+        double hypotenuse = Math.hypot(y1 - y0, x1 - x0);
+        Rotation2d angleOfTangentLineToXAxis = new Translation2d(x0 / hypotenuse, y0 / hypotenuse).getAngle();
+        restOfPoints[i] = new PathPoint(internalPoints.get(i + 1), angleOfTangentLineToXAxis, endRotationObj);
       }
-      restOfPoints[restOfPoints.length - 1] = new PathPoint(new Translation2d(endX, endY), endRotationObj);
+      restOfPoints[restOfPoints.length - 1] = new PathPoint(new Translation2d(endX, endY), endRotationObj, endRotationObj);
 
       trajectory = PathPlanner.generatePath(constraints,
           new PathPoint(pose.getTranslation(), internalPoints.get(0).minus(pose.getTranslation()).getAngle(), driveSystem.getModulePositions()[0].angle),
@@ -69,8 +73,7 @@ public class PPAStar extends CommandBase {
     } else {
           trajectory = PathPlanner.generatePath(constraints,
           new PathPoint(pose.getTranslation(), internalPoints.get(0).minus(pose.getTranslation()).getAngle(), driveSystem.getModulePositions()[0].angle),
-          new PathPoint(new Translation2d(endX, endY), driveSystem.getGyroscopeRotation(),
-              endRotationObj));
+          new PathPoint(new Translation2d(endX, endY), endRotationObj, endRotationObj));
     }
 
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
