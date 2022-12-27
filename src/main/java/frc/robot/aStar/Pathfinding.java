@@ -337,24 +337,25 @@ public class Pathfinding
   }
 
   public static List<Translation2d> generatePath(double startX, double startY, double endX, double endY) {
-    Node initialNode = new Node((int) (Units.metersToInches(startX) / 10), (int) (Units.metersToInches(startY) / 10));
-    Node finalNode = new Node((int) (Units.metersToInches(endX) / 10), (int) (Units.metersToInches(endY) / 10));
+    Node initialNode = new Node((int) (Units.metersToInches(startY) / 10),(int) (Units.metersToInches(startX) / 10));
+    Node finalNode = new Node((int) (Units.metersToInches(endY) / 10),(int)(Units.metersToInches(endX) / 10));
     int rows = 32;
     int cols = 65;
-    AStar aStar = new AStar(cols, rows, initialNode, finalNode);
+    AStar aStar = new AStar(rows, cols, initialNode, finalNode);
 
     // Put in blocks Array to block cells {0, 1}, {1, 1}
     int[][] blocksArray = new int[][] {};
 
     aStar.setBlocks(blocksArray);
     List<Node> path = aStar.findPath();
-    List<Translation2d> finalPath = new ArrayList<>(path.size());
+  
+    List<Translation2d> finalPath = new ArrayList<>(path.size()-1);
 
     // Use a for loop since it's faster than streams.
-    for (int i = 0; i < path.size(); i++)
+    for (int i = 0; i < path.size()-1; i++)
     {
       Node p = path.get(i);
-      finalPath.set(i, new Translation2d(Units.inchesToMeters(p.getCol() * 10), Units.inchesToMeters(p.getRow() * 10)));
+      finalPath.add(i, new Translation2d(Units.inchesToMeters(p.getCol() * 10), Units.inchesToMeters(p.getRow() * 10)));
     }
     return finalPath;
   }

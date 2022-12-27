@@ -61,7 +61,7 @@ public class PPAStar extends CommandBase {
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
-    if (!internalPoints.isEmpty()) {
+    if (internalPoints.size()>=2) {
       // Declare an array to hold PathPoint objects made from all other points specified in constructor.
       PathPoint[] restOfPoints = new PathPoint[internalPoints.size() - 1];
 
@@ -73,8 +73,8 @@ public class PPAStar extends CommandBase {
         double x1 = internalPoints.get(i + 1).getX();
         double y0 = internalPoints.get(i).getY();
         double x0 = internalPoints.get(i).getX();
-        double hypotenuse = Math.hypot(y1 - y0, x1 - x0);
-        Rotation2d angleOfTangentLineToXAxis = new Translation2d(x0 / hypotenuse, y0 / hypotenuse).getAngle();
+        Rotation2d angleOfTangentLineToXAxis = new Rotation2d(x1-x0,y1-y0);
+        System.out.println("ANGLE: "+angleOfTangentLineToXAxis);
 
         restOfPoints[i] = new PathPoint(internalPoints.get(i + 1), angleOfTangentLineToXAxis, endRotationObj);
       }
@@ -82,13 +82,12 @@ public class PPAStar extends CommandBase {
 
       trajectory = PathPlanner.generatePath(constraints,
           new PathPoint(startPose.getTranslation(), internalPoints.get(0).minus(startPose.getTranslation()).getAngle(),
-              driveSystem.getModulePositions()[0].angle),
+              driveSystem.getGyroscopeRotation()),
           secondPoint,
           restOfPoints);
     } else {
       trajectory = PathPlanner.generatePath(constraints,
-          new PathPoint(startPose.getTranslation(), internalPoints.get(0).minus(startPose.getTranslation()).getAngle(),
-              driveSystem.getModulePositions()[0].angle),
+          new PathPoint(startPose.getTranslation(),driveSystem.getModulePositions()[0].angle, driveSystem.getGyroscopeRotation()),
           new PathPoint(endTranslationObj, endRotationObj, endRotationObj));
     }
 
