@@ -107,7 +107,8 @@ public class PPAStar extends CommandBase {
     if (interrupted)
     {
       pathDrivingCommand.cancel();
-      driveSystem.stop();
     }
+
+    driveSystem.stop();
   }
 }
