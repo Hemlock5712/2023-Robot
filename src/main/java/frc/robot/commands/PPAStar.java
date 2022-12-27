@@ -11,6 +11,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.aStar.Pathfinding;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -53,7 +54,7 @@ public class PPAStar extends CommandBase {
     Pose2d startPose = poseEstimatorSystem.getCurrentPose();
 
     // Already there.
-    if (startPose.getTranslation().equals(endTranslationObj))
+    if (startPose.getTranslation().getDistance(endTranslationObj) <= Units.inchesToMeters(10))
       return;
 
     List<Translation2d> internalPoints = Pathfinding.generatePath(startPose.getX(), startPose.getY(), endX, endY);
