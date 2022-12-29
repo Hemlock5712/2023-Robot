@@ -22,7 +22,6 @@ public class PPAStar extends CommandBase {
   private final PoseEstimatorSubsystem poseEstimatorSystem;
   private PPSwerveControllerCommand pathDrivingCommand;
 
-  private PathPlannerTrajectory trajectory;
   private final PathConstraints constraints;
   public final double endX;
   public final double endY;
@@ -39,7 +38,6 @@ public class PPAStar extends CommandBase {
 
     addRequirements(driveSystem, poseEstimatorSystem);
   }
-
 
   // ----------------------------------------------------------------------------
   // Per-schedule setup code.
@@ -63,34 +61,32 @@ public class PPAStar extends CommandBase {
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
-    if (!internalPoints.isEmpty()) {
-      // Declare an array to hold PathPoint objects made from all other points specified in constructor.
-      PathPoint[] restOfPoints = new PathPoint[internalPoints.size() - 1];
+    if (internalPoints.size() >= 2) {
+      PathPoint[] thirdPointToEnd = new PathPoint[internalPoints.size() - 1];
 
       PathPoint secondPoint = new PathPoint(internalPoints.get(0),
           internalPoints.get(1).minus(internalPoints.get(0)).getAngle(), endRotationObj);
 
+      // Iterate through the points returned 
       for (int i = 0; i < internalPoints.size() - 1; i++) {
         double y1 = internalPoints.get(i + 1).getY();
         double x1 = internalPoints.get(i + 1).getX();
         double y0 = internalPoints.get(i).getY();
         double x0 = internalPoints.get(i).getX();
-        double hypotenuse = Math.hypot(y1 - y0, x1 - x0);
-        Rotation2d angleOfTangentLineToXAxis = new Translation2d(x0 / hypotenuse, y0 / hypotenuse).getAngle();
+        Rotation2d angleOfTangentLineToXAxis = new Rotation2d(x1 - x0, y1 - y0);
 
-        restOfPoints[i] = new PathPoint(internalPoints.get(i + 1), angleOfTangentLineToXAxis, endRotationObj);
+        thirdPointToEnd[i] = new PathPoint(internalPoints.get(i + 1), angleOfTangentLineToXAxis, null);
       }
-      restOfPoints[restOfPoints.length - 1] = new PathPoint(endTranslationObj, endRotationObj, endRotationObj);
+      thirdPointToEnd[thirdPointToEnd.length - 1] = new PathPoint(endTranslationObj, endRotationObj, endRotationObj);
 
       trajectory = PathPlanner.generatePath(constraints,
           new PathPoint(startPose.getTranslation(), internalPoints.get(0).minus(startPose.getTranslation()).getAngle(),
-              driveSystem.getModulePositions()[0].angle),
+              startPose.getRotation()),
           secondPoint,
-          restOfPoints);
+          thirdPointToEnd);
     } else {
       trajectory = PathPlanner.generatePath(constraints,
-          new PathPoint(startPose.getTranslation(), internalPoints.get(0).minus(startPose.getTranslation()).getAngle(),
-              driveSystem.getModulePositions()[0].angle),
+          new PathPoint(startPose.getTranslation(), driveSystem.getModulePositions()[0].angle, startPose.getRotation()),
           new PathPoint(endTranslationObj, endRotationObj, endRotationObj));
     }
 
