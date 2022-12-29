@@ -1,18 +1,17 @@
 package frc.robot.aStar;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
-class Node {
-
+class Node implements Comparable<Node> 
+{
   private int g;
   private int f;
   private int h;
@@ -22,40 +21,51 @@ class Node {
   private Node parent;
 
   public Node(int row, int col) {
-    super();
     this.row = row;
     this.col = col;
   }
 
+  @Override
+  public int compareTo(Node other)
+  {
+    return Integer.compare(f, other.f);
+  }
+
   public void calculateHeuristic(Node finalNode) {
-    this.h = Math.abs(finalNode.getRow() - getRow()) + Math.abs(finalNode.getCol() - getCol());
+    h = Math.abs(finalNode.row - row) + Math.abs(finalNode.col - col);
   }
 
   public void setNodeData(Node currentNode, int cost) {
-    int gCost = currentNode.getG() + cost;
-    setParent(currentNode);
-    setG(gCost);
-    calculateFinalCost();
+    parent = currentNode;
+    g = currentNode.g + cost;
+    f = g + h;
   }
 
   public boolean checkBetterPath(Node currentNode, int cost) {
-    int gCost = currentNode.getG() + cost;
-    if (gCost < getG()) {
+    int gCost = currentNode.g + cost;
+    if (gCost < this.g) {
       setNodeData(currentNode, cost);
       return true;
     }
     return false;
   }
 
-  private void calculateFinalCost() {
-    int finalCost = getG() + getH();
-    setF(finalCost);
+  @Override
+  public boolean equals(Object arg0) {
+    if (arg0 == this)
+      return true;
+
+    if (arg0 == null || arg0.getClass() != getClass())
+      return false;
+
+    Node other = (Node) arg0;
+    return row == other.row && col == other.col;
   }
 
   @Override
-  public boolean equals(Object arg0) {
-    Node other = (Node) arg0;
-    return this.getRow() == other.getRow() && this.getCol() == other.getCol();
+  public int hashCode()
+  {
+    return 31 * row + col;
   }
 
   @Override
@@ -121,8 +131,8 @@ class Node {
 }
 
 class AStar {
-  private static int DEFAULT_HV_COST = 100; // Horizontal - Vertical Cost
-  private static int DEFAULT_DIAGONAL_COST = 141;
+  private static final int DEFAULT_HV_COST = 100; // Horizontal - Vertical Cost
+  private static final int DEFAULT_DIAGONAL_COST = 141;
   private int hvCost;
   private int diagonalCost;
   private Node[][] searchArea;
@@ -132,19 +142,15 @@ class AStar {
   private Node finalNode;
 
   public AStar(int rows, int cols, Node initialNode, Node finalNode, int hvCost, int diagonalCost) {
-    setHvCost(hvCost);
-    setDiagonalCost(diagonalCost);
-    setInitialNode(initialNode);
-    setFinalNode(finalNode);
-    this.searchArea = new Node[rows][cols];
-    this.openList = new PriorityQueue<Node>(new Comparator<Node>() {
-      @Override
-      public int compare(Node node0, Node node1) {
-        return Integer.compare(node0.getF(), node1.getF());
-      }
-    });
+    this.hvCost = hvCost;
+    this.diagonalCost = diagonalCost;
+    this.initialNode = initialNode;
+    this.finalNode = finalNode;
+
+    searchArea = new Node[rows][cols];
+    openList = new PriorityQueue<>();
+    closedSet = new HashSet<>();
     setNodes();
-    this.closedSet = new HashSet<>();
   }
 
   public AStar(int rows, int cols, Node initialNode, Node finalNode) {
@@ -155,8 +161,8 @@ class AStar {
     for (int i = 0; i < searchArea.length; i++) {
       for (int j = 0; j < searchArea[0].length; j++) {
         Node node = new Node(i, j);
-        node.calculateHeuristic(getFinalNode());
-        this.searchArea[i][j] = node;
+        node.calculateHeuristic(finalNode);
+        searchArea[i][j] = node;
       }
     }
   }
@@ -171,25 +177,26 @@ class AStar {
 
   public List<Node> findPath() {
     openList.add(initialNode);
-    while (!isEmpty(openList)) {
+    while (!openList.isEmpty()) {
       Node currentNode = openList.poll();
       closedSet.add(currentNode);
-      if (isFinalNode(currentNode)) {
+
+      if (isFinalNode(currentNode))
         return getPath(currentNode);
-      } else {
+      else
         addAdjacentNodes(currentNode);
-      }
     }
-    return new ArrayList<Node>();
+    return new ArrayList<>();
   }
 
   private List<Node> getPath(Node currentNode) {
-    List<Node> path = new ArrayList<Node>();
+    List<Node> path = new ArrayList<>();
     path.add(currentNode);
-    Node parent;
-    while ((parent = currentNode.getParent()) != null) {
-      path.add(0, parent);
-      currentNode = parent;
+
+    Node parentOfTopNode = currentNode.getParent();
+    while (parentOfTopNode != null) {
+      path.add(0, parentOfTopNode);
+      parentOfTopNode = parentOfTopNode.getParent();
     }
     return path;
   }
@@ -204,16 +211,16 @@ class AStar {
     int row = currentNode.getRow();
     int col = currentNode.getCol();
     int lowerRow = row + 1;
-    if (lowerRow < getSearchArea().length) {
+    if (lowerRow < searchArea.length) {
       if (col - 1 >= 0) {
-        checkNode(currentNode, col - 1, lowerRow, getDiagonalCost()); // Comment this line if diagonal movements are not
+        checkNode(currentNode, col - 1, lowerRow, diagonalCost); // Comment this line if diagonal movements are not
                                                                       // allowed
       }
-      if (col + 1 < getSearchArea()[0].length) {
-        checkNode(currentNode, col + 1, lowerRow, getDiagonalCost()); // Comment this line if diagonal movements are not
+      if (col + 1 < searchArea[0].length) {
+        checkNode(currentNode, col + 1, lowerRow, diagonalCost); // Comment this line if diagonal movements are not
                                                                       // allowed
       }
-      checkNode(currentNode, col, lowerRow, getHvCost());
+      checkNode(currentNode, col, lowerRow, hvCost);
     }
   }
 
@@ -222,10 +229,10 @@ class AStar {
     int col = currentNode.getCol();
     int middleRow = row;
     if (col - 1 >= 0) {
-      checkNode(currentNode, col - 1, middleRow, getHvCost());
+      checkNode(currentNode, col - 1, middleRow, hvCost);
     }
-    if (col + 1 < getSearchArea()[0].length) {
-      checkNode(currentNode, col + 1, middleRow, getHvCost());
+    if (col + 1 < searchArea[0].length) {
+      checkNode(currentNode, col + 1, middleRow, hvCost);
     }
   }
 
@@ -235,31 +242,32 @@ class AStar {
     int upperRow = row - 1;
     if (upperRow >= 0) {
       if (col - 1 >= 0) {
-        checkNode(currentNode, col - 1, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not
+        checkNode(currentNode, col - 1, upperRow, diagonalCost); // Comment this if diagonal movements are not
                                                                       // allowed
       }
-      if (col + 1 < getSearchArea()[0].length) {
-        checkNode(currentNode, col + 1, upperRow, getDiagonalCost()); // Comment this if diagonal movements are not
+      if (col + 1 < searchArea[0].length) {
+        checkNode(currentNode, col + 1, upperRow, diagonalCost); // Comment this if diagonal movements are not
                                                                       // allowed
       }
-      checkNode(currentNode, col, upperRow, getHvCost());
+      checkNode(currentNode, col, upperRow, hvCost);
     }
   }
 
   private void checkNode(Node currentNode, int col, int row, int cost) {
-    Node adjacentNode = getSearchArea()[row][col];
-    if (!adjacentNode.isBlock() && !getClosedSet().contains(adjacentNode)) {
-      if (!getOpenList().contains(adjacentNode)) {
+    Node adjacentNode = searchArea[row][col];
+    if (!adjacentNode.isBlock() && !getClosedSet().contains(adjacentNode)) 
+    {
+      if (!openList.contains(adjacentNode)) 
+      {
         adjacentNode.setNodeData(currentNode, cost);
-        getOpenList().add(adjacentNode);
-      } else {
-        boolean changed = adjacentNode.checkBetterPath(currentNode, cost);
-        if (changed) {
+        openList.add(adjacentNode);
+      } 
+      else if (adjacentNode.checkBetterPath(currentNode, cost)) 
+      {
           // Remove and Add the changed node, so that the PriorityQueue can sort again its
           // contents with the modified "finalCost" value of the modified node
-          getOpenList().remove(adjacentNode);
-          getOpenList().add(adjacentNode);
-        }
+          openList.remove(adjacentNode);
+          openList.add(adjacentNode);
       }
     }
   }
@@ -268,12 +276,8 @@ class AStar {
     return currentNode.equals(finalNode);
   }
 
-  private boolean isEmpty(PriorityQueue<Node> openList) {
-    return openList.size() == 0;
-  }
-
   private void setBlock(int row, int col) {
-    this.searchArea[row][col].setBlock(true);
+    searchArea[row][col].setBlock(true);
   }
 
   public Node getInitialNode() {
@@ -293,7 +297,7 @@ class AStar {
   }
 
   public Node[][] getSearchArea() {
-    return searchArea;
+    return Arrays.copyOf(searchArea, searchArea.length);
   }
 
   public void setSearchArea(Node[][] searchArea) {
@@ -323,20 +327,16 @@ class AStar {
   public void setHvCost(int hvCost) {
     this.hvCost = hvCost;
   }
-
-  private void setDiagonalCost(int diagonalCost) {
-    this.diagonalCost = diagonalCost;
-  }
-
-  private int getDiagonalCost() {
-    return diagonalCost;
-  }
-
 }
 
-public class Pathfinding {
+public class Pathfinding 
+{
+  private Pathfinding()
+  {
+    throw new IllegalStateException("Pathfinding is a helper class");
+  }
 
-  public static List<Translation2d> generatePath(int startX, int startY, int endX, int endY) {
+  public static List<Translation2d> generatePath(double startX, double startY, double endX, double endY) {
     Node initialNode = new Node((int) (Units.metersToInches(startX) / 10), (int) (Units.metersToInches(startY) / 10));
     Node finalNode = new Node((int) (Units.metersToInches(endX) / 10), (int) (Units.metersToInches(endY) / 10));
     int rows = 32;
@@ -348,10 +348,14 @@ public class Pathfinding {
 
     aStar.setBlocks(blocksArray);
     List<Node> path = aStar.findPath();
-    List<Node> midPoints = path.subList(2, path.size() - 1);
-    List<Translation2d> points = midPoints.stream()
-        .map((p) -> new Translation2d(Units.inchesToMeters(p.getCol() * 10), Units.inchesToMeters(p.getRow() * 10)))
-        .collect(Collectors.toList());
-    return points;
+    List<Translation2d> finalPath = new ArrayList<>(path.size());
+
+    // Use a for loop since it's faster than streams.
+    for (int i = 0; i < path.size(); i++)
+    {
+      Node p = path.get(i);
+      finalPath.set(i, new Translation2d(Units.inchesToMeters(p.getCol() * 10), Units.inchesToMeters(p.getRow() * 10)));
+    }
+    return finalPath;
   }
 }
