@@ -255,6 +255,7 @@ class AStar {
 
   private void checkNode(Node currentNode, int col, int row, int cost) {
     Node adjacentNode = searchArea[row][col];
+
     if (!adjacentNode.isBlock() && !getClosedSet().contains(adjacentNode)) 
     {
       if (!openList.contains(adjacentNode)) 
@@ -337,8 +338,10 @@ public class Pathfinding
   }
 
   public static List<Translation2d> generatePath(double startX, double startY, double endX, double endY) {
+
     Node initialNode = new Node((int) (Units.metersToInches(startY) / 10),(int) (Units.metersToInches(startX) / 10));
     Node finalNode = new Node((int) (Units.metersToInches(endY) / 10),(int)(Units.metersToInches(endX) / 10));
+
     int rows = 32;
     int cols = 65;
     AStar aStar = new AStar(rows, cols, initialNode, finalNode);
@@ -348,6 +351,7 @@ public class Pathfinding
 
     aStar.setBlocks(blocksArray);
     List<Node> path = aStar.findPath();
+
   
     List<Translation2d> finalPath = new ArrayList<>(path.size()-1);
 
@@ -356,6 +360,7 @@ public class Pathfinding
     {
       Node p = path.get(i);
       finalPath.add(i, new Translation2d(Units.inchesToMeters(p.getCol() * 10), Units.inchesToMeters(p.getRow() * 10)));
+
     }
     return finalPath;
   }
