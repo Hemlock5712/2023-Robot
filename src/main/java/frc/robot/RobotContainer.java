@@ -6,6 +6,8 @@ package frc.robot;
 
 import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
@@ -29,6 +31,10 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.PathFinder.AStar;
+import frc.robot.PathFinder.Edge;
+import frc.robot.PathFinder.Node;
+import frc.robot.PathFinder.Obstacle;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DriveWithPathPlanner;
@@ -59,6 +65,10 @@ public class RobotContainer {
   private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
       poseEstimator::getCurrentPose);
 
+  AStar AStarMap = new AStar();
+  List< Obstacle > obstacles = new ArrayList < > ();
+    
+
   private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new FieldHeadingDriveCommand(
       drivetrainSubsystem,
       () -> poseEstimator.getCurrentPose().getRotation(),
@@ -82,6 +92,27 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     configureDashboard();
+
+    //SetUp AStar Map
+    Obstacle obstacle1 = new Obstacle(new float[] {2, 2, 14, 14}, new float[] {0, 10, 5, 15}, 4);
+    obstacles.addAll(Arrays.asList(obstacle1));
+    Node finalNode = new Node(33.2, 33.4);
+      AStarMap.addNode(finalNode);
+        for (int i = 0; i < 50; i=i+2) {
+            for (int j = 0; j < 50; j=j+2) {
+              AStarMap.addNode(new Node(i, j));
+            }
+        }
+
+        // I think this is O(nlogn), nice
+        // Add edges between all pairs of nodes
+        for (int i = 0; i < AStarMap.getNodeSize(); i++) {
+            Node startNode = AStarMap.getNode(i);
+            for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
+                Node endNode = AStarMap.getNode(j);
+                AStarMap.addEdge(new Edge(startNode, endNode), obstacles);
+            }
+        }
   }
 
   private void configureDashboard() {
@@ -124,7 +155,7 @@ public class RobotContainer {
     // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270))));
     controller.x().
         whileTrue(new PPAStar(drivetrainSubsystem, poseEstimator, 
-            new PathConstraints(2, 2), 3, 3, 180));
+            new PathConstraints(2, 2), new Node(3, 3), obstacles, AStarMap));
   }
 
   /**

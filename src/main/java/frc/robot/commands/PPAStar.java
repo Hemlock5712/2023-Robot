@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
@@ -8,12 +9,13 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.aStar.Pathfinding;
+import frc.robot.PathFinder.AStar;
+import frc.robot.PathFinder.Edge;
+import frc.robot.PathFinder.Node;
+import frc.robot.PathFinder.Obstacle;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 
@@ -21,20 +23,28 @@ public class PPAStar extends CommandBase {
   private final DrivetrainSubsystem driveSystem;
   private final PoseEstimatorSubsystem poseEstimatorSystem;
   private PPSwerveControllerCommand pathDrivingCommand;
-
   private final PathConstraints constraints;
-  public final double endX;
-  public final double endY;
-  public final double endAngle;
+  public final Node finalPosition;
+  
+  private AStar AStarMap;
+  
 
-  public PPAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, double endX, double endY,
-      double endAngle) {
+
+
+
+  public PPAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, Node finalPosition, List<Obstacle> obstacles, AStar AStarMap) {
     this.driveSystem = d;
     this.poseEstimatorSystem = p;
     this.constraints = constraints;
-    this.endX = endX;
-    this.endY = endY;
-    this.endAngle = endAngle;
+    this.finalPosition = finalPosition;
+    this.AStarMap = AStarMap;
+
+    Node startPoint = new Node(p.getCurrentPose().getX(), p.getCurrentPose().getY());
+    AStarMap.addNode(startPoint);
+    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
+        Node endNode = AStarMap.getNode(i);
+        AStarMap.addEdge(new Edge(startPoint, endNode), obstacles);
+    }
 
     addRequirements(driveSystem, poseEstimatorSystem);
   }
@@ -46,57 +56,49 @@ public class PPAStar extends CommandBase {
   {
     PathPlannerTrajectory trajectory;
 
-    // Due to repeateded passing of specified end angle as a Rotation2d object,
-    // allocate one object and reference it.
-    Translation2d endTranslationObj = new Translation2d(endX, endY);
-    Rotation2d endRotationObj = Rotation2d.fromDegrees(endAngle);
-
-    Pose2d startPose = poseEstimatorSystem.getCurrentPose();
-
-    // Already there.
-    if (startPose.getTranslation().getDistance(endTranslationObj) <= Units.inchesToMeters(10))
-      return;
-
-    List<Translation2d> internalPoints = Pathfinding.generatePath(startPose.getX(), startPose.getY(), endX, endY);
+    List<Node> fullPath =  AStarMap.findPath(
+      new Node(poseEstimatorSystem.getCurrentPose().getX(), 
+      poseEstimatorSystem.getCurrentPose().getY()), 
+      finalPosition);
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
-
-    if (internalPoints.size()>=2) {
-      // Declare an array to hold PathPoint objects made from all other points specified in constructor.
-      PathPoint[] restOfPoints = new PathPoint[internalPoints.size() - 1];
-
-      PathPoint secondPoint = new PathPoint(internalPoints.get(0),
-          internalPoints.get(1).minus(internalPoints.get(0)).getAngle(), endRotationObj);
-
-
-      for (int i = 0; i < internalPoints.size() - 1; i++) {
-        double y1 = internalPoints.get(i + 1).getY();
-        double x1 = internalPoints.get(i + 1).getX();
-        double y0 = internalPoints.get(i).getY();
-        double x0 = internalPoints.get(i).getX();
-
-        Rotation2d angleOfTangentLineToXAxis = new Rotation2d(x1-x0,y1-y0);
-        System.out.println("ANGLE: "+angleOfTangentLineToXAxis);
-
-        restOfPoints[i] = new PathPoint(internalPoints.get(i + 1), angleOfTangentLineToXAxis, endRotationObj);
+    PathPoint[] fullPathPoints = new PathPoint[fullPath.size() - 1];
+    for(int i=0; i<fullPath.size(); i++){
+      if(i<fullPath.size()-1){
+        if(fullPath.get(i).getHolRot()==-1){
+          fullPathPoints[i] = new PathPoint(new Translation2d(i, i), 
+          new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(), 
+          fullPath.get(i+1).getY()-fullPath.get(i).getY()));
+        }
+        else{
+          fullPathPoints[i] = new PathPoint(new Translation2d(i, i), 
+          new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(), 
+          fullPath.get(i+1).getY()-fullPath.get(i).getY()),
+          Rotation2d.fromDegrees(fullPath.get(i).getHolRot()));
+        } 
       }
-      restOfPoints[restOfPoints.length - 1] = new PathPoint(endTranslationObj, endRotationObj, endRotationObj);
-
-      trajectory = PathPlanner.generatePath(constraints,
-          new PathPoint(startPose.getTranslation(), internalPoints.get(0).minus(startPose.getTranslation()).getAngle(),
-              driveSystem.getGyroscopeRotation()),
-
-          secondPoint,
-          thirdPointToEnd);
-    } else {
-      trajectory = PathPlanner.generatePath(constraints,
-
-          new PathPoint(startPose.getTranslation(),driveSystem.getModulePositions()[0].angle, driveSystem.getGyroscopeRotation()),
-
-          new PathPoint(endTranslationObj, endRotationObj, endRotationObj));
+      else{
+        if(fullPath.get(i).getHolRot()==-1){
+          fullPathPoints[i] = new PathPoint(new Translation2d(i, i), 
+          Rotation2d.fromDegrees(0),
+          Rotation2d.fromDegrees(0));
+        }
+        else{
+          fullPathPoints[i] = new PathPoint(new Translation2d(i, i), 
+          Rotation2d.fromDegrees(fullPath.get(i).getHolRot()),
+          Rotation2d.fromDegrees(fullPath.get(i).getHolRot()));
+        } 
+      }
+      
     }
-
+    // Declare an array to hold PathPoint objects made from all other points specified in constructor.
+    if(fullPathPoints.length<3){
+      trajectory = PathPlanner.generatePath(constraints, fullPathPoints[0], fullPathPoints[1]);
+    }
+    else{
+      trajectory = PathPlanner.generatePath(constraints, fullPathPoints[0], fullPathPoints[1], Arrays.copyOfRange(fullPathPoints, 2, fullPathPoints.length));
+    } 
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }
