@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,8 +25,9 @@ public class PPAStar extends CommandBase {
   private final PoseEstimatorSubsystem poseEstimatorSystem;
   private PPSwerveControllerCommand pathDrivingCommand;
   private final PathConstraints constraints;
-  public final Node finalPosition;
-  
+  private final Node finalPosition;
+  private final Node startPoint;
+  private final List<Obstacle> obstacles;
   private AStar AStarMap;
   
 
@@ -36,15 +38,11 @@ public class PPAStar extends CommandBase {
     this.driveSystem = d;
     this.poseEstimatorSystem = p;
     this.constraints = constraints;
+    this.obstacles = obstacles;
     this.finalPosition = finalPosition;
     this.AStarMap = AStarMap;
-
-    Node startPoint = new Node(p.getCurrentPose().getX(), p.getCurrentPose().getY());
-    AStarMap.addNode(startPoint);
-    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
-        Node endNode = AStarMap.getNode(i);
-        AStarMap.addEdge(new Edge(startPoint, endNode), obstacles);
-    }
+    this.startPoint = new Node(p.getCurrentPose().getX(), p.getCurrentPose().getY());
+    
 
     addRequirements(driveSystem, poseEstimatorSystem);
   }
@@ -55,11 +53,25 @@ public class PPAStar extends CommandBase {
   public void initialize() 
   {
     PathPlannerTrajectory trajectory;
+    List<Node> fullPath = new ArrayList<Node>();
 
-    List<Node> fullPath =  AStarMap.findPath(
-      new Node(poseEstimatorSystem.getCurrentPose().getX(), 
-      poseEstimatorSystem.getCurrentPose().getY()), 
-      finalPosition);
+    AStarMap.addNode(startPoint);
+    if(AStarMap.addEdge(new Edge(startPoint, finalPosition), obstacles)){
+      fullPath.add(0,startPoint);
+      fullPath.add(1,finalPosition);
+    }
+    else{
+      for (int i = 0; i < AStarMap.getNodeSize(); i++) {
+        Node endNode = AStarMap.getNode(i);
+        AStarMap.addEdge(new Edge(startPoint, endNode), obstacles);
+      }
+
+      fullPath =  AStarMap.findPath(
+        new Node(poseEstimatorSystem.getCurrentPose().getX(), 
+        poseEstimatorSystem.getCurrentPose().getY()), 
+        finalPosition);
+    }
+    
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
