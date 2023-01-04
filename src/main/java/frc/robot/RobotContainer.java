@@ -12,12 +12,10 @@ import java.util.List;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPoint;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -36,9 +34,9 @@ import frc.robot.PathFinder.Node;
 import frc.robot.PathFinder.Obstacle;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.DriveWithPathPlanner;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.PPAStar;
+import frc.robot.commands.WPIAStar;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 
@@ -136,11 +134,9 @@ public class RobotContainer {
     controller.a().onTrue(Commands.runOnce(() -> poseEstimator.initializeGyro(0), drivetrainSubsystem));
 
     controller.y()
-        .whileTrue(new DriveWithPathPlanner(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
-            new PathPoint(new Translation2d(2, 2), drivetrainSubsystem.getGyroscopeRotation(),
-                Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(3, 3), drivetrainSubsystem.getGyroscopeRotation(),
-                Rotation2d.fromDegrees(180))));
+        .whileTrue(new WPIAStar(drivetrainSubsystem, poseEstimator, 
+        new TrajectoryConfig(1, 1), 
+        new Node(3, 3), obstacles, AStarMap));
     // controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem,
     // poseEstimator, new PathConstraints(2, 2),
     // new PathPoint(new Translation2d(2.33, 2.03),
