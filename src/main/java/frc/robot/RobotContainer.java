@@ -7,7 +7,6 @@ package frc.robot;
 import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
@@ -94,25 +93,24 @@ public class RobotContainer {
     configureDashboard();
 
     //SetUp AStar Map
-    Obstacle obstacle1 = new Obstacle(new float[] {2, 2, 14, 14}, new float[] {0, 10, 5, 15}, 4);
-    obstacles.addAll(Arrays.asList(obstacle1));
-    Node finalNode = new Node(33.2, 33.4);
-      AStarMap.addNode(finalNode);
-        for (int i = 0; i < 50; i=i+2) {
-            for (int j = 0; j < 50; j=j+2) {
-              AStarMap.addNode(new Node(i, j));
-            }
+    //Obstacle obstacle1 = new Obstacle(new float[] {2, 2, 14, 14}, new float[] {0, 10, 5, 15}, 4);
+    //obstacles.addAll(Arrays.asList(obstacle1));
+    Node finalNode = new Node(3.2, 2.4);
+    AStarMap.addNode(finalNode);
+    for (int i = 0; i < 50; i=i+2) {
+        for (int j = 0; j < 50; j=j+2) {
+          AStarMap.addNode(new Node(i, j));
         }
+    }
 
-        // I think this is O(nlogn), nice
-        // Add edges between all pairs of nodes
-        for (int i = 0; i < AStarMap.getNodeSize(); i++) {
-            Node startNode = AStarMap.getNode(i);
-            for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
-                Node endNode = AStarMap.getNode(j);
-                AStarMap.addEdge(new Edge(startNode, endNode), obstacles);
-            }
+    // Add edges between all pairs of nodes
+    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
+        Node startNode = AStarMap.getNode(i);
+        for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
+            Node endNode = AStarMap.getNode(j);
+            AStarMap.addEdge(new Edge(startNode, endNode), obstacles);
         }
+    }
   }
 
   private void configureDashboard() {
