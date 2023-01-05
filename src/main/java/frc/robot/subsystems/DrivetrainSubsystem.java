@@ -264,8 +264,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             new PIDController(AutoConstants.X_kP, AutoConstants.X_kI, AutoConstants.X_kD),
             new PIDController(AutoConstants.Y_kP, AutoConstants.Y_kI, AutoConstants.Y_kD),
             thetaController,
-            this::setModuleStates,
-            this);
+            this::setModuleStates);
             
       return swerveControllerCommand;
   }
