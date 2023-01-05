@@ -26,7 +26,7 @@ public class PPAStar extends CommandBase {
   private PPSwerveControllerCommand pathDrivingCommand;
   private final PathConstraints constraints;
   private final Node finalPosition;
-  private final Node startPoint;
+  private Node startPoint;
   private final List<Obstacle> obstacles;
   private AStar AStarMap;
   
@@ -52,28 +52,29 @@ public class PPAStar extends CommandBase {
   @Override
   public void initialize() 
   {
+    startPoint = new Node(poseEstimatorSystem.getCurrentPose().getX(), poseEstimatorSystem.getCurrentPose().getY(), poseEstimatorSystem.getCurrentPose().getRotation());
     PathPlannerTrajectory trajectory;
     List<Node> fullPath = new ArrayList<Node>();
 
     AStarMap.addNode(startPoint);
-    if(AStarMap.addEdge(new Edge(startPoint, finalPosition), obstacles)){
+   /* if(AStarMap.addEdge(new Edge(startPoint, finalPosition), obstacles)){
       fullPath.add(0,startPoint);
       fullPath.add(1,finalPosition);
     }
-    else{
+    else{*/
       for (int i = 0; i < AStarMap.getNodeSize(); i++) {
         Node endNode = AStarMap.getNode(i);
         AStarMap.addEdge(new Edge(startPoint, endNode), obstacles);
       }
       fullPath =  AStarMap.findPath(startPoint, finalPosition);
-    }
+   // }
     
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
     PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
     int pathSize = fullPath.size()-1;
-    for(int i=0; i<fullPath.size(); i++){
+    for(int i=0; i<pathSize; i++){
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()), 
         new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(), 
         fullPath.get(i+1).getY()-fullPath.get(i).getY()),
@@ -85,7 +86,6 @@ public class PPAStar extends CommandBase {
       fullPath.get(pathSize).getHolRot());
     // Declare an array to hold PathPoint objects made from all other points specified in constructor.
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
-
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }

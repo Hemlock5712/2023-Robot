@@ -14,7 +14,7 @@ public class Node {
   public Node(double x, double y) {
       this.x = x;
       this.y = y;
-      holonomicRotation = null;
+      holonomicRotation = new Rotation2d(0);
       this.neighbors = new ArrayList < > ();
   }
 

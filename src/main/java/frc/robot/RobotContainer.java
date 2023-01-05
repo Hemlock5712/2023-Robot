@@ -7,6 +7,7 @@ package frc.robot;
 import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
@@ -64,6 +65,7 @@ public class RobotContainer {
 
   AStar AStarMap = new AStar();
   List< Obstacle > obstacles = new ArrayList < > ();
+  final Node finalNode = new Node(1, 4, Rotation2d.fromDegrees(180));
     
 
   private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new FieldHeadingDriveCommand(
@@ -91,22 +93,25 @@ public class RobotContainer {
     configureDashboard();
 
     //SetUp AStar Map
-    //Obstacle obstacle1 = new Obstacle(new float[] {2, 2, 14, 14}, new float[] {0, 10, 5, 15}, 4);
-    //obstacles.addAll(Arrays.asList(obstacle1));
-    Node finalNode = new Node(3.2, 2.4);
+    Obstacle obstacle1 = new Obstacle(new float[] {0, 2f, 2f, 0}, new float[] {3f, 3f, 2f, 2f}, 4);
+    obstacles.addAll(Arrays.asList(obstacle1));
     AStarMap.addNode(finalNode);
-    for (int i = 0; i < 50; i=i+2) {
-        for (int j = 0; j < 50; j=j+2) {
-          AStarMap.addNode(new Node(i, j));
-        }
-    }
+    // for (float i = 0; i < 8; i+=.25f) {
+    //     for (float j = 0; j < 8; j+=.25f) {
+    //       AStarMap.addNode(new Node(i, j));
+    //     }
+    // }
 
+      
+    AStarMap.addNode(new Node(2.7, 1.3));
+    AStarMap.addNode(new Node(2.7, 3.7));
     // Add edges between all pairs of nodes
     for (int i = 0; i < AStarMap.getNodeSize(); i++) {
         Node startNode = AStarMap.getNode(i);
         for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
             Node endNode = AStarMap.getNode(j);
             AStarMap.addEdge(new Edge(startNode, endNode), obstacles);
+            //System.out.println(String.format("SUCCESS: %.2f,%.2f %.2f,%.2f - %s", startNode.getX(), startNode.getY(), endNode.getX(), endNode.getY(), test ? "true" : "false"));
         }
     }
   }
@@ -135,8 +140,8 @@ public class RobotContainer {
 
     controller.y()
         .whileTrue(new WPIAStar(drivetrainSubsystem, poseEstimator, 
-        new TrajectoryConfig(1, 1), 
-        new Node(3, 3), obstacles, AStarMap));
+        new TrajectoryConfig(2, 2), 
+        finalNode, obstacles, AStarMap));
     // controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem,
     // poseEstimator, new PathConstraints(2, 2),
     // new PathPoint(new Translation2d(2.33, 2.03),
@@ -149,7 +154,7 @@ public class RobotContainer {
     // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270))));
     controller.x().
         whileTrue(new PPAStar(drivetrainSubsystem, poseEstimator, 
-            new PathConstraints(2, 2), new Node(3, 3), obstacles, AStarMap));
+            new PathConstraints(2, 2), finalNode, obstacles, AStarMap));
   }
 
   /**

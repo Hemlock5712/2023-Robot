@@ -36,11 +36,12 @@ public class AStar {
 
     // Add an edge to the navigation mesh
     public boolean addEdge(Edge edge, List < Obstacle > obstacles) {
+      // Why not use the Line2D class' static method of .linesIntersect() ? I am just hold on
         for (Obstacle obstacle: obstacles) {
             PolygonFloat polygon = obstacle.polygon;
             for(int i=0; i<polygon.npoints; i++){
               int j = (i+1) % polygon.npoints;
-
+              // Couldn't the mod be eliminated by starting the index i at 1 and manually checking the segment between the last vertex and first one before this? Well 
               double x1 = polygon.xpoints[i];
               double y1 = polygon.ypoints[i];
               double x2 = polygon.xpoints[j];
@@ -84,10 +85,13 @@ public class AStar {
                       cameFrom.put(neighbor, current);
                       gScore.put(neighbor, tentativeGScore);
                       fScore.put(neighbor, gScore.get(neighbor) + distance(neighbor, goal));
-                      openSet.add(neighbor);
+                      // No check needed, .add is a noop if it contains it. Sets don't allow duplicates
+                      if (!openSet.contains(neighbor)) {
+                          openSet.add(neighbor);
+                      }
                   }
                 }
-            }
+              }
         }
 
         // If we get here, then no path was found
@@ -96,9 +100,9 @@ public class AStar {
 
     // Calculate the distance between two nodes
     private static double distance(Node n1, Node n2) {
-        double dx = n1.getX() - n2.getX();
-        double dy = n1.getY() - n2.getY();
-        return Math.hypot(dx,dy);
+        double dx = n1.x - n2.x;
+        double dy = n1.y - n2.y;
+        return Math.sqrt((dx * dx) + (dy * dy));
     }
 
     // Get the node in the open set with the lowest f score

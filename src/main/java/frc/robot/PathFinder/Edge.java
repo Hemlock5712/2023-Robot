@@ -19,6 +19,6 @@ public class Edge {
   private static double distance(Node n1, Node n2) {
       double dx = n1.x - n2.x;
       double dy = n1.y - n2.y;
-      return Math.hypot(dx, dy);
+      return Math.sqrt((dx * dx) + (dy * dy));
   }
 }
