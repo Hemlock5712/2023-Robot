@@ -49,6 +49,9 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.7;
 
+    //Pick the longest side of the robot for this and measure outside bumper to outside bumper
+    public static final double ROBOT_LENGTH_WIDTH = 0.8;
+
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 9;
