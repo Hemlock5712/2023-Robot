@@ -72,10 +72,10 @@ public class PPAStar extends CommandBase {
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
-    PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
+    PathPoint[] fullPathPoints = new PathPoint[fullPath.size()-1];
     int pathSize = fullPath.size()-1;
     for(int i=1; i<pathSize; i++){
-        fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()), 
+        fullPathPoints[i-1] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()), 
         new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(), 
         fullPath.get(i+1).getY()-fullPath.get(i).getY()));
     }
