@@ -74,11 +74,10 @@ public class PPAStar extends CommandBase {
     // points in the path.
     PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
     int pathSize = fullPath.size()-1;
-    for(int i=0; i<pathSize; i++){
+    for(int i=1; i<pathSize; i++){
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()), 
         new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(), 
-        fullPath.get(i+1).getY()-fullPath.get(i).getY()),
-        fullPath.get(i).getHolRot());
+        fullPath.get(i+1).getY()-fullPath.get(i).getY()));
     }
     
     fullPathPoints[pathSize] = new PathPoint(new Translation2d(fullPath.get(pathSize).getX(), fullPath.get(pathSize).getY()), 
