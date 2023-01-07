@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import frc.robot.Constants;
-
 public class AStar {
 
     // A class representing the navigation mesh
@@ -38,8 +36,7 @@ public class AStar {
 
     // Add an edge to the navigation mesh
     public boolean addEdge(Edge edge, List < Obstacle > obstacles) {
-      // Why not use the Line2D class' static method of .linesIntersect() ? I am just hold on
-      double buffer = Constants.DrivetrainConstants.ROBOT_LENGTH_WIDTH/2;
+      
       for (Obstacle obstacle: obstacles) {
             PolygonFloat polygon = obstacle.polygon;
             for(int i=0; i<polygon.npoints; i++){
@@ -49,7 +46,7 @@ public class AStar {
               double y1 = polygon.ypoints[i];
               double x2 = polygon.xpoints[j];
               double y2 = polygon.ypoints[j];
-              if(Line2D.linesIntersect(x1-buffer, y1-buffer, x2-buffer, y2-buffer, edge.start.x+buffer,edge.start.y+buffer, edge.end.x+buffer, edge.end.y+buffer)){
+              if(Line2D.linesIntersect(x1, y1, x2, y2, edge.start.x,edge.start.y, edge.end.x, edge.end.y)){
                 return false;
               }
           }
