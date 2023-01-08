@@ -11,6 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
+import org.team5712.lib.pathfind.Edge;
+import org.team5712.lib.pathfind.NavigationMesh;
+import org.team5712.lib.pathfind.Node;
+import org.team5712.lib.pathfind.Obstacle;
 
 import com.pathplanner.lib.PathConstraints;
 
@@ -29,10 +33,6 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.PathFinder.AStar;
-import frc.robot.PathFinder.Edge;
-import frc.robot.PathFinder.Node;
-import frc.robot.PathFinder.Obstacle;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
@@ -40,7 +40,6 @@ import frc.robot.commands.PPAStar;
 import frc.robot.commands.WPIAStar;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
-
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -63,7 +62,7 @@ public class RobotContainer {
   private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
       poseEstimator::getCurrentPose);
 
-  AStar AStarMap = new AStar();
+  NavigationMesh AStarMap = new NavigationMesh();
   List< Obstacle > obstacles = new ArrayList < > ();
   final Node finalNode = new Node(1, 4, Rotation2d.fromDegrees(180));
     

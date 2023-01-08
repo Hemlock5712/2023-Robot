@@ -3,6 +3,11 @@ package frc.robot.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.team5712.lib.pathfind.Edge;
+import org.team5712.lib.pathfind.NavigationMesh;
+import org.team5712.lib.pathfind.Node;
+import org.team5712.lib.pathfind.Obstacle;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -11,13 +16,8 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.PathFinder.AStar;
-import frc.robot.PathFinder.Edge;
-import frc.robot.PathFinder.Node;
-import frc.robot.PathFinder.Obstacle;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
-
 public class WPIAStar extends CommandBase {
   private final DrivetrainSubsystem driveSystem;
   private final PoseEstimatorSubsystem poseEstimatorSystem;
@@ -25,7 +25,7 @@ public class WPIAStar extends CommandBase {
   private final Node finalPosition;
   private Node startPoint;
   private final List<Obstacle> obstacles;
-  private AStar AStarMap;
+  private NavigationMesh AStarMap;
   private TrajectoryConfig config;
             // Add kinematics to ensure max speed is actually obeyed
             
@@ -33,7 +33,7 @@ public class WPIAStar extends CommandBase {
 
 
 
-  public WPIAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, TrajectoryConfig config, Node finalPosition, List<Obstacle> obstacles, AStar AStarMap) {
+  public WPIAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, TrajectoryConfig config, Node finalPosition, List<Obstacle> obstacles, NavigationMesh AStarMap) {
     this.driveSystem = d;
     this.poseEstimatorSystem = p;
     this.config = config.setKinematics(DrivetrainConstants.KINEMATICS);
