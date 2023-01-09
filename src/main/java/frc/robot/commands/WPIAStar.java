@@ -3,11 +3,6 @@ package frc.robot.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.team5712.lib.pathfind.Edge;
-import org.team5712.lib.pathfind.NavigationMesh;
-import org.team5712.lib.pathfind.Node;
-import org.team5712.lib.pathfind.Obstacle;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -16,6 +11,10 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.pathfind.Edge;
+import frc.robot.pathfind.NavigationMesh;
+import frc.robot.pathfind.Node;
+import frc.robot.pathfind.Obstacle;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 public class WPIAStar extends CommandBase {
