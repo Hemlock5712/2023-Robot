@@ -47,30 +47,30 @@ public final class Constants {
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.7;
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.749;
 
     //Pick the longest side of the robot for this and measure outside bumper to outside bumper
-    public static final double ROBOT_LENGTH_WIDTH = 0.8;
+    public static final double ROBOT_LENGTH_WIDTH = 0.749;
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 9;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(95.5);
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(188.7);
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 4;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 10;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(241);
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(340.83);
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 5;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(102.744);
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(270);
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 7;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 8;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 12;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(279.13);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(225);
     
     public static final int PIGEON_ID = 13;
 
@@ -80,8 +80,8 @@ public final class Constants {
      * This is a measure of how fast the robot should be able to drive in a straight line.
      */
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
-        ModuleConfiguration.MK4_L1.getDriveReduction() *
-        ModuleConfiguration.MK4_L1.getWheelDiameter() * PI;
+        ModuleConfiguration.MK4I_L2.getDriveReduction() *
+        ModuleConfiguration.MK4I_L2.getWheelDiameter() * PI;
 
      /**
      * The maximum angular velocity of the robot in radians per second.
