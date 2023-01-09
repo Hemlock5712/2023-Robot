@@ -7,14 +7,9 @@ package frc.robot;
 import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
-import org.team5712.lib.pathfind.Edge;
-import org.team5712.lib.pathfind.NavigationMesh;
-import org.team5712.lib.pathfind.Node;
-import org.team5712.lib.pathfind.Obstacle;
 
 import com.pathplanner.lib.PathConstraints;
 
@@ -38,6 +33,9 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.PPAStar;
 import frc.robot.commands.WPIAStar;
+import frc.robot.pathfind.NavigationMesh;
+import frc.robot.pathfind.Node;
+import frc.robot.pathfind.Obstacle;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 /**
@@ -92,27 +90,11 @@ public class RobotContainer {
     configureDashboard();
 
     //SetUp AStar Map
-    Obstacle obstacle1 = new Obstacle(new float[] {0, 2f, 2f, 0}, new float[] {3f, 3f, 2f, 2f}, 4);
-    obstacles.addAll(Arrays.asList(obstacle1));
-    AStarMap.addNode(finalNode);
-    // for (float i = 0; i < 8; i+=.25f) {
-    //     for (float j = 0; j < 8; j+=.25f) {
-    //       AStarMap.addNode(new Node(i, j));
-    //     }
-    // }
+    Obstacle o = new Obstacle(new float[] { 0, 0, 4, 4}, new float[] {0, 4, 4, 0}, 4);
+    Obstacle offset = o.offset(0.5f);
+    offset.addNodes(AStarMap);
 
-      
-    AStarMap.addNode(new Node(2.7, 1.3));
-    AStarMap.addNode(new Node(2.7, 3.7));
-    // Add edges between all pairs of nodes
-    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
-        Node startNode = AStarMap.getNode(i);
-        for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
-            Node endNode = AStarMap.getNode(j);
-            AStarMap.addEdge(new Edge(startNode, endNode), obstacles);
-            //System.out.println(String.format("SUCCESS: %.2f,%.2f %.2f,%.2f - %s", startNode.getX(), startNode.getY(), endNode.getX(), endNode.getY(), test ? "true" : "false"));
-        }
-    }
+
   }
 
   private void configureDashboard() {
@@ -128,6 +110,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // Start button reseeds the steer motors to fix dead wheel
+    controller.start().onTrue(Commands.runOnce(drivetrainSubsystem::reseedSteerMotorOffsets, drivetrainSubsystem));
+    
     // Back button resets the robot pose
     controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition, drivetrainSubsystem));
 

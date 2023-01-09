@@ -245,7 +245,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND);
     IntStream.range(0, swerveModules.length).forEach(i -> swerveModules[i].setDesiredState(states[i]));
   }
-
+  
+  /**
+   * Reseeds the Talon FX steer motors from their CANCoder absolute position. Workaround for "dead wheel"
+   */
+  public void reseedSteerMotorOffsets() {
+    Arrays.stream(swerveModules).forEach(SwerveModule::reseedSteerMotorOffset);
+  }
   /**
    * Creates a command to follow a Trajectory on the drivetrain.
    * @param trajectory trajectory to follow

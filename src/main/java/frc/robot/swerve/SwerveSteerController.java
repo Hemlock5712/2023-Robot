@@ -121,7 +121,7 @@ public class SwerveSteerController {
    * See https://www.chiefdelphi.com/t/official-sds-mk3-mk4-code/397109/99
    * @return the absolute angle
    */
-  private double configMotorOffset(boolean logErrors) {
+  public double configMotorOffset(boolean logErrors) {
     double angle = getAbsoluteAngle();
     var angleErrorCode = encoder.getLastError();
 
@@ -129,14 +129,15 @@ public class SwerveSteerController {
       // If this happens, we will have a misaligned wheel
       DriverStation.reportError(
         "Failed to configure swerve module position. CANCoder ID: " + encoder.getDeviceID(), false);
+      } else {
+        var positionErrorCode = motor.setSelectedSensorPosition(angle / motorEncoderPositionCoefficient, 0, CAN_TIMEOUT_MS);
+        if (logErrors) {
+          CtreUtils.checkCtreError(
+              positionErrorCode, "Failed to set Falcon 500 encoder position. ID: " + motor.getDeviceID());
+        }
+        motorOffsetConfigured = 
+            motorOffsetConfigured || ((angleErrorCode == ErrorCode.OK) && (positionErrorCode == ErrorCode.OK));
     }
-
-    var positionErrorCode = motor.setSelectedSensorPosition(angle / motorEncoderPositionCoefficient, 0, CAN_TIMEOUT_MS);
-    if (logErrors) {
-      CtreUtils.checkCtreError(positionErrorCode, "Failed to set Falcon 500 encoder position. ID: " + motor.getDeviceID());
-    }
-
-    motorOffsetConfigured = (angleErrorCode == ErrorCode.OK) && (positionErrorCode == ErrorCode.OK);
     return angle;
   }
 
