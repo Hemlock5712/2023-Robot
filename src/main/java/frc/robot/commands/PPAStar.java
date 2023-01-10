@@ -57,23 +57,24 @@ public class PPAStar extends CommandBase {
     List<Node> fullPath = new ArrayList<Node>();
 
     AStarMap.addNode(startPoint);
-   /* if(AStarMap.addEdge(new Edge(startPoint, finalPosition), obstacles)){
+   if(AStarMap.addEdge(new Edge(startPoint, finalPosition), obstacles)){
       fullPath.add(0,startPoint);
       fullPath.add(1,finalPosition);
     }
-    else{*/
+    else{
       for (int i = 0; i < AStarMap.getNodeSize(); i++) {
         Node endNode = AStarMap.getNode(i);
         AStarMap.addEdge(new Edge(startPoint, endNode), obstacles);
       }
       fullPath =  AStarMap.findPath(startPoint, finalPosition);
-   // }
+    }
     
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
     PathPoint[] fullPathPoints = new PathPoint[fullPath.size()-1];
     int pathSize = fullPath.size()-1;
+    fullPathPoints[0] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), startPoint.getHolRot());
     for(int i=1; i<pathSize; i++){
         fullPathPoints[i-1] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()), 
         new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(), 
