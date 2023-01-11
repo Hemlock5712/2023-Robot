@@ -71,7 +71,7 @@ public class DefaultDriveCommand extends CommandBase {
         ChassisSpeeds.fromFieldRelativeSpeeds(
             translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
             translateYRateLimiter.calculate(translationYSupplier.getAsDouble()),
-            rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
+            -rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
             robotAngleSupplier.get()));
   }
 
