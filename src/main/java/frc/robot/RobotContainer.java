@@ -32,7 +32,6 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.PPAStar;
 import frc.robot.commands.WPIAStar;
-import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.NavigationMesh;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
@@ -89,18 +88,12 @@ public class RobotContainer {
     configureDashboard();
 
     AStarMap.addNode(finalNode);
-    //SetUp AStar Map
-    
+    //Create all obstacles
     for(int i = 0; i<obstacles.size(); i++){
-      Constants.FieldConstants.obstacles.get(i).offset(0.5).addNodes(AStarMap);
+      Constants.FieldConstants.obstacles.get(i).offset(0.5).addNodes(AStarMap, obstacles);
     }
 
-    for(int i = 0; i<AStarMap.getNodeSize();i++){
-      Node startNode = AStarMap.getNode(i);
-      for(int j = i+1; j<AStarMap.getNodeSize(); j++){
-        AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
-      }
-    }
+    
 
     
     //Obstacle o = new Obstacle(new double[]{ 0, 0, 4, 4}, new double[] {0, 4, 4, 0});

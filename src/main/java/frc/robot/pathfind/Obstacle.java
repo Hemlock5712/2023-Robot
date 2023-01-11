@@ -14,10 +14,17 @@ public class Obstacle {
         this.polygon = new PolygonDouble(xPoints, yPoints);
     }
 
-    public void addNodes(NavigationMesh nodes) {
+    public void addNodes(NavigationMesh nodes, List<Obstacle> obstacles) {
         for(int i = 0; i < polygon.npoints; i++) {
             nodes.addNode(new Node(polygon.xpoints[i], polygon.ypoints[i]));
         }
+        for(int i = 0; i<nodes.getNodeSize();i++){
+          Node startNode = nodes.getNode(i);
+          for(int j = i+1; j<nodes.getNodeSize(); j++){
+            nodes.addEdge(new Edge(startNode, nodes.getNode(j)), obstacles);
+          }
+        }
+        
     }
 
     /**
