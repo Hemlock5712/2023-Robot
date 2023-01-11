@@ -6,7 +6,6 @@ package frc.robot;
 
 import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
@@ -61,9 +60,8 @@ public class RobotContainer {
       poseEstimator::getCurrentPose);
 
   NavigationMesh AStarMap = new NavigationMesh();
-  List< Obstacle > obstacles = new ArrayList < > ();
   final Node finalNode = new Node(1, 4, Rotation2d.fromDegrees(180));
-    
+  final List<Obstacle> obstacles = Constants.FieldConstants.obstacles;
 
   private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new FieldHeadingDriveCommand(
       drivetrainSubsystem,
@@ -89,10 +87,16 @@ public class RobotContainer {
     configureButtonBindings();
     configureDashboard();
 
+    AStarMap.addNode(finalNode);
     //SetUp AStar Map
-    Obstacle o = new Obstacle(new float[] { 0, 0, 4, 4}, new float[] {0, 4, 4, 0}, 4);
-    Obstacle offset = o.offset(0.5f);
-    offset.addNodes(AStarMap);
+    
+    for(int i = 0; i<obstacles.size(); i++){
+      Constants.FieldConstants.obstacles.get(i).offset(0.5);
+    }
+    
+    //Obstacle o = new Obstacle(new double[]{ 0, 0, 4, 4}, new double[] {0, 4, 4, 0});
+    //Obstacle offset = o.offset(0.5f);
+    //offset.addNodes(AStarMap);
 
 
   }

@@ -34,11 +34,11 @@ import java.io.Serializable;
 
 
 /**
- * This class is a Polygon with float coordinates.
+ * This class is a Polygon with double coordinates.
  *
  * @version $Id: Polygon2D.java 594018 2007-11-12 04:17:41Z cam $
  */
-public class PolygonFloat implements Shape, Cloneable, Serializable {
+public class PolygonDouble implements Shape, Cloneable, Serializable {
 
     /**
      * The total number of points.  The value of <code>npoints</code>
@@ -50,13 +50,13 @@ public class PolygonFloat implements Shape, Cloneable, Serializable {
      * The array of <i>x</i> coordinates. The value of {@link #npoints npoints} is equal to the
      * number of points in this <code>Polygon2D</code>.
      */
-    public float[] xpoints;
+    public double[] xpoints;
 
     /**
      * The array of <i>x</i> coordinates. The value of {@link #npoints npoints} is equal to the
      * number of points in this <code>Polygon2D</code>.
      */
-    public float[] ypoints;
+    public double[] ypoints;
 
     /**
      * Bounds of the Polygon2D.
@@ -71,9 +71,9 @@ public class PolygonFloat implements Shape, Cloneable, Serializable {
     /**
      * Creates an empty Polygon2D.
      */
-    public PolygonFloat() {
-        xpoints = new float[4];
-        ypoints = new float[4];
+    public PolygonDouble() {
+        xpoints = new double[4];
+        ypoints = new double[4];
     }
 
     /**
@@ -83,21 +83,21 @@ public class PolygonFloat implements Shape, Cloneable, Serializable {
      * @param rec the Rectangle2D
      * @throws NullPointerException rec is <code>null</code>.
      */
-    public PolygonFloat(Rectangle2D rec) {
+    public PolygonDouble(Rectangle2D rec) {
         if (rec == null) {
             throw new IndexOutOfBoundsException("null Rectangle");
         }
         npoints = 4;
-        xpoints = new float[4];
-        ypoints = new float[4];
-        xpoints[0] = (float) rec.getMinX();
-        ypoints[0] = (float) rec.getMinY();
-        xpoints[1] = (float) rec.getMaxX();
-        ypoints[1] = (float) rec.getMinY();
-        xpoints[2] = (float) rec.getMaxX();
-        ypoints[2] = (float) rec.getMaxY();
-        xpoints[3] = (float) rec.getMinX();
-        ypoints[3] = (float) rec.getMaxY();
+        xpoints = new double[4];
+        ypoints = new double[4];
+        xpoints[0] =  rec.getMinX();
+        ypoints[0] =  rec.getMinY();
+        xpoints[1] =  rec.getMaxX();
+        ypoints[1] =  rec.getMinY();
+        xpoints[2] =  rec.getMaxX();
+        ypoints[2] =  rec.getMaxY();
+        xpoints[3] =  rec.getMinX();
+        ypoints[3] =  rec.getMaxY();
         calculatePath();
     }
 
@@ -108,13 +108,13 @@ public class PolygonFloat implements Shape, Cloneable, Serializable {
      * @param pol the Polygon
      * @throws NullPointerException pol is <code>null</code>.
      */
-    public PolygonFloat(Polygon pol) {
+    public PolygonDouble(Polygon pol) {
         if (pol == null) {
             throw new IndexOutOfBoundsException("null Polygon");
         }
         this.npoints = pol.npoints;
-        this.xpoints = new float[pol.npoints];
-        this.ypoints = new float[pol.npoints];
+        this.xpoints = new double[pol.npoints];
+        this.ypoints = new double[pol.npoints];
         for (int i = 0; i < pol.npoints; i++) {
             xpoints[i] = pol.xpoints[i];
             ypoints[i] = pol.ypoints[i];
@@ -137,13 +137,13 @@ public class PolygonFloat implements Shape, Cloneable, Serializable {
      * @throws NullPointerException       if <code>xpoints</code> or
      *                                    <code>ypoints</code> is <code>null</code>.
      */
-    public PolygonFloat(float[] xpoints, float[] ypoints, int npoints) {
-        if (npoints > xpoints.length || npoints > ypoints.length) {
+    public PolygonDouble(double[] xpoints, double[] ypoints) {
+        if (xpoints.length != ypoints.length) {
             throw new IndexOutOfBoundsException("npoints > xpoints.length || npoints > ypoints.length");
         }
-        this.npoints = npoints;
-        this.xpoints = new float[npoints];
-        this.ypoints = new float[npoints];
+        this.npoints = xpoints.length;
+        this.xpoints = new double[npoints];
+        this.ypoints = new double[npoints];
         System.arraycopy(xpoints, 0, this.xpoints, 0, npoints);
         System.arraycopy(ypoints, 0, this.ypoints, 0, npoints);
         calculatePath();
@@ -164,13 +164,13 @@ public class PolygonFloat implements Shape, Cloneable, Serializable {
      * @throws NullPointerException       if <code>xpoints</code> or
      *                                    <code>ypoints</code> is <code>null</code>.
      */
-    public PolygonFloat(int[] xpoints, int[] ypoints, int npoints) {
+    public PolygonDouble(int[] xpoints, int[] ypoints, int npoints) {
         if (npoints > xpoints.length || npoints > ypoints.length) {
             throw new IndexOutOfBoundsException("npoints > xpoints.length || npoints > ypoints.length");
         }
         this.npoints = npoints;
-        this.xpoints = new float[npoints];
-        this.ypoints = new float[npoints];
+        this.xpoints = new double[npoints];
+        this.ypoints = new double[npoints];
         for (int i = 0; i < npoints; i++) {
             this.xpoints[i] = xpoints[i];
             this.ypoints[i] = ypoints[i];
@@ -189,7 +189,7 @@ public class PolygonFloat implements Shape, Cloneable, Serializable {
     }
 
     public Object clone() {
-        PolygonFloat pol = new PolygonFloat();
+        PolygonDouble pol = new PolygonDouble();
         for (int i = 0; i < npoints; i++) {
             pol.addPoint(xpoints[i], ypoints[i]);
         }
@@ -206,23 +206,23 @@ public class PolygonFloat implements Shape, Cloneable, Serializable {
         closedPath = null;
     }
 
-    private void updatePath(float x, float y) {
+    private void updatePath(double x, double y) {
         closedPath = null;
         if (path == null) {
             path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
             path.moveTo(x, y);
-            bounds = new Rectangle2D.Float(x, y, 0, 0);
+            bounds = new Rectangle2D.Double(x, y, 0, 0);
         } else {
             path.lineTo(x, y);
-            float _xmax = (float) bounds.getMaxX();
-            float _ymax = (float) bounds.getMaxY();
-            float _xmin = (float) bounds.getMinX();
-            float _ymin = (float) bounds.getMinY();
+            double _xmax =  bounds.getMaxX();
+            double _ymax =  bounds.getMaxY();
+            double _xmin =  bounds.getMinX();
+            double _ymin =  bounds.getMinY();
             if (x < _xmin) _xmin = x;
             else if (x > _xmax) _xmax = x;
             if (y < _ymin) _ymin = y;
             else if (y > _ymax) _ymax = y;
-            bounds = new Rectangle2D.Float(_xmin, _ymin, _xmax - _xmin, _ymax - _ymin);
+            bounds = new Rectangle2D.Double(_xmin, _ymin, _xmax - _xmin, _ymax - _ymin);
         }
     }
 
@@ -249,7 +249,7 @@ public class PolygonFloat implements Shape, Cloneable, Serializable {
     }
 
     public void addPoint(Point2D p) {
-        addPoint((float) p.getX(), (float) p.getY());
+        addPoint( p.getX(),  p.getY());
     }
 
     /**
@@ -258,15 +258,15 @@ public class PolygonFloat implements Shape, Cloneable, Serializable {
      * @param x the specified x coordinate
      * @param y the specified y coordinate
      */
-    public void addPoint(float x, float y) {
+    public void addPoint(double x, double y) {
         if (npoints == xpoints.length) {
-            float[] tmp;
+            double[] tmp;
 
-            tmp = new float[npoints * 2];
+            tmp = new double[npoints * 2];
             System.arraycopy(xpoints, 0, tmp, 0, npoints);
             xpoints = tmp;
 
-            tmp = new float[npoints * 2];
+            tmp = new double[npoints * 2];
             System.arraycopy(ypoints, 0, tmp, 0, npoints);
             ypoints = tmp;
         }
@@ -507,7 +507,7 @@ limitations under the License.
  */
 class Polyline2D implements Shape, Cloneable, Serializable {
 
-    private static final float ASSUME_ZERO = 0.001f;
+    private static final double ASSUME_ZERO = 0.001f;
 
     /**
      * The total number of points.  The value of <code>npoints</code>
@@ -519,13 +519,13 @@ class Polyline2D implements Shape, Cloneable, Serializable {
      * The array of <i>x</i> coordinates. The value of {@link #npoints npoints} is equal to the
      * number of points in this <code>Polyline2D</code>.
      */
-    public float[] xpoints;
+    public double[] xpoints;
 
     /**
      * The array of <i>x</i> coordinates. The value of {@link #npoints npoints} is equal to the
      * number of points in this <code>Polyline2D</code>.
      */
-    public float[] ypoints;
+    public double[] ypoints;
 
     /**
      * Bounds of the Polyline2D.
@@ -541,8 +541,8 @@ class Polyline2D implements Shape, Cloneable, Serializable {
      * Creates an empty Polyline2D.
      */
     public Polyline2D() {
-        xpoints = new float[4];
-        ypoints = new float[4];
+        xpoints = new double[4];
+        ypoints = new double[4];
     }
 
     /**
@@ -561,13 +561,13 @@ class Polyline2D implements Shape, Cloneable, Serializable {
      * @throws NullPointerException       if <code>xpoints</code> or
      *                                    <code>ypoints</code> is <code>null</code>.
      */
-    public Polyline2D(float[] xpoints, float[] ypoints, int npoints) {
+    public Polyline2D(double[] xpoints, double[] ypoints, int npoints) {
         if (npoints > xpoints.length || npoints > ypoints.length) {
             throw new IndexOutOfBoundsException("npoints > xpoints.length || npoints > ypoints.length");
         }
         this.npoints = npoints;
-        this.xpoints = new float[npoints + 1];   // make space for one more to close the polyline
-        this.ypoints = new float[npoints + 1];   // make space for one more to close the polyline
+        this.xpoints = new double[npoints + 1];   // make space for one more to close the polyline
+        this.ypoints = new double[npoints + 1];   // make space for one more to close the polyline
         System.arraycopy(xpoints, 0, this.xpoints, 0, npoints);
         System.arraycopy(ypoints, 0, this.ypoints, 0, npoints);
         calculatePath();
@@ -593,8 +593,8 @@ class Polyline2D implements Shape, Cloneable, Serializable {
             throw new IndexOutOfBoundsException("npoints > xpoints.length || npoints > ypoints.length");
         }
         this.npoints = npoints;
-        this.xpoints = new float[npoints];
-        this.ypoints = new float[npoints];
+        this.xpoints = new double[npoints];
+        this.ypoints = new double[npoints];
         for (int i = 0; i < npoints; i++) {
             this.xpoints[i] = xpoints[i];
             this.ypoints[i] = ypoints[i];
@@ -604,12 +604,12 @@ class Polyline2D implements Shape, Cloneable, Serializable {
 
     public Polyline2D(Line2D line) {
         npoints = 2;
-        xpoints = new float[2];
-        ypoints = new float[2];
-        xpoints[0] = (float) line.getX1();
-        xpoints[1] = (float) line.getX2();
-        ypoints[0] = (float) line.getY1();
-        ypoints[1] = (float) line.getY2();
+        xpoints = new double[2];
+        ypoints = new double[2];
+        xpoints[0] =  line.getX1();
+        xpoints[1] =  line.getX2();
+        ypoints[0] =  line.getY1();
+        ypoints[1] =  line.getY2();
         calculatePath();
     }
 
@@ -653,28 +653,28 @@ class Polyline2D implements Shape, Cloneable, Serializable {
         closedPath = null;
     }
 
-    private void updatePath(float x, float y) {
+    private void updatePath(double x, double y) {
         closedPath = null;
         if (path == null) {
             path = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
             path.moveTo(x, y);
-            bounds = new Rectangle2D.Float(x, y, 0, 0);
+            bounds = new Rectangle2D.Double(x, y, 0, 0);
         } else {
             path.lineTo(x, y);
-            float _xmax = (float) bounds.getMaxX();
-            float _ymax = (float) bounds.getMaxY();
-            float _xmin = (float) bounds.getMinX();
-            float _ymin = (float) bounds.getMinY();
+            double _xmax =  bounds.getMaxX();
+            double _ymax =  bounds.getMaxY();
+            double _xmin =  bounds.getMinX();
+            double _ymin =  bounds.getMinY();
             if (x < _xmin) _xmin = x;
             else if (x > _xmax) _xmax = x;
             if (y < _ymin) _ymin = y;
             else if (y > _ymax) _ymax = y;
-            bounds = new Rectangle2D.Float(_xmin, _ymin, _xmax - _xmin, _ymax - _ymin);
+            bounds = new Rectangle2D.Double(_xmin, _ymin, _xmax - _xmin, _ymax - _ymin);
         }
     }
 
     public void addPoint(Point2D p) {
-        addPoint((float) p.getX(), (float) p.getY());
+        addPoint( p.getX(),  p.getY());
     }
 
     /**
@@ -690,15 +690,15 @@ class Polyline2D implements Shape, Cloneable, Serializable {
      * @see java.awt.Polygon#getBounds
      * @see java.awt.Polygon#contains(double, double)
      */
-    public void addPoint(float x, float y) {
+    public void addPoint(double x, double y) {
         if (npoints == xpoints.length) {
-            float[] tmp;
+            double[] tmp;
 
-            tmp = new float[npoints * 2];
+            tmp = new double[npoints * 2];
             System.arraycopy(xpoints, 0, tmp, 0, npoints);
             xpoints = tmp;
 
-            tmp = new float[npoints * 2];
+            tmp = new double[npoints * 2];
             System.arraycopy(ypoints, 0, tmp, 0, npoints);
             ypoints = tmp;
         }
@@ -862,8 +862,8 @@ class Polyline2D implements Shape, Cloneable, Serializable {
      * be equal to the first. In that case it must not be included in the Polygon,
      * as polygons declare their first point only once.
      */
-    public PolygonFloat getPolygon2D() {
-        PolygonFloat pol = new PolygonFloat();
+    public PolygonDouble getPolygon2D() {
+        PolygonDouble pol = new PolygonDouble();
         for (int i = 0; i < npoints - 1; i++) {
             pol.addPoint(xpoints[i], ypoints[i]);
         }

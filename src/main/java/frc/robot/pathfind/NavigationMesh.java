@@ -37,7 +37,7 @@ public class NavigationMesh {
     public boolean addEdge(Edge edge, List<Obstacle> obstacles) {
         // Why not use the Line2D class' static method of .linesIntersect() ? I am just hold on
         for (Obstacle obstacle : obstacles) {
-            PolygonFloat polygon = obstacle.polygon;
+            PolygonDouble polygon = obstacle.polygon;
             for (int i = 0; i < polygon.npoints; i++) {
                 int j = (i + 1) % polygon.npoints;
                 // Couldn't the mod be eliminated by starting the index i at 1 and manually checking the segment between the last vertex and first one before this? Well
