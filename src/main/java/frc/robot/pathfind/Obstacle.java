@@ -14,7 +14,7 @@ public class Obstacle {
         this.polygon = new PolygonDouble(xPoints, yPoints);
     }
 
-    public void addNodes(NavigationMesh nodes) {
+    public void addNodes(VisGraph nodes) {
         for(int i = 0; i < polygon.npoints; i++) {
             nodes.addNode(new Node(polygon.xpoints[i], polygon.ypoints[i]));
         }

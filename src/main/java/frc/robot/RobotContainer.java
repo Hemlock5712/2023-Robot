@@ -30,9 +30,9 @@ import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.WPIAStar;
 import frc.robot.pathfind.Edge;
-import frc.robot.pathfind.NavigationMesh;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
+import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 /**
@@ -57,7 +57,7 @@ public class RobotContainer {
   private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
       poseEstimator::getCurrentPose);
 
-  NavigationMesh AStarMap = new NavigationMesh();
+  VisGraph AStarMap = new VisGraph();
   final Node finalNode = new Node(4, 4, Rotation2d.fromDegrees(180));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = Constants.FieldConstants.obstacles;

@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class NavigationMesh {
+public class VisGraph {
 
     // A class representing the navigation mesh
     private final List<Node> nodes;
     private final List<Edge> edges;
 
-    public NavigationMesh() {
+    public VisGraph() {
         this.nodes = new ArrayList<>();
         this.edges = new ArrayList<>();
     }

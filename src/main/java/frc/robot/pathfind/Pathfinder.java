@@ -6,7 +6,7 @@ import java.util.List;
 public class Pathfinder {
     List<Obstacle> obstacles = new ArrayList<>();
     List<Obstacle> obstaclesWithOffsets = new ArrayList<>();
-    NavigationMesh navMesh = new NavigationMesh();
+    VisGraph navMesh = new VisGraph();
     double obstacleOffsetDistance;
 
     public Pathfinder(double obstacleOffsetDistance) {

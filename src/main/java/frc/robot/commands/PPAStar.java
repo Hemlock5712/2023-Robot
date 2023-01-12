@@ -14,9 +14,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.pathfind.Edge;
-import frc.robot.pathfind.NavigationMesh;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
+import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 
@@ -28,13 +28,13 @@ public class PPAStar extends CommandBase {
   private final Node finalPosition;
   private Node startPoint;
   private final List<Obstacle> obstacles;
-  private NavigationMesh AStarMap;
+  private VisGraph AStarMap;
   
 
 
 
 
-  public PPAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, Node finalPosition, List<Obstacle> obstacles, NavigationMesh AStarMap) {
+  public PPAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, Node finalPosition, List<Obstacle> obstacles, VisGraph AStarMap) {
     this.driveSystem = d;
     this.poseEstimatorSystem = p;
     this.constraints = constraints;
@@ -83,8 +83,8 @@ public class PPAStar extends CommandBase {
         }
         else{
           fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()), 
-        new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(), 
-        fullPath.get(i+1).getY()-fullPath.get(i).getY()));
+            new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(), 
+            fullPath.get(i+1).getY()-fullPath.get(i).getY()));
         }
         
     }
