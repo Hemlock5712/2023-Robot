@@ -49,6 +49,7 @@ public class WPIAStar extends CommandBase {
   @Override
   public void initialize() 
   {
+    config.setStartVelocity(Math.hypot(driveSystem.getChassisSpeeds().vxMetersPerSecond,driveSystem.getChassisSpeeds().vxMetersPerSecond));
     List<Node> fullPath = new ArrayList<Node>();
     startPoint = new Node(poseEstimatorSystem.getCurrentPose().getX(), poseEstimatorSystem.getCurrentPose().getY(), poseEstimatorSystem.getCurrentPose().getRotation()); 
     AStarMap.addNode(startPoint);
