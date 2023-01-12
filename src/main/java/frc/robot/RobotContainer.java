@@ -10,8 +10,6 @@ import java.util.List;
 
 import org.photonvision.PhotonCamera;
 
-import com.pathplanner.lib.PathConstraints;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,7 +28,6 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
-import frc.robot.commands.PPAStar;
 import frc.robot.commands.WPIAStar;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.NavigationMesh;
@@ -61,7 +58,8 @@ public class RobotContainer {
       poseEstimator::getCurrentPose);
 
   NavigationMesh AStarMap = new NavigationMesh();
-  final Node finalNode = new Node(1, 4, Rotation2d.fromDegrees(180));
+  final Node finalNode = new Node(4, 4, Rotation2d.fromDegrees(180));
+  //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = Constants.FieldConstants.obstacles;
 
   private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new FieldHeadingDriveCommand(
@@ -92,11 +90,13 @@ public class RobotContainer {
     //SetUp AStar Map
     
     for(int i = 0; i<obstacles.size(); i++){
+      System.out.println(obstacles.get(i));
       Constants.FieldConstants.obstacles.get(i).offset(0.5).addNodes(AStarMap);
     }
 
     for(int i = 0; i<AStarMap.getNodeSize();i++){
       Node startNode = AStarMap.getNode(i);
+      System.out.println(""+startNode.getX()+","+startNode.getY());
       for(int j = i+1; j<AStarMap.getNodeSize(); j++){
         AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
       }
@@ -149,9 +149,9 @@ public class RobotContainer {
     // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)),
     // new PathPoint(new Translation2d(Units.inchesToMeters(200), 2.03),
     // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270))));
-    controller.x().
-        whileTrue(new PPAStar(drivetrainSubsystem, poseEstimator, 
-            new PathConstraints(2, 2), finalNode, obstacles, AStarMap));
+    // controller.x().
+    //     whileTrue(new PPAStar(drivetrainSubsystem, poseEstimator, 
+    //         new PathConstraints(2, 2), finalNode, obstacles, AStarMap));
   }
 
   /**

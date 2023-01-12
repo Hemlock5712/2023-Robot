@@ -416,7 +416,7 @@ public final class Constants {
 // AprilTag locations (do not flip for red alliance)
     public static final Map<Integer, Pose3d> aprilTags = Map.of(
       0, new Pose3d(0.0, 2.13, 0.0, new Rotation3d(0, 0, degreesToRadians(0.0))),
-      1, new Pose3d(2.40, 0.0, 0.0, new Rotation3d(0, 0, degreesToRadians(90.0))),
+      1, new Pose3d(0.26, 0.0, 0.0, new Rotation3d(0, 0, degreesToRadians(90.0))),
       2, new Pose3d(0.0, 3.97, 0.0, new Rotation3d(0, 0, degreesToRadians(0.0))));
 
 
@@ -425,25 +425,25 @@ public final class Constants {
             new Obstacle(new double[] {
                     FieldConstants.Community.chargingStationCorners[0].getX(),
                     FieldConstants.Community.chargingStationCorners[1].getX(),
-                    FieldConstants.Community.chargingStationCorners[2].getX(),
                     FieldConstants.Community.chargingStationCorners[3].getX(),
+                    FieldConstants.Community.chargingStationCorners[2].getX(),
             }, new double[] {
                     FieldConstants.Community.chargingStationCorners[0].getY(),
                     FieldConstants.Community.chargingStationCorners[1].getY(),
-                    FieldConstants.Community.chargingStationCorners[2].getY(),
                     FieldConstants.Community.chargingStationCorners[3].getY(),
+                    FieldConstants.Community.chargingStationCorners[2].getY()
             }),
             // Red Charging Station
             new Obstacle(new double[] {
-                    allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getX(),
-                    allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getX(),
                     allianceFlip(FieldConstants.Community.chargingStationCorners[2]).getX(),
                     allianceFlip(FieldConstants.Community.chargingStationCorners[3]).getX(),
+                    allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getX(),
+                    allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getX(),
             }, new double[] {
-                    allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getY(),
-                    allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getY(),
                     allianceFlip(FieldConstants.Community.chargingStationCorners[2]).getY(),
                     allianceFlip(FieldConstants.Community.chargingStationCorners[3]).getY(),
+                    allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getY(),
+                    allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getY()
             }));
 
     /**

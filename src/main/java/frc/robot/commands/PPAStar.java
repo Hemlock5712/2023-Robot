@@ -72,18 +72,23 @@ public class PPAStar extends CommandBase {
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
-    PathPoint[] fullPathPoints = new PathPoint[fullPath.size()-1];
-    int pathSize = fullPath.size()-1;
-    fullPathPoints[0] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), startPoint.getHolRot());
-    for(int i=1; i<pathSize; i++){
-        fullPathPoints[i-1] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()), 
+    PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
+    
+    for(int i=0; i<fullPath.size(); i++){
+        if(i==0){
+          fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), startPoint.getHolRot());
+        }
+        else if(i+1==fullPath.size()){
+          fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()), finalPosition.getHolRot());
+        }
+        else{
+          fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()), 
         new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(), 
         fullPath.get(i+1).getY()-fullPath.get(i).getY()));
+        }
+        
     }
     
-    fullPathPoints[pathSize] = new PathPoint(new Translation2d(fullPath.get(pathSize).getX(), fullPath.get(pathSize).getY()), 
-      fullPath.get(pathSize).getHolRot(),
-      fullPath.get(pathSize).getHolRot());
     // Declare an array to hold PathPoint objects made from all other points specified in constructor.
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
