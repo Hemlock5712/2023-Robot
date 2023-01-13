@@ -1,9 +1,7 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static frc.robot.Constants.VisionConstants.CAMERA_TO_ROBOT;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.photonvision.PhotonCamera;
@@ -14,7 +12,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -23,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DrivetrainConstants;
 
 public class PoseEstimatorSubsystem extends SubsystemBase {
@@ -32,10 +30,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   // Ordered list of target poses by ID (WPILib is adding some functionality for
   // this)
-  private static final Map<Integer, Pose3d> targetPoses = Collections.unmodifiableMap(Map.of(
-      0, new Pose3d(0.0, 2.13, 0.0, new Rotation3d(0, 0, degreesToRadians(0.0))),
-          1, new Pose3d(2.40, 0.0, 0.0, new Rotation3d(0, 0, degreesToRadians(90.0))),
-          2, new Pose3d(0.0, 3.97, 0.0, new Rotation3d(0, 0, degreesToRadians(0.0)))));
+  private static final Map<Integer, Pose3d> targetPoses = Constants.FieldConstants.aprilTags;
    
   // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
   // you trust your various sensors. Smaller numbers will cause the filter to

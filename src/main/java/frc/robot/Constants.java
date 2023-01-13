@@ -413,11 +413,62 @@ public final class Constants {
     //                 Units.inchesToMeters(42.19),
     //                 Units.inchesToMeters(18.22),
     //                 new Rotation3d()));
-// AprilTag locations (do not flip for red alliance)
+
     public static final Map<Integer, Pose3d> aprilTags = Map.of(
-      0, new Pose3d(0.0, 2.13, 0.0, new Rotation3d(0, 0, degreesToRadians(0.0))),
-      1, new Pose3d(0.26, 0.0, 0.0, new Rotation3d(0, 0, degreesToRadians(90.0))),
-      2, new Pose3d(0.0, 3.97, 0.0, new Rotation3d(0, 0, degreesToRadians(0.0))));
+            1,
+            new Pose3d(
+                    Units.inchesToMeters(Constants.FieldConstants.fieldLength),
+                    Units.inchesToMeters(42.19),
+                    Units.inchesToMeters(18.22),
+                    new Rotation3d(0.0, 0.0, Math.PI)),
+            2,
+            new Pose3d(
+                    Units.inchesToMeters(Constants.FieldConstants.fieldLength),
+                    Units.inchesToMeters(108.19),
+                    Units.inchesToMeters(18.22),
+                    new Rotation3d(0.0, 0.0, Math.PI)),
+            3,
+            new Pose3d(
+                    Units.inchesToMeters(Constants.FieldConstants.fieldLength),
+                    Units.inchesToMeters(174.19), // FIRST's diagram has a typo (it says 147.19)
+                    Units.inchesToMeters(18.22),
+                    new Rotation3d(0.0, 0.0, Math.PI)),
+            4,
+            new Pose3d(
+                    Units.inchesToMeters(Constants.FieldConstants.fieldLength),
+                    Units.inchesToMeters(265.74),
+                    Units.inchesToMeters(27.38),
+                    new Rotation3d(0.0, 0.0, Math.PI)),
+            5,
+            new Pose3d(
+                    Units.inchesToMeters(0),
+                    Units.inchesToMeters(265.74),
+                    Units.inchesToMeters(27.38),
+                    new Rotation3d()),
+            6,
+            new Pose3d(
+                    Units.inchesToMeters(0),
+                    Units.inchesToMeters(174.19), // FIRST's diagram has a typo (it says 147.19)
+                    Units.inchesToMeters(18.22),
+                    new Rotation3d()),
+            7,
+            new Pose3d(
+                    Units.inchesToMeters(0),
+                    Units.inchesToMeters(108.19),
+                    Units.inchesToMeters(18.22),
+                    new Rotation3d()),
+            8,
+            new Pose3d(
+                    Units.inchesToMeters(0),
+                    Units.inchesToMeters(42.19),
+                    Units.inchesToMeters(18.22),
+                    new Rotation3d()));
+
+// AprilTag locations (do not flip for red alliance)
+    // public static final Map<Integer, Pose3d> aprilTags = Map.of(
+    //   0, new Pose3d(0.0, 2.13, 0.0, new Rotation3d(0, 0, degreesToRadians(0.0))),
+    //   1, new Pose3d(0.26, 0.0, 0.0, new Rotation3d(0, 0, degreesToRadians(90.0))),
+    //   2, new Pose3d(0.0, 3.97, 0.0, new Rotation3d(0, 0, degreesToRadians(0.0))));
 
 
     public static List<Obstacle> obstacles = List.of(
