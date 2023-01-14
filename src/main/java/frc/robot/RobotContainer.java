@@ -116,8 +116,8 @@ public class RobotContainer {
       poseEstimator::getCurrentPose,
       poseEstimator::setCurrentPose,
       Constants.DrivetrainConstants.KINEMATICS,
-      new PIDConstants(.1, 0, 0),
-      new PIDConstants(-1, 0, 0),
+      new PIDConstants(.3, 0, 0),
+      new PIDConstants(-3, 0, 0),
       drivetrainSubsystem::setModuleStates,
       eventMap,
       drivetrainSubsystem
