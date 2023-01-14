@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.AutoConstants.THETA_CONSTRAINTS;
 import static frc.robot.Constants.DrivetrainConstants.BACK_LEFT_MODULE_DRIVE_MOTOR;
 import static frc.robot.Constants.DrivetrainConstants.BACK_LEFT_MODULE_STEER_ENCODER;
 import static frc.robot.Constants.DrivetrainConstants.BACK_LEFT_MODULE_STEER_MOTOR;
@@ -46,6 +45,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -136,8 +136,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
       }
     }, () -> {
       for (SwerveModule swerveModule : swerveModules) {
-        swerveModule.setNeutralMode(NeutralMode.Coast);
+        swerveModule.setNeutralMode(NeutralMode.Brake);
       }
+      drive(new ChassisSpeeds());
     }));
   }
 
@@ -219,6 +220,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
     // Always reset desiredChassisSpeeds to null to prevent latching to the last state (aka motor safety)!!
     desiredChassisSpeeds = null;
+    SmartDashboard.putNumberArray("Drivetrain/SwerveStates", new double[] {
+      swerveModules[0].getSteerAngle().getRadians(), swerveModules[0].getDriveVelocity(),
+      swerveModules[1].getSteerAngle().getRadians(), swerveModules[1].getDriveVelocity(),
+      swerveModules[2].getSteerAngle().getRadians(), swerveModules[2].getDriveVelocity(),
+      swerveModules[3].getSteerAngle().getRadians(), swerveModules[3].getDriveVelocity()
+    });
   }
 
   /**
@@ -241,7 +248,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * Sets the states of the modules.
    * @param states array of states. Must be ordered frontLeft, frontRight, backLeft, backRight
    */
-  private void setModuleStates(SwerveModuleState[] states) {
+  public void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND);
     IntStream.range(0, swerveModules.length).forEach(i -> swerveModules[i].setDesiredState(states[i]));
   }
@@ -259,7 +266,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
    */
   public Command createCommandForTrajectory(Trajectory trajectory, Supplier<Pose2d> poseSupplier) {
     var thetaController = new ProfiledPIDController(
-        -AutoConstants.THETA_kP, AutoConstants.THETA_kI, AutoConstants.THETA_kD, THETA_CONSTRAINTS);
+        -AutoConstants.THETA_kP, AutoConstants.THETA_kI, AutoConstants.THETA_kD, AutoConstants.THETA_CONSTRAINTS);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     SwerveControllerCommand swerveControllerCommand =

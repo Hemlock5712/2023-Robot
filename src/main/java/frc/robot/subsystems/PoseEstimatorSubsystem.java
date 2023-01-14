@@ -11,7 +11,6 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -88,7 +87,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       previousPipelineTimestamp = resultTimestamp;
       var target = pipelineResult.getBestTarget();
       var fiducialId = target.getFiducialId();
-      if (target.getPoseAmbiguity() <= .2 && fiducialId >= 0 && fiducialId < targetPoses.size()) {
+      if (target.getPoseAmbiguity() <= .1 && fiducialId >= 0 && fiducialId < targetPoses.size()) {
         var targetPose = targetPoses.get(fiducialId);
         Transform3d camToTarget = target.getBestCameraToTarget();
         Pose3d camPose = targetPose.transformBy(camToTarget.inverse());
@@ -140,7 +139,6 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   public void initializeGyro(double angleDegree){
     drivetrainSubsystem.setGyroscopeRotation(angleDegree);
-    poseEstimator.resetPosition(drivetrainSubsystem.getGyroscopeRotation(), drivetrainSubsystem.getModulePositions(), new Pose2d(getCurrentPose().getX(), getCurrentPose().getY(), Rotation2d.fromDegrees(0)));
   }
 
 }

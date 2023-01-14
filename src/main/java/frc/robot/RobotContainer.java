@@ -6,9 +6,14 @@ package frc.robot;
 
 import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.auto.PIDConstants;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,13 +28,13 @@ import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.WPIAStar;
-import frc.robot.commands.autonomous.TestAutonomous;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
+import frc.robot.util.CustomAutoBuilder;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -56,6 +61,9 @@ public class RobotContainer {
   final Node finalNode = new Node(4, 4, Rotation2d.fromDegrees(180));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = Constants.FieldConstants.obstacles;
+  CustomAutoBuilder autoBuilder;
+
+  HashMap<String, Command> eventMap = new HashMap<>();
 
   private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new FieldHeadingDriveCommand(
       drivetrainSubsystem,
@@ -102,7 +110,18 @@ public class RobotContainer {
     //Obstacle offset = o.offset(0.5f);
     //offset.addNodes(AStarMap);
 
+    
 
+    autoBuilder = new CustomAutoBuilder(
+      poseEstimator::getCurrentPose,
+      poseEstimator::setCurrentPose,
+      Constants.DrivetrainConstants.KINEMATICS,
+      new PIDConstants(.1, 0, 0),
+      new PIDConstants(-1, 0, 0),
+      drivetrainSubsystem::setModuleStates,
+      eventMap,
+      drivetrainSubsystem
+    );
   }
 
   private void configureDashboard() {
@@ -155,7 +174,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-   return new TestAutonomous(drivetrainSubsystem, poseEstimator);
+   return autoBuilder.fullAuto(PathPlanner.loadPathGroup("Test Auto", new PathConstraints(1, 1)));
   }
 
   private static double modifyAxis(double value) {

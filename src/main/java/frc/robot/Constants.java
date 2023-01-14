@@ -417,25 +417,25 @@ public final class Constants {
     public static final Map<Integer, Pose3d> aprilTags = Map.of(
             1,
             new Pose3d(
-                    Units.inchesToMeters(Constants.FieldConstants.fieldLength),
+                    Constants.FieldConstants.fieldLength,
                     Units.inchesToMeters(42.19),
                     Units.inchesToMeters(18.22),
                     new Rotation3d(0.0, 0.0, Math.PI)),
             2,
             new Pose3d(
-                    Units.inchesToMeters(Constants.FieldConstants.fieldLength),
+                    Constants.FieldConstants.fieldLength,
                     Units.inchesToMeters(108.19),
                     Units.inchesToMeters(18.22),
                     new Rotation3d(0.0, 0.0, Math.PI)),
             3,
             new Pose3d(
-                    Units.inchesToMeters(Constants.FieldConstants.fieldLength),
+                    Constants.FieldConstants.fieldLength,
                     Units.inchesToMeters(174.19), // FIRST's diagram has a typo (it says 147.19)
                     Units.inchesToMeters(18.22),
                     new Rotation3d(0.0, 0.0, Math.PI)),
             4,
             new Pose3d(
-                    Units.inchesToMeters(Constants.FieldConstants.fieldLength),
+                    Constants.FieldConstants.fieldLength,
                     Units.inchesToMeters(265.74),
                     Units.inchesToMeters(27.38),
                     new Rotation3d(0.0, 0.0, Math.PI)),
