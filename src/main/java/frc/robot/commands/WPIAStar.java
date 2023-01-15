@@ -49,10 +49,26 @@ public class WPIAStar extends CommandBase {
   @Override
   public void initialize() 
   {
-    config.setStartVelocity(Math.hypot(driveSystem.getChassisSpeeds().vxMetersPerSecond,driveSystem.getChassisSpeeds().vxMetersPerSecond));
+    
+    // config.setStartVelocity(Math.hypot(driveSystem.getChassisSpeeds().vxMetersPerSecond,driveSystem.getChassisSpeeds().vxMetersPerSecond));
+    
     List<Node> fullPath = new ArrayList<Node>();
     startPoint = new Node(poseEstimatorSystem.getCurrentPose().getX(), poseEstimatorSystem.getCurrentPose().getY(), poseEstimatorSystem.getCurrentPose().getRotation()); 
     AStarMap.addNode(startPoint);
+    finalPosition.setHolRot(180);
+
+    double hypot = Math.hypot(finalPosition.getX()-startPoint.getX(),finalPosition.getY()-startPoint.getY());
+    double diffX = finalPosition.getX()-startPoint.getX();
+    double angle = Math.acos(diffX/hypot);
+    double offangle = Math.abs(Math.toDegrees(Math.abs(poseEstimatorSystem.getCurrentPose().getRotation().getRadians())-angle));
+
+    if(offangle>90){
+      config.setReversed(true);
+    }
+    else{
+      config.setReversed(false);
+    }
+
     if(AStarMap.addEdge(new Edge(startPoint, finalPosition), obstacles)){
       fullPath.add(0,startPoint);
       fullPath.add(1,finalPosition);
@@ -66,8 +82,10 @@ public class WPIAStar extends CommandBase {
       fullPath = AStarMap.findPath(startPoint, finalPosition);
 
     }
-    
 
+    if(fullPath == null){
+      return;
+    }
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
     Translation2d[] fullPathPoints = new Translation2d[fullPath.size()-2];

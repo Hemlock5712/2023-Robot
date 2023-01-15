@@ -483,7 +483,8 @@ public final class Constants {
                     FieldConstants.Community.chargingStationCorners[1].getY(),
                     FieldConstants.Community.chargingStationCorners[3].getY(),
                     FieldConstants.Community.chargingStationCorners[2].getY()
-            }),
+            })
+            ,
             // Red Charging Station
             new Obstacle(new double[] {
                     allianceFlip(FieldConstants.Community.chargingStationCorners[2]).getX(),
@@ -495,7 +496,8 @@ public final class Constants {
                     allianceFlip(FieldConstants.Community.chargingStationCorners[3]).getY(),
                     allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getY(),
                     allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getY()
-            }));
+            })
+            );
 
     /**
      * Flips a translation to the correct side of the field based on the current

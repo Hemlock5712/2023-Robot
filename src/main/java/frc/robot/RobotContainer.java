@@ -17,6 +17,7 @@ import com.pathplanner.lib.auto.PIDConstants;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -58,7 +59,10 @@ public class RobotContainer {
       poseEstimator::getCurrentPose);
 
   VisGraph AStarMap = new VisGraph();
-  final Node finalNode = new Node(4, 4, Rotation2d.fromDegrees(180));
+  Translation2d spot4 = Constants.FieldConstants.allianceFlip(Constants.FieldConstants.StagingLocations.translations[3]);
+  // final Node finalNode = new Node(spot4.getX(), spot4.getY(), Rotation2d.fromDegrees(180));
+
+  final Node finalNode = new Node(12, 5, Rotation2d.fromDegrees(180));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = Constants.FieldConstants.obstacles;
   CustomAutoBuilder autoBuilder;

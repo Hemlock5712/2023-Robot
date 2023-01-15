@@ -36,4 +36,7 @@ public class Node {
     public Rotation2d getHolRot(){
       return holonomicRotation;
     }
+    public void setHolRot(double degree){
+      this.holonomicRotation = Rotation2d.fromDegrees(degree);
+    } 
   }
