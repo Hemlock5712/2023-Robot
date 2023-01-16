@@ -68,6 +68,7 @@ public class PPAStar extends CommandBase {
       }
       fullPath =  AStarMap.findPath(startPoint, finalPosition);
     }
+    Rotation2d StartHeading = new Rotation2d(Math.acos(fullPath.get(0).getX()-fullPath.get(1).getX()/(Math.hypot(fullPath.get(0).getX()-fullPath.get(1).getX(),fullPath.get(0).getY()-fullPath.get(1).getY())))*Math.signum(fullPath.get(0).getY()-fullPath.get(1).getY()));
     
 
     // Depending on if internal points are present, make a new array of the other
@@ -76,10 +77,11 @@ public class PPAStar extends CommandBase {
     
     for(int i=0; i<fullPath.size(); i++){
         if(i==0){
-          fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), startPoint.getHolRot());
+          fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), StartHeading, startPoint.getHolRot());
         }
         else if(i+1==fullPath.size()){
-          fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()), finalPosition.getHolRot());
+          Rotation2d EndHeading = new Rotation2d(Math.acos(fullPath.get(i).getX()-fullPath.get(i-1).getX()/Math.hypot(fullPath.get(i).getX()-fullPath.get(i-1).getX(),fullPath.get(i).getY()-fullPath.get(i-1).getY()))*Math.signum(fullPath.get(i).getY()-fullPath.get(i-1).getY()));
+          fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()), EndHeading, finalPosition.getHolRot());
         }
         else{
           fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()), 
