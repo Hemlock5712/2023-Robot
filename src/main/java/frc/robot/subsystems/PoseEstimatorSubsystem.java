@@ -87,7 +87,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       previousPipelineTimestamp = resultTimestamp;
       var target = pipelineResult.getBestTarget();
       var fiducialId = target.getFiducialId();
-      if (target.getPoseAmbiguity() <= .1 && fiducialId >= 0 && fiducialId < targetPoses.size()) {
+      if (target.getPoseAmbiguity() <= .05 && fiducialId >= 0 && fiducialId < targetPoses.size()) {
         var targetPose = targetPoses.get(fiducialId);
         Transform3d camToTarget = target.getBestCameraToTarget();
         Pose3d camPose = targetPose.transformBy(camToTarget.inverse());

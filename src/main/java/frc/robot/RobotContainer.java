@@ -60,7 +60,7 @@ public class RobotContainer {
 
   VisGraph AStarMap = new VisGraph();
   Translation2d spot4 = Constants.FieldConstants.allianceFlip(Constants.FieldConstants.StagingLocations.translations[3]);
-  // final Node finalNode = new Node(spot4.getX(), spot4.getY(), Rotation2d.fromDegrees(180));
+  //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
   final Node finalNode = new Node(12, 5, Rotation2d.fromDegrees(180));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
@@ -120,8 +120,8 @@ public class RobotContainer {
       poseEstimator::getCurrentPose,
       poseEstimator::setCurrentPose,
       Constants.DrivetrainConstants.KINEMATICS,
-      new PIDConstants(.1, 0, 0),
-      new PIDConstants(-1, 0, 0),
+      new PIDConstants(.3, 0, 0),
+      new PIDConstants(-3, 0, 0),
       drivetrainSubsystem::setModuleStates,
       eventMap,
       drivetrainSubsystem

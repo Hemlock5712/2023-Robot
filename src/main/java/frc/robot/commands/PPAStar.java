@@ -41,7 +41,7 @@ public class PPAStar extends CommandBase {
     this.obstacles = obstacles;
     this.finalPosition = finalPosition;
     this.AStarMap = AStarMap;
-    this.startPoint = new Node(p.getCurrentPose().getX(), p.getCurrentPose().getY(), p.getCurrentPose().getRotation());
+    this.startPoint = new Node(p);
     
 
     addRequirements(driveSystem, poseEstimatorSystem);
@@ -52,7 +52,7 @@ public class PPAStar extends CommandBase {
   @Override
   public void initialize() 
   {
-    startPoint = new Node(poseEstimatorSystem.getCurrentPose().getX(), poseEstimatorSystem.getCurrentPose().getY(), poseEstimatorSystem.getCurrentPose().getRotation());
+    startPoint = new Node(poseEstimatorSystem);
     PathPlannerTrajectory trajectory;
     List<Node> fullPath = new ArrayList<Node>();
 

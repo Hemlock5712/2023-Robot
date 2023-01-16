@@ -202,6 +202,24 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public ChassisSpeeds getChassisSpeeds() {
     return DrivetrainConstants.KINEMATICS.toChassisSpeeds(getModuleStates());
   }
+
+  private double[] swerveModulesToNTValues(SwerveModule[] states) {
+    return new double[] {
+      states[0].getSteerAngle().getRadians(), states[0].getDriveVelocity(),
+      states[1].getSteerAngle().getRadians(), states[1].getDriveVelocity(),
+      states[2].getSteerAngle().getRadians(), states[2].getDriveVelocity(),
+      states[3].getSteerAngle().getRadians(), states[3].getDriveVelocity()
+    };
+  }
+
+  private double[] swerveStatesToNTValues(SwerveModuleState[] states) {
+    return new double[] {
+      states[0].angle.getRadians(), states[0].speedMetersPerSecond,
+      states[1].angle.getRadians(), states[1].speedMetersPerSecond,
+      states[2].angle.getRadians(), states[2].speedMetersPerSecond,
+      states[3].angle.getRadians(), states[3].speedMetersPerSecond
+    };
+  }
   
 
   @Override
@@ -216,16 +234,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
         IntStream.range(0, currentStates.length).forEach(i -> desiredStates[i].angle = currentStates[i].angle);
       }
 
+
       setModuleStates(desiredStates);
     }
+    SmartDashboard.putNumberArray("Drivetrain/SwerveStates", swerveModulesToNTValues(swerveModules));
     // Always reset desiredChassisSpeeds to null to prevent latching to the last state (aka motor safety)!!
     desiredChassisSpeeds = null;
-    SmartDashboard.putNumberArray("Drivetrain/SwerveStates", new double[] {
-      swerveModules[0].getSteerAngle().getRadians(), swerveModules[0].getDriveVelocity(),
-      swerveModules[1].getSteerAngle().getRadians(), swerveModules[1].getDriveVelocity(),
-      swerveModules[2].getSteerAngle().getRadians(), swerveModules[2].getDriveVelocity(),
-      swerveModules[3].getSteerAngle().getRadians(), swerveModules[3].getDriveVelocity()
-    });
+    
+
   }
 
   /**
