@@ -28,6 +28,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
+import frc.robot.commands.PPAStar;
 import frc.robot.commands.WPIAStar;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
@@ -62,7 +63,8 @@ public class RobotContainer {
   Translation2d spot4 = Constants.FieldConstants.allianceFlip(Constants.FieldConstants.StagingLocations.translations[3]);
   //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
-  final Node finalNode = new Node(12, 5, Rotation2d.fromDegrees(180));
+  final Node finalNode = new Node(14.5, 1.5, Rotation2d.fromDegrees(0
+  ));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = Constants.FieldConstants.obstacles;
   CustomAutoBuilder autoBuilder;
@@ -167,9 +169,10 @@ public class RobotContainer {
     // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)),
     // new PathPoint(new Translation2d(Units.inchesToMeters(200), 2.03),
     // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270))));
-    // controller.x().
-    //     whileTrue(new PPAStar(drivetrainSubsystem, poseEstimator, 
-    //         new PathConstraints(2, 2), finalNode, obstacles, AStarMap));
+    controller.x().
+        whileTrue(new PPAStar(
+          drivetrainSubsystem, poseEstimator, 
+            new PathConstraints(2, 2), finalNode, obstacles, AStarMap));
   }
 
   /**

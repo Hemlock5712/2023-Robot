@@ -29,12 +29,9 @@ public class PPAStar extends CommandBase {
   private Node startPoint;
   private final List<Obstacle> obstacles;
   private VisGraph AStarMap;
-  
 
-
-
-
-  public PPAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, Node finalPosition, List<Obstacle> obstacles, VisGraph AStarMap) {
+  public PPAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, Node finalPosition,
+      List<Obstacle> obstacles, VisGraph AStarMap) {
     this.driveSystem = d;
     this.poseEstimatorSystem = p;
     this.constraints = constraints;
@@ -42,7 +39,6 @@ public class PPAStar extends CommandBase {
     this.finalPosition = finalPosition;
     this.AStarMap = AStarMap;
     this.startPoint = new Node(p);
-    
 
     addRequirements(driveSystem, poseEstimatorSystem);
   }
@@ -50,64 +46,90 @@ public class PPAStar extends CommandBase {
   // ----------------------------------------------------------------------------
   // Per-schedule setup code.
   @Override
-  public void initialize() 
-  {
+  public void initialize() {
     startPoint = new Node(poseEstimatorSystem);
     PathPlannerTrajectory trajectory;
     List<Node> fullPath = new ArrayList<Node>();
 
     AStarMap.addNode(startPoint);
-   if(AStarMap.addEdge(new Edge(startPoint, finalPosition), obstacles)){
-      fullPath.add(0,startPoint);
-      fullPath.add(1,finalPosition);
-    }
-    else{
+    if (AStarMap.addEdge(new Edge(startPoint, finalPosition), obstacles)) {
+      fullPath.add(0, startPoint);
+      fullPath.add(1, finalPosition);
+    } else {
       for (int i = 0; i < AStarMap.getNodeSize(); i++) {
         Node endNode = AStarMap.getNode(i);
         AStarMap.addEdge(new Edge(startPoint, endNode), obstacles);
       }
-      fullPath =  AStarMap.findPath(startPoint, finalPosition);
+      fullPath = AStarMap.findPath(startPoint, finalPosition);
     }
-    Rotation2d StartHeading = new Rotation2d(Math.acos(fullPath.get(0).getX()-fullPath.get(1).getX()/(Math.hypot(fullPath.get(0).getX()-fullPath.get(1).getX(),fullPath.get(0).getY()-fullPath.get(1).getY())))*Math.signum(fullPath.get(0).getY()-fullPath.get(1).getY()));
-    
+    // Rotation2d StartHeading = new
+    // Rotation2d(Math.acos(fullPath.get(0).getX()-fullPath.get(1).getX()/(Math.hypot(fullPath.get(0).getX()-fullPath.get(1).getX(),fullPath.get(0).getY()-fullPath.get(1).getY())))*Math.signum(fullPath.get(0).getY()-fullPath.get(1).getY()));
+    // System.out.println(new Translation2d(startPoint.getX(), startPoint.getY())+"
+    // First xy");
+    // System.out.println(new
+    // Translation2d(fullPath.get(1).getX(),fullPath.get(1).getY())+" Next xy");
+
+    // double hypot = Math.hypot(startPoint.getX()-fullPath.get(1).getX(),
+    // startPoint.getY()-fullPath.get(1).getY());
+    // double Heading =
+    // Math.acos(startPoint.getX()-fullPath.get(1).getX()/hypot)*Math.signum(startPoint.getX()-fullPath.get(1).getX());
+
+    // System.out.println(hypot);
+    // System.out.println(Heading);
+
+    Rotation2d Heading = Rotation2d.fromRadians(
+        Math.PI + Math.atan2(startPoint.getY() - fullPath.get(1).getY(), startPoint.getX() - fullPath.get(1).getX()));
+    double totalDis = 0;
+    for (int i = 0; i < fullPath.size() - 1; i++) {
+      totalDis += Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
+          fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+    }
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
     PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
-    
-    for(int i=0; i<fullPath.size(); i++){
-        if(i==0){
-          fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), StartHeading, startPoint.getHolRot());
-        }
-        else if(i+1==fullPath.size()){
-          Rotation2d EndHeading = new Rotation2d(Math.acos(fullPath.get(i).getX()-fullPath.get(i-1).getX()/Math.hypot(fullPath.get(i).getX()-fullPath.get(i-1).getX(),fullPath.get(i).getY()-fullPath.get(i-1).getY()))*Math.signum(fullPath.get(i).getY()-fullPath.get(i-1).getY()));
-          fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()), EndHeading, finalPosition.getHolRot());
-        }
-        else{
-          fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()), 
-            new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(), 
-            fullPath.get(i+1).getY()-fullPath.get(i).getY()));
-        }
-        
+
+    for (int i = 0; i < fullPath.size(); i++) {
+      if (i == 0) {
+        fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), Heading,
+            poseEstimatorSystem.getCurrentPose().getRotation());
+      } else if (i + 1 == fullPath.size()) {
+        // Rotation2d EndHeading = new
+        // Rotation2d(Math.acos(fullPath.get(i).getX()-fullPath.get(i-1).getX()/Math.hypot(fullPath.get(i).getX()-fullPath.get(i-1).getX(),fullPath.get(i).getY()-fullPath.get(i-1).getY()))*Math.signum(fullPath.get(i).getY()-fullPath.get(i-1).getY()));
+        fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
+            Rotation2d.fromRadians(Math.atan2(fullPath.get(i).getY() - fullPath.get(i - 1).getY(),
+                fullPath.get(i).getX() - fullPath.get(i - 1).getX())),
+            finalPosition.getHolRot());
+      } else {
+        fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
+            Rotation2d.fromRadians(Math.atan2(fullPath.get(i + 1).getY() - fullPath.get(i).getY(),
+                fullPath.get(i + 1).getX() - fullPath.get(i).getX())),
+            Rotation2d.fromRadians(Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
+                fullPath.get(i + 1).getY() - fullPath.get(i).getY()) / totalDis
+                * (finalPosition.getHolRot().getRadians()
+                    + poseEstimatorSystem.getCurrentPose().getRotation().getRadians())));
+
+        // new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(),
+        // fullPath.get(i+1).getY()-fullPath.get(i).getY())
+      }
+
     }
-    
-    // Declare an array to hold PathPoint objects made from all other points specified in constructor.
+
+    // Declare an array to hold PathPoint objects made from all other points
+    // specified in constructor.
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }
 
   @Override
-  public boolean isFinished()
-  {
+  public boolean isFinished() {
     return (pathDrivingCommand == null || !pathDrivingCommand.isScheduled());
   }
 
   @Override
-  public void end(boolean interrupted)
-  {
-    if (interrupted)
-    {
+  public void end(boolean interrupted) {
+    if (interrupted) {
       pathDrivingCommand.cancel();
     }
 
