@@ -80,6 +80,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+      
+
     // Update pose estimator with the best visible target
     var pipelineResult = photonCamera.getLatestResult();
     var resultTimestamp = pipelineResult.getTimestampSeconds();
@@ -102,6 +105,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       drivetrainSubsystem.getModulePositions());
 
     field2d.setRobotPose(getCurrentPose());
+
+    // System.out.println(getCurrentPose().getRotation());
   }
 
   private String getFormattedPose() {

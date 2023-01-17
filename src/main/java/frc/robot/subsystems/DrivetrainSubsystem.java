@@ -61,7 +61,7 @@ import frc.robot.swerve.SwerveSteerController;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
-  private final WPI_Pigeon2 pigeon = new WPI_Pigeon2(PIGEON_ID);
+  private final static WPI_Pigeon2 pigeon = new WPI_Pigeon2(PIGEON_ID);
   // private final AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
   private final SwerveModule[] swerveModules;
 
@@ -175,6 +175,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     pigeon.setYaw(angleDeg);
   }
 
+  public double getGyroscopeHeading() {
+    return pigeon.getYaw();
+    
+  }
+
   public void resetGyro(){
     setGyroscopeRotation(0);
   }
@@ -224,6 +229,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    
+
     // Set the swerve module states
     if (desiredChassisSpeeds != null) {
       var desiredStates = DrivetrainConstants.KINEMATICS.toSwerveModuleStates(desiredChassisSpeeds);
