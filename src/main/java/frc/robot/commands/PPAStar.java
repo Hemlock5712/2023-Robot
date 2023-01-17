@@ -74,7 +74,8 @@ public class PPAStar extends CommandBase {
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
     PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
-
+    double distanceTraveled = 0;
+    double currentPathDist = 0;
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), Heading,
@@ -84,13 +85,14 @@ public class PPAStar extends CommandBase {
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(), fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
             finalPosition.getHolRot());
       } else {
+        currentPathDist = Math.hypot(fullPath.get(i).getX() - fullPath.get(i-1).getX(), fullPath.get(i).getY() - fullPath.get(i-1).getY());
+        distanceTraveled += currentPathDist;
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
-            Rotation2d.fromRadians(Math.atan2(fullPath.get(i + 1).getY() - fullPath.get(i).getY(),
-                fullPath.get(i + 1).getX() - fullPath.get(i).getX())),
-            Rotation2d.fromRadians(Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
-                fullPath.get(i + 1).getY() - fullPath.get(i).getY()) / totalDis
-                * (finalPosition.getHolRot().getRadians()
-                    + poseEstimatorSystem.getCurrentPose().getRotation().getRadians())));
+            new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
+            new Rotation2d.fromDegrees(
+              angleAtPercent(poseEstimatorSystem.getCurrentPose().getRotation(), 
+              finalPosition.getHolRot().getDegrees(), 
+              distanceTraveled/totalDis));
       }
 
     }
@@ -114,5 +116,21 @@ public class PPAStar extends CommandBase {
     }
 
     driveSystem.stop();
+  }
+  
+  public static double angleAtPercent(double start, double end, double percent) {
+    double angleDiff = end - start;
+    if (angleDiff > 180) {
+        angleDiff -= 360;
+    } else if (angleDiff < -180) {
+        angleDiff += 360;
+    }
+    double angle = start + (angleDiff * percent);
+    if (angle > 180) {
+        angle -= 360;
+    } else if (angle < -180) {
+        angle += 360;
+    }
+    return angle;
   }
 }
