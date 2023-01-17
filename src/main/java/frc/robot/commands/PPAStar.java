@@ -90,7 +90,7 @@ public class PPAStar extends CommandBase {
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
             new Rotation2d.fromDegrees(
-              angleAtPercent(poseEstimatorSystem.getCurrentPose().getRotation(), 
+              angleAtPercent(poseEstimatorSystem.getCurrentPose().getRotation().getDegrees(), 
               finalPosition.getHolRot().getDegrees(), 
               distanceTraveled/totalDis));
       }
