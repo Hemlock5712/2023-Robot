@@ -62,23 +62,9 @@ public class PPAStar extends CommandBase {
       }
       fullPath = AStarMap.findPath(startPoint, finalPosition);
     }
-    // Rotation2d StartHeading = new
-    // Rotation2d(Math.acos(fullPath.get(0).getX()-fullPath.get(1).getX()/(Math.hypot(fullPath.get(0).getX()-fullPath.get(1).getX(),fullPath.get(0).getY()-fullPath.get(1).getY())))*Math.signum(fullPath.get(0).getY()-fullPath.get(1).getY()));
-    // System.out.println(new Translation2d(startPoint.getX(), startPoint.getY())+"
-    // First xy");
-    // System.out.println(new
-    // Translation2d(fullPath.get(1).getX(),fullPath.get(1).getY())+" Next xy");
+    
 
-    // double hypot = Math.hypot(startPoint.getX()-fullPath.get(1).getX(),
-    // startPoint.getY()-fullPath.get(1).getY());
-    // double Heading =
-    // Math.acos(startPoint.getX()-fullPath.get(1).getX()/hypot)*Math.signum(startPoint.getX()-fullPath.get(1).getX());
-
-    // System.out.println(hypot);
-    // System.out.println(Heading);
-
-    Rotation2d Heading = Rotation2d.fromRadians(
-        Math.PI + Math.atan2(startPoint.getY() - fullPath.get(1).getY(), startPoint.getX() - fullPath.get(1).getX()));
+    Rotation2d Heading = new Rotation2d(fullPath.get(1).getX()-startPoint.getX(),fullPath.get(1).getY()-startPoint.getY());
     double totalDis = 0;
     for (int i = 0; i < fullPath.size() - 1; i++) {
       totalDis += Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
@@ -94,11 +80,8 @@ public class PPAStar extends CommandBase {
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), Heading,
             poseEstimatorSystem.getCurrentPose().getRotation());
       } else if (i + 1 == fullPath.size()) {
-        // Rotation2d EndHeading = new
-        // Rotation2d(Math.acos(fullPath.get(i).getX()-fullPath.get(i-1).getX()/Math.hypot(fullPath.get(i).getX()-fullPath.get(i-1).getX(),fullPath.get(i).getY()-fullPath.get(i-1).getY()))*Math.signum(fullPath.get(i).getY()-fullPath.get(i-1).getY()));
         fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
-            Rotation2d.fromRadians(Math.atan2(fullPath.get(i).getY() - fullPath.get(i - 1).getY(),
-                fullPath.get(i).getX() - fullPath.get(i - 1).getX())),
+            new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(), fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
             finalPosition.getHolRot());
       } else {
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
@@ -108,9 +91,6 @@ public class PPAStar extends CommandBase {
                 fullPath.get(i + 1).getY() - fullPath.get(i).getY()) / totalDis
                 * (finalPosition.getHolRot().getRadians()
                     + poseEstimatorSystem.getCurrentPose().getRotation().getRadians())));
-
-        // new Rotation2d(fullPath.get(i+1).getX()-fullPath.get(i).getX(),
-        // fullPath.get(i+1).getY()-fullPath.get(i).getY())
       }
 
     }
