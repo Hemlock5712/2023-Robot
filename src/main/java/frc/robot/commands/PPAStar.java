@@ -63,7 +63,10 @@ public class PPAStar extends CommandBase {
       fullPath = AStarMap.findPath(startPoint, finalPosition);
     }
     
-
+    if(fullPath == null){
+      return;
+    }
+    
     Rotation2d Heading = new Rotation2d(fullPath.get(1).getX()-startPoint.getX(),fullPath.get(1).getY()-startPoint.getY());
     double totalDis = 0;
     for (int i = 0; i < fullPath.size() - 1; i++) {
@@ -74,7 +77,6 @@ public class PPAStar extends CommandBase {
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
     PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
-
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), Heading,
@@ -85,12 +87,11 @@ public class PPAStar extends CommandBase {
             finalPosition.getHolRot());
       } else {
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
-            Rotation2d.fromRadians(Math.atan2(fullPath.get(i + 1).getY() - fullPath.get(i).getY(),
-                fullPath.get(i + 1).getX() - fullPath.get(i).getX())),
-            Rotation2d.fromRadians(Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
-                fullPath.get(i + 1).getY() - fullPath.get(i).getY()) / totalDis
-                * (finalPosition.getHolRot().getRadians()
-                    + poseEstimatorSystem.getCurrentPose().getRotation().getRadians())));
+        new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
+        finalPosition.getHolRot());
+        // fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
+        // new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
+        // (Rotation2d)null);
       }
 
     }
@@ -98,6 +99,7 @@ public class PPAStar extends CommandBase {
     // Declare an array to hold PathPoint objects made from all other points
     // specified in constructor.
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
+    poseEstimatorSystem.addTrajectory(trajectory);
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }
