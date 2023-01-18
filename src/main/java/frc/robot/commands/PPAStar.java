@@ -63,6 +63,9 @@ public class PPAStar extends CommandBase {
       fullPath = AStarMap.findPath(startPoint, finalPosition);
     }
     
+    if(fullPath == null){
+      return;
+    }
 
     Rotation2d Heading = new Rotation2d(fullPath.get(1).getX()-startPoint.getX(),fullPath.get(1).getY()-startPoint.getY());
     double totalDis = 0;
