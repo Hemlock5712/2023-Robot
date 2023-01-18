@@ -87,12 +87,18 @@ public class PPAStar extends CommandBase {
       } else {
         currentPathDist = Math.hypot(fullPath.get(i).getX() - fullPath.get(i-1).getX(), fullPath.get(i).getY() - fullPath.get(i-1).getY());
         distanceTraveled += currentPathDist;
+        // fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
+        //     new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
+        //     Rotation2d.fromDegrees(
+        //       angleAtPercent(poseEstimatorSystem.getCurrentPose().getRotation().getDegrees(), 
+        //       finalPosition.getHolRot().getDegrees(), 
+        //       distanceTraveled/totalDis)));
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
-            new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
-            new Rotation2d.fromDegrees(
-              angleAtPercent(poseEstimatorSystem.getCurrentPose().getRotation().getDegrees(), 
-              finalPosition.getHolRot().getDegrees(), 
-              distanceTraveled/totalDis));
+        new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
+        finalPosition.getHolRot());
+        // fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
+        // new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
+        // (Rotation2d)null);
       }
 
     }
@@ -100,6 +106,7 @@ public class PPAStar extends CommandBase {
     // Declare an array to hold PathPoint objects made from all other points
     // specified in constructor.
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
+    poseEstimatorSystem.addTrajectory(trajectory);
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }
