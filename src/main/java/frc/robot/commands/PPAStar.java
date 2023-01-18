@@ -76,8 +76,7 @@ public class PPAStar extends CommandBase {
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
     PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
-    double distanceTraveled = 0;
-    double currentPathDist = 0;
+ 
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), Heading,
@@ -87,20 +86,13 @@ public class PPAStar extends CommandBase {
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(), fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
             finalPosition.getHolRot());
       } else {
-        currentPathDist = Math.hypot(fullPath.get(i).getX() - fullPath.get(i-1).getX(), fullPath.get(i).getY() - fullPath.get(i-1).getY());
-        distanceTraveled += currentPathDist;
-        // fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
-        //     new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
-        //     Rotation2d.fromDegrees(
-        //       angleAtPercent(poseEstimatorSystem.getCurrentPose().getRotation().getDegrees(), 
-        //       finalPosition.getHolRot().getDegrees(), 
-        //       distanceTraveled/totalDis)));
-        fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
-        new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
-        finalPosition.getHolRot());
+ 
         // fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
         // new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
-        // (Rotation2d)null);
+        // finalPosition.getHolRot());
+        fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
+        new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
+        (Rotation2d)null);
       }
 
     }
