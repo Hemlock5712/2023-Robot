@@ -307,6 +307,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public static PPSwerveControllerCommand followTrajectory(DrivetrainSubsystem d, PoseEstimatorSubsystem s, PathPlannerTrajectory traj) {
+    Constants.AutoConstants.m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
     return new PPSwerveControllerCommand(
             traj,
             s::getCurrentPose,
