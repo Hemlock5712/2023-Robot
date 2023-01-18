@@ -18,7 +18,6 @@ import com.pathplanner.lib.auto.PIDConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,7 +28,6 @@ import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.PPAStar;
-import frc.robot.commands.WPIAStar;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
@@ -63,8 +61,7 @@ public class RobotContainer {
   Translation2d spot4 = Constants.FieldConstants.allianceFlip(Constants.FieldConstants.StagingLocations.translations[3]);
   //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
-  final Node finalNode = new Node(14.5, 1.5, Rotation2d.fromDegrees(0
-  ));
+  final Node finalNode = new Node(14.23, 2.97, Rotation2d.fromDegrees(0));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = Constants.FieldConstants.obstacles;
   CustomAutoBuilder autoBuilder;
@@ -97,11 +94,20 @@ public class RobotContainer {
 
     AStarMap.addNode(finalNode);
     //SetUp AStar Map
+    AStarMap.addNode(new Node(2.92-0.42,1.51-0.42));
+    AStarMap.addNode(new Node(2.92-0.42,3.98+0.42));
+    AStarMap.addNode(new Node(4.86+0.42,3.98+0.42));
+    AStarMap.addNode(new Node(4.86+0.42,1.51-0.42));
+
+    AStarMap.addNode(new Node(11.68-0.42,1.51-0.42));
+    AStarMap.addNode(new Node(11.68-0.42,3.98+0.42));
+    AStarMap.addNode(new Node(14.23,3.98+0.42));
+    AStarMap.addNode(new Node(14.23,1.51-0.42));
     
-    for(int i = 0; i<obstacles.size(); i++){
-      System.out.println(obstacles.get(i));
-      Constants.FieldConstants.obstacles.get(i).offset(0.5).addNodes(AStarMap);
-    }
+    // for(int i = 0; i<obstacles.size(); i++){
+    //   System.out.println(obstacles.get(i));
+    //   Constants.FieldConstants.obstacles.get(i).addNodes(AStarMap);
+    // }
 
     for(int i = 0; i<AStarMap.getNodeSize();i++){
       Node startNode = AStarMap.getNode(i);
@@ -155,10 +161,9 @@ public class RobotContainer {
 
     controller.a().onTrue(Commands.runOnce(() -> poseEstimator.initializeGyro(0), drivetrainSubsystem));
 
-    controller.y()
-        .whileTrue(new WPIAStar(drivetrainSubsystem, poseEstimator, 
-        new TrajectoryConfig(2, 2), 
-        finalNode, obstacles, AStarMap));
+    // controller.y().
+    //   whileTrue(new WPIAStar(drivetrainSubsystem, poseEstimator, new TrajectoryConfig(2, 2), 
+    //     finalNode, obstacles, AStarMap));
     // controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem,
     // poseEstimator, new PathConstraints(2, 2),
     // new PathPoint(new Translation2d(2.33, 2.03),
@@ -172,7 +177,7 @@ public class RobotContainer {
     controller.x().
         whileTrue(new PPAStar(
           drivetrainSubsystem, poseEstimator, 
-            new PathConstraints(2, 2), finalNode, obstacles, AStarMap));
+            new PathConstraints(3, 1), finalNode, obstacles, AStarMap));
   }
 
   /**
