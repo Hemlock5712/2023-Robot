@@ -61,7 +61,7 @@ public class RobotContainer {
   Translation2d spot4 = Constants.FieldConstants.allianceFlip(Constants.FieldConstants.StagingLocations.translations[3]);
   //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
-  final Node finalNode = new Node(14.23, 2.97, Rotation2d.fromDegrees(0));
+  final Node finalNode = new Node(14.58, 2.65, Rotation2d.fromDegrees(0));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = Constants.FieldConstants.obstacles;
   CustomAutoBuilder autoBuilder;
