@@ -61,7 +61,7 @@ public class RobotContainer {
   Translation2d spot4 = Constants.FieldConstants.allianceFlip(Constants.FieldConstants.StagingLocations.translations[3]);
   //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
-  final Node finalNode = new Node(14.58, 2.65, Rotation2d.fromDegrees(0));
+  final Node finalNode = new Node(14.47, 3.26, Rotation2d.fromDegrees(0));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = Constants.FieldConstants.obstacles;
   CustomAutoBuilder autoBuilder;
@@ -100,8 +100,8 @@ public class RobotContainer {
     AStarMap.addNode(new Node(4.86+0.42,1.51-0.42));
 
     AStarMap.addNode(new Node(11.68-0.42,1.51-0.42));
-    AStarMap.addNode(new Node(11.68-0.42,3.98+0.42));
-    AStarMap.addNode(new Node(14.23,3.98+0.42));
+    AStarMap.addNode(new Node(11.65,5));
+    AStarMap.addNode(new Node(14.37,4.55));
     AStarMap.addNode(new Node(14.23,1.51-0.42));
     
     // for(int i = 0; i<obstacles.size(); i++){
@@ -177,7 +177,7 @@ public class RobotContainer {
     controller.x().
         whileTrue(new PPAStar(
           drivetrainSubsystem, poseEstimator, 
-            new PathConstraints(3, 1), finalNode, obstacles, AStarMap));
+            new PathConstraints(2, 1.5), finalNode, obstacles, AStarMap));
   }
 
   /**

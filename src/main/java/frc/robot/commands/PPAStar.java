@@ -79,8 +79,9 @@ public class PPAStar extends CommandBase {
  
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
+        
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), Heading,
-            poseEstimatorSystem.getCurrentPose().getRotation());
+            poseEstimatorSystem.getCurrentPose().getRotation(), Math.hypot(driveSystem.getChassisSpeeds().vxMetersPerSecond, driveSystem.getChassisSpeeds().vyMetersPerSecond));
       } else if (i + 1 == fullPath.size()) {
         fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(), fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
