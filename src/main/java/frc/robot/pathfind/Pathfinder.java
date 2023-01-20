@@ -6,7 +6,7 @@ import java.util.List;
 public class Pathfinder {
     List<Obstacle> obstacles = new ArrayList<>();
     List<Obstacle> obstaclesWithOffsets = new ArrayList<>();
-    VisGraph navMesh = new VisGraph();
+    VisGraph visGraph = new VisGraph();
     double obstacleOffsetDistance;
 
     public Pathfinder(double obstacleOffsetDistance) {
@@ -27,7 +27,7 @@ public class Pathfinder {
     }
 
     public void addObstacleNodes(Obstacle obstacle) {
-        obstacle.addNodes(navMesh);
+        obstacle.addNodes(visGraph);
     }
 
     /**
@@ -42,15 +42,14 @@ public class Pathfinder {
     public List<Node> findPath(Node startPoint, Node endPoint) {
         // Add edges from current position to all other positions
         addNode(startPoint);
-
-        return navMesh.findPath(startPoint, endPoint);
+        return visGraph.findPath(startPoint, endPoint);
     }
 
     public void addNode(Node node) {
-        navMesh.addNode(node);
-        for(int i = 0; i < navMesh.getNodeSize(); i++) {
-            Node endNode = navMesh.getNode(i);
-            navMesh.addEdge(new Edge(node, endNode), obstacles);
+        visGraph.addNode(node);
+        for(int i = 0; i < visGraph.getNodeSize(); i++) {
+            Node endNode = visGraph.getNode(i);
+            visGraph.addEdge(new Edge(node, endNode), obstacles);
         }
     }
 
@@ -58,11 +57,11 @@ public class Pathfinder {
      * Add edges between all nodes. Do this after all obstacles are added to the field
      */
     public void generateNodeEdges() {
-        for(int i = 0; i < navMesh.getNodeSize(); i++) {
-            Node startNode = navMesh.getNode(i);
-            for(int j = i + 1; j < navMesh.getNodeSize(); j++) {
-                Node endNode = navMesh.getNode(j);
-                navMesh.addEdge(new Edge(startNode, endNode), obstacles);
+        for(int i = 0; i < visGraph.getNodeSize(); i++) {
+            Node startNode = visGraph.getNode(i);
+            for(int j = i + 1; j < visGraph.getNodeSize(); j++) {
+                Node endNode = visGraph.getNode(j);
+                visGraph.addEdge(new Edge(startNode, endNode), obstacles);
             }
         }
     }

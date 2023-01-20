@@ -35,6 +35,7 @@ import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.util.CustomAutoBuilder;
+import frc.robot.util.FieldConstants;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -58,12 +59,12 @@ public class RobotContainer {
       poseEstimator::getCurrentPose);
 
   VisGraph AStarMap = new VisGraph();
-  Translation2d spot4 = Constants.FieldConstants.allianceFlip(Constants.FieldConstants.StagingLocations.translations[3]);
+  Translation2d spot4 = FieldConstants.allianceFlip(FieldConstants.StagingLocations.translations[3]);
   //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
   final Node finalNode = new Node(14.47, 3.26, Rotation2d.fromDegrees(0));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
-  final List<Obstacle> obstacles = Constants.FieldConstants.obstacles;
+  final List<Obstacle> obstacles = Constants.obstacles;
   CustomAutoBuilder autoBuilder;
 
   HashMap<String, Command> eventMap = new HashMap<>();
@@ -150,7 +151,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Start button reseeds the steer motors to fix dead wheel
-    controller.start().onTrue(Commands.runOnce(drivetrainSubsystem::reseedSteerMotorOffsets, drivetrainSubsystem));
+    controller.start().onTrue(Commands.runOnce(drivetrainSubsystem::reseedSteerMotorOffsets));
     
     // Back button resets the robot pose
     controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition, drivetrainSubsystem));

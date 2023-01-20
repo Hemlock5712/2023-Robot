@@ -41,6 +41,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -129,6 +130,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_RIGHT_MODULE_STEER_OFFSET
         )};
 
+    /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
+    * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
+    */
+    Timer.delay(1.0);
+    reseedSteerMotorOffsets();
+
     // Put the motors in brake mode when enabled, coast mode when disabled
     new Trigger(RobotState::isEnabled).onTrue(new StartEndCommand(() -> {
       for (SwerveModule swerveModule : swerveModules) {
@@ -184,7 +191,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     setGyroscopeRotation(0);
   }
 
-
   /**
    * Sets the desired chassis speeds
    * @param chassisSpeeds desired chassis speeds
@@ -217,14 +223,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     };
   }
 
-  private double[] swerveStatesToNTValues(SwerveModuleState[] states) {
-    return new double[] {
-      states[0].angle.getRadians(), states[0].speedMetersPerSecond,
-      states[1].angle.getRadians(), states[1].speedMetersPerSecond,
-      states[2].angle.getRadians(), states[2].speedMetersPerSecond,
-      states[3].angle.getRadians(), states[3].speedMetersPerSecond
-    };
-  }
   
 
   @Override

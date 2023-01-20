@@ -19,8 +19,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.util.FieldConstants;
 
 public class PoseEstimatorSubsystem extends SubsystemBase {
 
@@ -29,7 +29,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   // Ordered list of target poses by ID (WPILib is adding some functionality for
   // this)
-  private static final Map<Integer, Pose3d> targetPoses = Constants.FieldConstants.aprilTags;
+  private static final Map<Integer, Pose3d> targetPoses = FieldConstants.aprilTags;
    
   // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
   // you trust your various sensors. Smaller numbers will cause the filter to

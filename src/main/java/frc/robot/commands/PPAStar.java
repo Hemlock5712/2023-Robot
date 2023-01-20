@@ -66,11 +66,11 @@ public class PPAStar extends CommandBase {
     if(fullPath == null){
       return;
     }
-    Rotation2d Heading = new Rotation2d(fullPath.get(1).getX()-startPoint.getX(),fullPath.get(1).getY()-startPoint.getY());
-    double totalDis = 0;
-    for (int i = 0; i < fullPath.size() - 1; i++) {
-      totalDis += Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
-          fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+    
+    double startingSpeed = Math.hypot(driveSystem.getChassisSpeeds().vxMetersPerSecond, driveSystem.getChassisSpeeds().vyMetersPerSecond);
+    Rotation2d heading = new Rotation2d(fullPath.get(1).getX()-startPoint.getX(),fullPath.get(1).getY()-startPoint.getY());
+    if(startingSpeed>0.05){
+      heading = new Rotation2d(driveSystem.getChassisSpeeds().vxMetersPerSecond, driveSystem.getChassisSpeeds().vyMetersPerSecond);
     }
 
     // Depending on if internal points are present, make a new array of the other
@@ -79,9 +79,8 @@ public class PPAStar extends CommandBase {
  
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
-        
-        fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), Heading,
-            poseEstimatorSystem.getCurrentPose().getRotation(), Math.hypot(driveSystem.getChassisSpeeds().vxMetersPerSecond, driveSystem.getChassisSpeeds().vyMetersPerSecond));
+        fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
+            poseEstimatorSystem.getCurrentPose().getRotation(), startingSpeed);
       } else if (i + 1 == fullPath.size()) {
         fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(), fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
@@ -91,11 +90,7 @@ public class PPAStar extends CommandBase {
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
         new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
         finalPosition.getHolRot());
-        // fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
-        // new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
-        // (Rotation2d)null);
       }
-
     }
 
     // Declare an array to hold PathPoint objects made from all other points
@@ -118,21 +113,5 @@ public class PPAStar extends CommandBase {
     }
 
     driveSystem.stop();
-  }
-  
-  public static double angleAtPercent(double start, double end, double percent) {
-    double angleDiff = end - start;
-    if (angleDiff > 180) {
-        angleDiff -= 360;
-    } else if (angleDiff < -180) {
-        angleDiff += 360;
-    }
-    double angle = start + (angleDiff * percent);
-    if (angle > 180) {
-        angle -= 360;
-    } else if (angle < -180) {
-        angle += 360;
-    }
-    return angle;
   }
 }
