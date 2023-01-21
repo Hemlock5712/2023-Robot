@@ -10,6 +10,8 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -66,11 +68,12 @@ public class DefaultDriveCommand extends CommandBase {
 
   @Override
   public void execute() {
+    int alliance = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
     // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
     drivetrainSubsystem.drive(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
-            translateYRateLimiter.calculate(translationYSupplier.getAsDouble()),
+            translateXRateLimiter.calculate(alliance*translationXSupplier.getAsDouble()),
+            translateYRateLimiter.calculate(alliance*translationYSupplier.getAsDouble()),
             -rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
             robotAngleSupplier.get()));
   }

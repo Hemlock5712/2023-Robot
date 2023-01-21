@@ -150,9 +150,6 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Start button reseeds the steer motors to fix dead wheel
-    controller.start().onTrue(Commands.runOnce(drivetrainSubsystem::reseedSteerMotorOffsets));
-    
     // Back button resets the robot pose
     controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition, drivetrainSubsystem));
 
