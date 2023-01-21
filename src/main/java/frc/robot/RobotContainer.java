@@ -14,6 +14,7 @@ import org.photonvision.PhotonCamera;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -34,7 +35,6 @@ import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
-import frc.robot.util.CustomAutoBuilder;
 import frc.robot.util.FieldConstants;
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -65,7 +65,7 @@ public class RobotContainer {
   final Node finalNode = new Node(14.47, 3.26, Rotation2d.fromDegrees(0));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
-  CustomAutoBuilder autoBuilder;
+  SwerveAutoBuilder autoBuilder;
 
   HashMap<String, Command> eventMap = new HashMap<>();
 
@@ -100,9 +100,9 @@ public class RobotContainer {
     AStarMap.addNode(new Node(4.86+0.42,3.98+0.42));
     AStarMap.addNode(new Node(4.86+0.42,1.51-0.42));
 
-    AStarMap.addNode(new Node(11.68-0.42,1.51-0.42));
-    AStarMap.addNode(new Node(11.65,5));
-    AStarMap.addNode(new Node(14.37,4.55));
+    AStarMap.addNode(new Node(11,1.51-0.42));
+    AStarMap.addNode(new Node(11,4.45));
+    AStarMap.addNode(new Node(14.37,4.45));
     AStarMap.addNode(new Node(14.23,1.51-0.42));
     
     // for(int i = 0; i<obstacles.size(); i++){
@@ -125,7 +125,7 @@ public class RobotContainer {
 
     
 
-    autoBuilder = new CustomAutoBuilder(
+    autoBuilder = new SwerveAutoBuilder(
       poseEstimator::getCurrentPose,
       poseEstimator::setCurrentPose,
       Constants.DrivetrainConstants.KINEMATICS,
@@ -157,21 +157,8 @@ public class RobotContainer {
 
     controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
-    controller.a().onTrue(Commands.runOnce(() -> poseEstimator.initializeGyro(0), drivetrainSubsystem));
+    controller.a().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition));
 
-    // controller.y().
-    //   whileTrue(new WPIAStar(drivetrainSubsystem, poseEstimator, new TrajectoryConfig(2, 2), 
-    //     finalNode, obstacles, AStarMap));
-    // controller.x().whileTrue(new DriveWithPathPlanner(drivetrainSubsystem,
-    // poseEstimator, new PathConstraints(2, 2),
-    // new PathPoint(new Translation2d(2.33, 2.03),
-    // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)),
-    // new PathPoint(new Translation2d(3, 3),
-    // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(180)),
-    // new PathPoint(new Translation2d(2, 2),
-    // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270)),
-    // new PathPoint(new Translation2d(Units.inchesToMeters(200), 2.03),
-    // drivetrainSubsystem.getGyroscopeRotation(), Rotation2d.fromDegrees(270))));
     controller.x().
         whileTrue(new PPAStar(
           drivetrainSubsystem, poseEstimator, 
@@ -184,7 +171,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-   return autoBuilder.fullAuto(PathPlanner.loadPathGroup("Test Auto", new PathConstraints(1, 1)));
+      return autoBuilder.fullAuto(PathPlanner.loadPathGroup("New Path Copy", new PathConstraints(1, 1)));
   }
 
   private static double modifyAxis(double value) {

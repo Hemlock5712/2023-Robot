@@ -2,10 +2,14 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.VisionConstants.CAMERA_TO_ROBOT;
 
-import java.util.Map;
+import java.io.IOException;
+import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -13,24 +17,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.util.FieldConstants;
 
 public class PoseEstimatorSubsystem extends SubsystemBase {
 
   private final PhotonCamera photonCamera;
   private final DrivetrainSubsystem drivetrainSubsystem;
-
-  // Ordered list of target poses by ID (WPILib is adding some functionality for
-  // this)
-  private static final Map<Integer, Pose3d> targetPoses = FieldConstants.aprilTags;
-   
+  private final AprilTagFieldLayout aprilTagFieldLayout;
+  
   // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
   // you trust your various sensors. Smaller numbers will cause the filter to
   // "trust" the estimate from that particular component more than the others. 
@@ -58,6 +59,17 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   public PoseEstimatorSubsystem(PhotonCamera photonCamera, DrivetrainSubsystem drivetrainSubsystem) {
     this.photonCamera = photonCamera;
     this.drivetrainSubsystem = drivetrainSubsystem;
+    AprilTagFieldLayout layout;
+    try {
+      layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+      var alliance = DriverStation.getAlliance();
+      layout.setOrigin(alliance == Alliance.Blue ?
+          OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);
+    } catch(IOException e) {
+      DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
+      layout = null;
+    }
+    this.aprilTagFieldLayout = layout;
 
     ShuffleboardTab tab = Shuffleboard.getTab("Vision");
 
@@ -69,20 +81,12 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         stateStdDevs,
         visionMeasurementStdDevs);
     
-    tab.addString("Pose", this::getFormattedPose).withPosition(0, 0).withSize(2, 0);
+    tab.addString("Pose", this::getFomattedPose).withPosition(0, 0).withSize(2, 0);
     tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
-  }
-
-  public void addTrajectory(Trajectory traj)
-  {
-    field2d.getObject("Trajectory").setTrajectory(traj);
   }
 
   @Override
   public void periodic() {
-
-      
-
     // Update pose estimator with the best visible target
     var pipelineResult = photonCamera.getLatestResult();
     var resultTimestamp = pipelineResult.getTimestampSeconds();
@@ -90,8 +94,10 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       previousPipelineTimestamp = resultTimestamp;
       var target = pipelineResult.getBestTarget();
       var fiducialId = target.getFiducialId();
-      if (target.getPoseAmbiguity() <= .05 && fiducialId >= 0 && fiducialId < targetPoses.size()) {
-        var targetPose = targetPoses.get(fiducialId);
+      // Get the tag pose from field layout - consider that the layout will be null if it failed to load
+      Optional<Pose3d> tagPose = aprilTagFieldLayout == null ? Optional.empty() : aprilTagFieldLayout.getTagPose(fiducialId);
+      if (target.getPoseAmbiguity() <= .2 && fiducialId >= 0 && tagPose.isPresent()) {
+        var targetPose = tagPose.get();
         Transform3d camToTarget = target.getBestCameraToTarget();
         Pose3d camPose = targetPose.transformBy(camToTarget.inverse());
 
@@ -105,11 +111,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       drivetrainSubsystem.getModulePositions());
 
     field2d.setRobotPose(getCurrentPose());
-
-    // System.out.println(getCurrentPose().getRotation());
   }
 
-  private String getFormattedPose() {
+  private String getFomattedPose() {
     var pose = getCurrentPose();
     return String.format("(%.2f, %.2f) %.2f degrees", 
         pose.getX(), 
@@ -140,10 +144,6 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
    */
   public void resetFieldPosition() {
     setCurrentPose(new Pose2d());
-  }
-
-  public void initializeGyro(double angleDegree){
-    drivetrainSubsystem.setGyroscopeRotation(angleDegree);
   }
 
 }
