@@ -8,8 +8,6 @@ import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 
-import java.util.List;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -19,9 +17,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import frc.robot.pathfind.Obstacle;
 import frc.robot.swerve.ModuleConfiguration;
-import frc.robot.util.FieldConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -191,40 +187,6 @@ public final class Constants {
     public static PIDController m_thetaController = new PIDController(Constants.AutoConstants.THETA_kP, Constants.AutoConstants.THETA_kI, Constants.AutoConstants.THETA_kD);
 
   }
-
-  
-
-    
-    
-
-    public static List<Obstacle> obstacles = List.of(
-            // Blue Charging Station
-            new Obstacle(new double[] {
-                    FieldConstants.Community.chargingStationCorners[0].getX(),
-                    FieldConstants.Community.chargingStationCorners[1].getX(),
-                    FieldConstants.Community.chargingStationCorners[3].getX(),
-                    FieldConstants.Community.chargingStationCorners[2].getX(),
-            }, new double[] {
-                    FieldConstants.Community.chargingStationCorners[0].getY(),
-                    FieldConstants.Community.chargingStationCorners[1].getY(),
-                    FieldConstants.Community.chargingStationCorners[3].getY(),
-                    FieldConstants.Community.chargingStationCorners[2].getY()
-            })
-            ,
-            // Red Charging Station
-            new Obstacle(new double[] {
-                    FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[2]).getX(),
-                    FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[3]).getX(),
-                    FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getX(),
-                    FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getX(),
-            }, new double[] {
-                    FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[2]).getY(),
-                    FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[3]).getY(),
-                    FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getY(),
-                    FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getY()
-            })
-            );
-
     
   
 }

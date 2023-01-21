@@ -64,7 +64,7 @@ public class RobotContainer {
 
   final Node finalNode = new Node(14.47, 3.26, Rotation2d.fromDegrees(0));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
-  final List<Obstacle> obstacles = Constants.obstacles;
+  final List<Obstacle> obstacles = FieldConstants.obstacles;
   CustomAutoBuilder autoBuilder;
 
   HashMap<String, Command> eventMap = new HashMap<>();

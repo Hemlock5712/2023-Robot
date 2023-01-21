@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import java.util.List;
 import java.util.Map;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.pathfind.Obstacle;
 
 public final class FieldConstants {
 
@@ -262,5 +264,33 @@ public final class FieldConstants {
           return pose;
       }
   }
+
+  public static List<Obstacle> obstacles = List.of(
+    // Blue Charging Station
+    new Obstacle(new double[] {
+            FieldConstants.Community.chargingStationCorners[0].getX(),
+            FieldConstants.Community.chargingStationCorners[1].getX(),
+            FieldConstants.Community.chargingStationCorners[3].getX(),
+            FieldConstants.Community.chargingStationCorners[2].getX(),
+    }, new double[] {
+            FieldConstants.Community.chargingStationCorners[0].getY(),
+            FieldConstants.Community.chargingStationCorners[1].getY(),
+            FieldConstants.Community.chargingStationCorners[3].getY(),
+            FieldConstants.Community.chargingStationCorners[2].getY()
+    })
+    ,
+    // Red Charging Station
+    new Obstacle(new double[] {
+            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[2]).getX(),
+            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[3]).getX(),
+            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getX(),
+            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getX(),
+    }, new double[] {
+            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[2]).getY(),
+            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[3]).getY(),
+            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getY(),
+            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getY()
+    })
+    );
 
 }
