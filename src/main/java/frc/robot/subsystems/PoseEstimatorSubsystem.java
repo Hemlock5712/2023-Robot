@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -152,6 +154,10 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
    */
   public void resetFieldPosition() {
     setCurrentPose(new Pose2d());
+  }
+
+  public void addTrajectory(PathPlannerTrajectory traj) {
+    field2d.getObject("Trajectory").setTrajectory(traj);
   }
 
 }
