@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -53,10 +54,15 @@ public class DefaultDriveCommand extends CommandBase {
 
     // Calculate field relative speeds
     var chassisSpeeds = drivetrainSubsystem.getChassisSpeeds();
+    var fieldSpeed = new Translation2d(
+    chassisSpeeds.vxMetersPerSecond,
+    chassisSpeeds.vyMetersPerSecond).rotateBy(robotAngle);
+    
     var robotSpeeds = new ChassisSpeeds(
-        chassisSpeeds.vxMetersPerSecond * robotAngle.getCos() - chassisSpeeds.vyMetersPerSecond * robotAngle.getSin(),
-        chassisSpeeds.vyMetersPerSecond * robotAngle.getCos() + chassisSpeeds.vxMetersPerSecond * robotAngle.getSin(),
-        chassisSpeeds.omegaRadiansPerSecond);
+      fieldSpeed.getX(),
+      fieldSpeed.getY(),
+      chassisSpeeds.omegaRadiansPerSecond
+    );
     
     // Reset the slew rate limiters, in case the robot is already moving
     translateXRateLimiter.reset(robotSpeeds.vxMetersPerSecond);

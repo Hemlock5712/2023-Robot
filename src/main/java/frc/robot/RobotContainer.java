@@ -12,7 +12,6 @@ import java.util.List;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
@@ -25,11 +24,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.auto.PPSwerveFollower;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.PPAStar;
-import frc.robot.commands.PPTransform;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
@@ -172,7 +171,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-      return autoBuilder.fullAuto(PPTransform.flipTraj(PathPlanner.loadPathGroup("New Path Copy", new PathConstraints(1, 1))));
+    return new PPSwerveFollower(drivetrainSubsystem, poseEstimator, "New Path", new PathConstraints(1, 1), false);
   }
 
   private static double modifyAxis(double value) {

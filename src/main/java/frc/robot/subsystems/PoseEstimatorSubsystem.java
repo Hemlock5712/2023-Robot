@@ -15,6 +15,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.util.FieldConstants;
 
 public class PoseEstimatorSubsystem extends SubsystemBase {
 
@@ -112,6 +114,11 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       drivetrainSubsystem.getModulePositions());
 
     field2d.setRobotPose(getCurrentPose());
+    if (DriverStation.getAlliance() == Alliance.Red) {
+      field2d.setRobotPose(new Pose2d(FieldConstants.fieldLength-getCurrentPose().getX(),FieldConstants.fieldWidth-getCurrentPose().getY(), new Rotation2d(getCurrentPose().getRotation().getRadians()+Math.PI)));
+    } else {
+      field2d.setRobotPose(getCurrentPose());
+    }
   }
 
   private String getFomattedPose() {
