@@ -29,6 +29,7 @@ import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.PPAStar;
+import frc.robot.commands.PPTransform;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
@@ -62,7 +63,7 @@ public class RobotContainer {
   Translation2d spot4 = FieldConstants.allianceFlip(FieldConstants.StagingLocations.translations[3]);
   //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
-  final Node finalNode = new Node(14.47, 3.26, Rotation2d.fromDegrees(0));
+  final Node finalNode = new Node(2.0146, 4.8426, Rotation2d.fromDegrees(0));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
   SwerveAutoBuilder autoBuilder;
@@ -171,7 +172,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-      return autoBuilder.fullAuto(PathPlanner.loadPathGroup("New Path Copy", new PathConstraints(1, 1)));
+      return autoBuilder.fullAuto(PPTransform.flipTraj(PathPlanner.loadPathGroup("New Path Copy", new PathConstraints(1, 1))));
   }
 
   private static double modifyAxis(double value) {
