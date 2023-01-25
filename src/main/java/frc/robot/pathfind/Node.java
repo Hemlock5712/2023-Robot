@@ -3,6 +3,7 @@ package frc.robot.pathfind;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
@@ -37,6 +38,13 @@ public class Node {
       this.x = coordinates.getX();
       this.y = coordinates.getY(); 
       this.holonomicRotation = holonomicRotation;
+      this.neighbors = new ArrayList < > ();
+    }
+
+    public Node(Pose2d pose) {
+      this.x = pose.getX();
+      this.y = pose.getY(); 
+      this.holonomicRotation = pose.getRotation();
       this.neighbors = new ArrayList < > ();
     }
 
