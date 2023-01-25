@@ -313,6 +313,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             Constants.AutoConstants.m_translationController,
             Constants.AutoConstants.m_strafeController,
             Constants.AutoConstants.m_thetaController,
-            d::setModuleStates);
+            d::setModuleStates,
+            false);
   }
 }

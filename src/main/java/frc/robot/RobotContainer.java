@@ -62,7 +62,7 @@ public class RobotContainer {
   Translation2d spot4 = FieldConstants.allianceFlip(FieldConstants.StagingLocations.translations[3]);
   //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
-  final Node finalNode = new Node(2.0146, 4.8426, Rotation2d.fromDegrees(0));
+  final Node finalNode = new Node(2.0146, 4.8426, Rotation2d.fromDegrees(180));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
   SwerveAutoBuilder autoBuilder;
@@ -95,15 +95,10 @@ public class RobotContainer {
 
     AStarMap.addNode(finalNode);
     //SetUp AStar Map
+    AStarMap.addNode(new Node(2.92-0.42,4.75));
     AStarMap.addNode(new Node(2.92-0.42,1.51-0.42));
-    AStarMap.addNode(new Node(2.92-0.42,3.98+0.42));
-    AStarMap.addNode(new Node(4.86+0.42,3.98+0.42));
-    AStarMap.addNode(new Node(4.86+0.42,1.51-0.42));
-
-    AStarMap.addNode(new Node(11,1.51-0.42));
-    AStarMap.addNode(new Node(11,4.45));
-    AStarMap.addNode(new Node(14.37,4.45));
-    AStarMap.addNode(new Node(14.23,1.51-0.42));
+    AStarMap.addNode(new Node(6,4.75));
+    AStarMap.addNode(new Node(6,1.51-0.42));
     
     // for(int i = 0; i<obstacles.size(); i++){
     //   System.out.println(obstacles.get(i));
@@ -171,7 +166,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new PPSwerveFollower(drivetrainSubsystem, poseEstimator, "New Path", new PathConstraints(1, 1), false);
+    return new PPSwerveFollower(drivetrainSubsystem, poseEstimator, "New Path", new PathConstraints(2, 1), false);
   }
 
   private static double modifyAxis(double value) {
