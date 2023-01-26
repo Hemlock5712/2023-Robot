@@ -95,6 +95,7 @@ public class FieldHeadingDriveCommand extends CommandBase {
         chassisSpeeds.vxMetersPerSecond * robotAngle.getCos() - chassisSpeeds.vyMetersPerSecond * robotAngle.getSin(),
         chassisSpeeds.vyMetersPerSecond * robotAngle.getCos() + chassisSpeeds.vxMetersPerSecond * robotAngle.getSin(),
         chassisSpeeds.omegaRadiansPerSecond);
+    
 
     // Reset the slew rate limiters, in case the robot is already moving
     translateXRateLimiter.reset(robotSpeeds.vxMetersPerSecond);
@@ -121,7 +122,7 @@ public class FieldHeadingDriveCommand extends CommandBase {
     if (thetaController.atGoal() || centered) {
       omega = 0;
     }
-
+    
     drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
         translateXRateLimiter.calculate(xSupplier.getAsDouble()),
         translateYRateLimiter.calculate(ySupplier.getAsDouble()),
