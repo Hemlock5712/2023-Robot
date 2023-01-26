@@ -107,7 +107,12 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         Pose3d camPose = targetPose.transformBy(camToTarget.inverse());
 
         var visionMeasurement = camPose.transformBy(CAMERA_TO_ROBOT);
-        poseEstimator.addVisionMeasurement(visionMeasurement.toPose2d(), resultTimestamp);
+        if(visionMeasurement!=null){
+          poseEstimator.addVisionMeasurement(visionMeasurement.toPose2d(), resultTimestamp);
+        } 
+        else{
+          DriverStation.reportError("Vision Measurement is NULL",false);
+        }
       }
     }
     // Update pose estimator with drivetrain sensors

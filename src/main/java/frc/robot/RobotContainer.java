@@ -107,7 +107,6 @@ public class RobotContainer {
 
     for(int i = 0; i<AStarMap.getNodeSize();i++){
       Node startNode = AStarMap.getNode(i);
-      System.out.println(""+startNode.getX()+","+startNode.getY());
       for(int j = i+1; j<AStarMap.getNodeSize(); j++){
         AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
       }
