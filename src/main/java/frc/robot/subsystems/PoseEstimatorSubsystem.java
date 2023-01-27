@@ -92,7 +92,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     photonEstimatedRobotPose = photonPoseEstimator.update();
-    if(photonEstimatedRobotPose.isEmpty()){
+    if(photonEstimatedRobotPose.isPresent()){
       EstimatedRobotPose pose = photonEstimatedRobotPose.get();
       try{
         poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
