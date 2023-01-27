@@ -31,7 +31,6 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -297,8 +296,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
             trajectory,
             poseSupplier,
             DrivetrainConstants.KINEMATICS,
-            new PIDController(AutoConstants.X_kP, AutoConstants.X_kI, AutoConstants.X_kD),
-            new PIDController(AutoConstants.Y_kP, AutoConstants.Y_kI, AutoConstants.Y_kD),
+            Constants.AutoConstants.translationController,
+            Constants.AutoConstants.strafeController,
             thetaController,
             this::setModuleStates);
             
@@ -306,14 +305,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public static PPSwerveControllerCommand followTrajectory(DrivetrainSubsystem d, PoseEstimatorSubsystem s, PathPlannerTrajectory traj) {
-    Constants.AutoConstants.m_thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    Constants.AutoConstants.thetaController.enableContinuousInput(-Math.PI, Math.PI);
     return new PPSwerveControllerCommand(
             traj,
             s::getCurrentPose,
             Constants.DrivetrainConstants.KINEMATICS,
-            Constants.AutoConstants.m_translationController,
-            Constants.AutoConstants.m_strafeController,
-            Constants.AutoConstants.m_thetaController,
+            Constants.AutoConstants.translationController,
+            Constants.AutoConstants.strafeController,
+            Constants.AutoConstants.thetaController,
             d::setModuleStates,
             false);
   }

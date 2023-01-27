@@ -26,8 +26,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.auto.PPSwerveFollower;
 import frc.robot.commands.ChaseTagCommand;
-import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
+import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.PPAStar;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
@@ -77,17 +77,19 @@ public class RobotContainer {
       () -> -controller.getRightY(),
       () -> -controller.getRightX());
 
+  private final FieldOrientedDriveCommand fieldOrientedDriveCommand = new FieldOrientedDriveCommand(
+    drivetrainSubsystem,
+    () -> poseEstimator.getCurrentPose().getRotation(),
+    () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
+    () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
+    () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Set up the default command for the drivetrain.
-    drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-        drivetrainSubsystem,
-        () -> poseEstimator.getCurrentPose().getRotation(),
-        () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2));
+    drivetrainSubsystem.setDefaultCommand(fieldOrientedDriveCommand);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -124,7 +126,7 @@ public class RobotContainer {
       poseEstimator::setCurrentPose,
       Constants.DrivetrainConstants.KINEMATICS,
       new PIDConstants(.3, 0, 0),
-      new PIDConstants(-3, 0, 0),
+      new PIDConstants(3, 0, 0),
       drivetrainSubsystem::setModuleStates,
       eventMap,
       drivetrainSubsystem

@@ -14,7 +14,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-public class DefaultDriveCommand extends CommandBase {
+/**
+ * Command for teleop driving where translation is field oriented and rotation velocity is controlled by the driver.
+ * 
+ * Translation is specified on the field-relative coordinate system. The Y-axis runs parallel to the alliance wall, left
+ * is positive. The X-axis runs down field toward the opposing alliance wall, away from the alliance wall is positive.
+ */
+public class FieldOrientedDriveCommand extends CommandBase {
   private final DrivetrainSubsystem drivetrainSubsystem;
   private final Supplier<Rotation2d> robotAngleSupplier;
   private final DoubleSupplier translationXSupplier;
@@ -33,7 +39,7 @@ public class DefaultDriveCommand extends CommandBase {
    * @param translationYSupplier supplier for translation Y component, in meters per second
    * @param rotationSupplier supplier for rotation component, in radians per second
    */
-  public DefaultDriveCommand(
+  public FieldOrientedDriveCommand(
       DrivetrainSubsystem drivetrainSubsystem,
       Supplier<Rotation2d> robotAngleSupplier,
       DoubleSupplier translationXSupplier,
@@ -54,15 +60,9 @@ public class DefaultDriveCommand extends CommandBase {
 
     // Calculate field relative speeds
     var chassisSpeeds = drivetrainSubsystem.getChassisSpeeds();
-    var fieldSpeed = new Translation2d(
-    chassisSpeeds.vxMetersPerSecond,
-    chassisSpeeds.vyMetersPerSecond).rotateBy(robotAngle);
-    
-    var robotSpeeds = new ChassisSpeeds(
-      fieldSpeed.getX(),
-      fieldSpeed.getY(),
-      chassisSpeeds.omegaRadiansPerSecond
-    );
+    var fieldSpeeds = 
+        new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond).rotateBy(robotAngle);
+    var robotSpeeds = new ChassisSpeeds(fieldSpeeds.getX(), fieldSpeeds.getY(), chassisSpeeds.omegaRadiansPerSecond);
     
     // Reset the slew rate limiters, in case the robot is already moving
     translateXRateLimiter.reset(robotSpeeds.vxMetersPerSecond);
@@ -72,12 +72,11 @@ public class DefaultDriveCommand extends CommandBase {
 
   @Override
   public void execute() {
-    // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
     drivetrainSubsystem.drive(
         ChassisSpeeds.fromFieldRelativeSpeeds(
             translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
             translateYRateLimiter.calculate(translationYSupplier.getAsDouble()),
-            -rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
+            rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
             robotAngleSupplier.get()));
   }
 
