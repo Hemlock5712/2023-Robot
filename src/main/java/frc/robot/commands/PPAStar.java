@@ -10,8 +10,11 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
@@ -19,6 +22,7 @@ import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
+import frc.robot.util.FieldConstants;
 
 public class PPAStar extends CommandBase {
   private final DrivetrainSubsystem driveSystem;
@@ -47,6 +51,13 @@ public class PPAStar extends CommandBase {
   // Per-schedule setup code.
   @Override
   public void initialize() {
+    if(DriverStation.getAlliance() == Alliance.Blue){
+      startPoint = new Node(poseEstimatorSystem);
+    }
+    else{
+      Pose2d flippedY = new Pose2d(poseEstimatorSystem.getCurrentPose().getX(),FieldConstants.fieldWidth-poseEstimatorSystem.getCurrentPose().getY(),poseEstimatorSystem.getCurrentPose().getRotation());
+      startPoint = new Node(flippedY);
+    }
     startPoint = new Node(poseEstimatorSystem);
     PathPlannerTrajectory trajectory;
     List<Node> fullPath = new ArrayList<Node>();
@@ -86,7 +97,6 @@ public class PPAStar extends CommandBase {
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(), fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
             finalPosition.getHolRot());
       } else {
- 
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
         new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
         finalPosition.getHolRot());
@@ -96,7 +106,10 @@ public class PPAStar extends CommandBase {
     // Declare an array to hold PathPoint objects made from all other points
     // specified in constructor.
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
-   
+    //var alliance = Alliance.Blue;
+    //trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, alliance);
+    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
+    
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }

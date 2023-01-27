@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -15,6 +17,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -25,6 +28,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.util.FieldConstants;
 
 public class PoseEstimatorSubsystem extends SubsystemBase {
 
@@ -63,6 +67,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     try {
       layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
       var alliance = DriverStation.getAlliance();
+      //var alliance = Alliance.Blue;
       layout.setOrigin(alliance == Alliance.Blue ?
           OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);
     } catch(IOException e) {
@@ -102,7 +107,12 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         Pose3d camPose = targetPose.transformBy(camToTarget.inverse());
 
         var visionMeasurement = camPose.transformBy(CAMERA_TO_ROBOT);
-        poseEstimator.addVisionMeasurement(visionMeasurement.toPose2d(), resultTimestamp);
+        if(visionMeasurement!=null){
+          poseEstimator.addVisionMeasurement(visionMeasurement.toPose2d(), resultTimestamp);
+        } 
+        else{
+          DriverStation.reportError("Vision Measurement is NULL",false);
+        }
       }
     }
     // Update pose estimator with drivetrain sensors
@@ -111,6 +121,11 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       drivetrainSubsystem.getModulePositions());
 
     field2d.setRobotPose(getCurrentPose());
+    if (DriverStation.getAlliance() == Alliance.Red) {
+      field2d.setRobotPose(new Pose2d(FieldConstants.fieldLength-getCurrentPose().getX(),FieldConstants.fieldWidth-getCurrentPose().getY(), new Rotation2d(getCurrentPose().getRotation().getRadians()+Math.PI)));
+    } else {
+      field2d.setRobotPose(getCurrentPose());
+    }
   }
 
   private String getFomattedPose() {
@@ -144,6 +159,10 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
    */
   public void resetFieldPosition() {
     setCurrentPose(new Pose2d());
+  }
+
+  public void addTrajectory(PathPlannerTrajectory traj) {
+    field2d.getObject("Trajectory").setTrajectory(traj);
   }
 
 }

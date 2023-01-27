@@ -53,34 +53,25 @@ public final class Constants {
     //Pick the longest side of the robot for this and measure outside bumper to outside bumper
     public static final double ROBOT_LENGTH_WIDTH = 0.749;
 
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2;
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 9;
-    // public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(188.7);
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(7.734375+180);
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 1;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 2;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 9;
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(8.7+180);
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 4;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 10;
-    // public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(340.83);
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(162.5976+180);
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 3;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 4;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 10;
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(161.5+180);
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 5;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 6;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 11;
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(88.41+180);    
 
-
-
-
-    
-    // public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(270);
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(88.9453125+180);
-
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 7;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 8;
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 12;
-    // public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(225);
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(44.384765625+180);
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 7;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 8;
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 12;
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(45.4+180);
     
     public static final int PIGEON_ID = 13;
 
@@ -152,9 +143,9 @@ public final class Constants {
     private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
     private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(8, 8);
 
-    public static final ProfiledPIDController xController = new ProfiledPIDController(2, 0, 0, X_CONSTRAINTS);
-    public static final ProfiledPIDController yController = new ProfiledPIDController(2, 0, 0, Y_CONSTRAINTS);
-    public static final ProfiledPIDController omegaController = new ProfiledPIDController(1.5, 0, 0, OMEGA_CONSTRAINTS);
+    public static final ProfiledPIDController xController = new ProfiledPIDController(3, 0, 0, X_CONSTRAINTS);
+    public static final ProfiledPIDController yController = new ProfiledPIDController(3, 0, 0, Y_CONSTRAINTS);
+    public static final ProfiledPIDController omegaController = new ProfiledPIDController(2, 0, 0, OMEGA_CONSTRAINTS);
 
   }
 
@@ -170,21 +161,21 @@ public final class Constants {
 
   public static class AutoConstants {
     public static TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(PI, 2 / PI);
-    public static double THETA_kP = -2.2;
+    public static double THETA_kP = 2;
     public static double THETA_kI = 0.0;
     public static double THETA_kD = 0.0;
     
-    public static double X_kP = 1.2;
+    public static double X_kP = 5;
     public static double X_kI = 0.0;
     public static double X_kD = 0.0;
 
-    public static double Y_kP = 1.2;
+    public static double Y_kP = 5;
     public static double Y_kI = 0.0;
     public static double Y_kD = 0.0;
 
-    public static PIDController m_translationController = new PIDController(Constants.AutoConstants.X_kP, Constants.AutoConstants.X_kI, Constants.AutoConstants.X_kD);
-    public static PIDController m_strafeController = new PIDController(Constants.AutoConstants.Y_kP, Constants.AutoConstants.Y_kI, Constants.AutoConstants.Y_kD);
-    public static PIDController m_thetaController = new PIDController(Constants.AutoConstants.THETA_kP, Constants.AutoConstants.THETA_kI, Constants.AutoConstants.THETA_kD);
+    public static PIDController translationController = new PIDController(Constants.AutoConstants.X_kP, Constants.AutoConstants.X_kI, Constants.AutoConstants.X_kD);
+    public static PIDController strafeController = new PIDController(Constants.AutoConstants.Y_kP, Constants.AutoConstants.Y_kI, Constants.AutoConstants.Y_kD);
+    public static PIDController thetaController = new PIDController(Constants.AutoConstants.THETA_kP, Constants.AutoConstants.THETA_kI, Constants.AutoConstants.THETA_kD);
 
   }
     
