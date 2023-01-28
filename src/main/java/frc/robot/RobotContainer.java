@@ -29,13 +29,16 @@ import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.PPAStar;
+import frc.robot.commands.RunIntakeCommand;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
+import frc.robot.subsystems.TestSubsystem;
 import frc.robot.util.FieldConstants;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -53,19 +56,21 @@ public class RobotContainer {
   private final PhotonCamera photonCamera = new PhotonCamera("photonvision");
 
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
-  // private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
+  // private final PoseEstimatorSubsystem poseEstimator = new
+  // PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
   private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
 
+  private final TestSubsystem testSubsystem = new TestSubsystem();
 
   private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
       poseEstimator::getCurrentPose);
 
   VisGraph AStarMap = new VisGraph();
   Translation2d spot4 = FieldConstants.allianceFlip(FieldConstants.StagingLocations.translations[3]);
-  //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
+  // final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
   final Node finalNode = new Node(2.0146, 4.8426, Rotation2d.fromDegrees(180));
-  //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
+  // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
   SwerveAutoBuilder autoBuilder;
 
@@ -80,11 +85,11 @@ public class RobotContainer {
       () -> -controller.getRightX());
 
   private final FieldOrientedDriveCommand fieldOrientedDriveCommand = new FieldOrientedDriveCommand(
-    drivetrainSubsystem,
-    () -> poseEstimator.getCurrentPose().getRotation(),
-    () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-    () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-    () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2);
+      drivetrainSubsystem,
+      () -> poseEstimator.getCurrentPose().getRotation(),
+      () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
+      () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
+      () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -98,41 +103,38 @@ public class RobotContainer {
     configureDashboard();
 
     AStarMap.addNode(finalNode);
-    //SetUp AStar Map
-    AStarMap.addNode(new Node(2.92-0.42,4.75));
-    AStarMap.addNode(new Node(2.92-0.42,1.51-0.42));
-    AStarMap.addNode(new Node(6,4.75));
-    AStarMap.addNode(new Node(6,1.51-0.42));
-    
+    // SetUp AStar Map
+    AStarMap.addNode(new Node(2.92 - 0.42, 4.75));
+    AStarMap.addNode(new Node(2.92 - 0.42, 1.51 - 0.42));
+    AStarMap.addNode(new Node(6, 4.75));
+    AStarMap.addNode(new Node(6, 1.51 - 0.42));
+
     // for(int i = 0; i<obstacles.size(); i++){
-    //   System.out.println(obstacles.get(i));
-    //   Constants.FieldConstants.obstacles.get(i).addNodes(AStarMap);
+    // System.out.println(obstacles.get(i));
+    // Constants.FieldConstants.obstacles.get(i).addNodes(AStarMap);
     // }
 
-    for(int i = 0; i<AStarMap.getNodeSize();i++){
+    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
       Node startNode = AStarMap.getNode(i);
-      for(int j = i+1; j<AStarMap.getNodeSize(); j++){
+      for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
         AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
       }
     }
 
-    
-    //Obstacle o = new Obstacle(new double[]{ 0, 0, 4, 4}, new double[] {0, 4, 4, 0});
-    //Obstacle offset = o.offset(0.5f);
-    //offset.addNodes(AStarMap);
-
-    
+    // Obstacle o = new Obstacle(new double[]{ 0, 0, 4, 4}, new double[] {0, 4, 4,
+    // 0});
+    // Obstacle offset = o.offset(0.5f);
+    // offset.addNodes(AStarMap);
 
     autoBuilder = new SwerveAutoBuilder(
-      poseEstimator::getCurrentPose,
-      poseEstimator::setCurrentPose,
-      Constants.DrivetrainConstants.KINEMATICS,
-      new PIDConstants(.3, 0, 0),
-      new PIDConstants(3, 0, 0),
-      drivetrainSubsystem::setModuleStates,
-      eventMap,
-      drivetrainSubsystem
-    );
+        poseEstimator::getCurrentPose,
+        poseEstimator::setCurrentPose,
+        Constants.DrivetrainConstants.KINEMATICS,
+        new PIDConstants(.3, 0, 0),
+        new PIDConstants(3, 0, 0),
+        drivetrainSubsystem::setModuleStates,
+        eventMap,
+        drivetrainSubsystem);
   }
 
   private void configureDashboard() {
@@ -157,10 +159,11 @@ public class RobotContainer {
 
     controller.a().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition));
 
-    controller.x().
-        whileTrue(new PPAStar(
-          drivetrainSubsystem, poseEstimator, 
-            new PathConstraints(2, 1.5), finalNode, obstacles, AStarMap));
+    controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
+
+    controller.x().whileTrue(new PPAStar(
+        drivetrainSubsystem, poseEstimator,
+        new PathConstraints(2, 1.5), finalNode, obstacles, AStarMap));
   }
 
   /**
