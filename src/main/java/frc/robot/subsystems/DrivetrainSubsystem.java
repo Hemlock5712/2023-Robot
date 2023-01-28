@@ -238,7 +238,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // Keep the wheels at their current angle when stopped, don't snap back to straight
         IntStream.range(0, currentStates.length).forEach(i -> desiredStates[i].angle = currentStates[i].angle);
       }
-      System.out.println(desiredChassisSpeeds.omegaRadiansPerSecond);
+      //Positive should be counter clockwise.
+      //System.out.println(desiredChassisSpeeds.omegaRadiansPerSecond);
 
 
       setModuleStates(desiredStates);

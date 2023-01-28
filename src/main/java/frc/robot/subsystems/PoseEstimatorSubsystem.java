@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.VisionConstants.CAMERA_TO_ROBOT;
+import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA;
 
 import java.io.IOException;
 import java.util.ConcurrentModificationException;
@@ -76,7 +76,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       layout = null;
     }
     ShuffleboardTab tab = Shuffleboard.getTab("Vision");
-    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.AVERAGE_BEST_TARGETS, this.photonCamera, CAMERA_TO_ROBOT);
+    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, this.photonCamera, ROBOT_TO_CAMERA);
     poseEstimator =  new SwerveDrivePoseEstimator(
         DrivetrainConstants.KINEMATICS,
         drivetrainSubsystem.getGyroscopeRotation(),
