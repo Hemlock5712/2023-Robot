@@ -48,8 +48,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
    * Standard deviations of model states. Increase these numbers to trust your model's state estimates less. This
    * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then meters.
    */
-  // private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(5));
-  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(5));
+  // private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.025, 0.025, Units.degreesToRadians(1));
 
   private Optional<EstimatedRobotPose> photonEstimatedRobotPose = Optional.empty();
   /**
@@ -57,6 +57,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
    * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and radians.
    */
   private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
+  // private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
   //private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 
   private final SwerveDrivePoseEstimator poseEstimator;
@@ -78,7 +79,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       layout = null;
     }
     ShuffleboardTab tab = Shuffleboard.getTab("Vision");
-    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, this.photonCamera, ROBOT_TO_CAMERA);
+    
+    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.CLOSEST_TO_LAST_POSE, this.photonCamera, ROBOT_TO_CAMERA);
+    
     poseEstimator =  new SwerveDrivePoseEstimator(
         DrivetrainConstants.KINEMATICS,
         drivetrainSubsystem.getGyroscopeRotation(),
@@ -86,19 +89,24 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         new Pose2d(),
         stateStdDevs,
         visionMeasurementStdDevs);
-    
+
+    photonPoseEstimator.setLastPose(poseEstimator.getEstimatedPosition());
     tab.addString("Pose", this::getFomattedPose).withPosition(0, 0).withSize(2, 0);
     tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
   }
 
   @Override
   public void periodic() {
+    photonPoseEstimator.setLastPose(poseEstimator.getEstimatedPosition());
     photonEstimatedRobotPose = photonPoseEstimator.update();
     if(photonEstimatedRobotPose.isPresent()){
       EstimatedRobotPose pose = photonEstimatedRobotPose.get();
-      try{
-        poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
-      }catch(ConcurrentModificationException e){}
+      if(pose.estimatedPose.getX()<5.25){
+        try{
+          poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+        }catch(ConcurrentModificationException e){}
+      }
+      
     }
     // Update pose estimator with drivetrain sensors
     poseEstimator.update(
