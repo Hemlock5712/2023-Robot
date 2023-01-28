@@ -64,7 +64,7 @@ public class RobotContainer {
   Translation2d spot4 = FieldConstants.allianceFlip(FieldConstants.StagingLocations.translations[3]);
   //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
-  final Node finalNode = new Node(2.0146, 4.8426, Rotation2d.fromDegrees(180));
+  final Node finalNode = new Node(new Translation2d(2.0146, 4.8426), Rotation2d.fromDegrees(180));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
   SwerveAutoBuilder autoBuilder;
@@ -97,12 +97,11 @@ public class RobotContainer {
     configureButtonBindings();
     configureDashboard();
 
-    AStarMap.addNode(finalNode);
-    //SetUp AStar Map
-    AStarMap.addNode(new Node(2.92-0.42,4.75));
-    AStarMap.addNode(new Node(2.92-0.42,1.51-0.42));
-    AStarMap.addNode(new Node(6,4.75));
-    AStarMap.addNode(new Node(6,1.51-0.42));
+    //Charging Pad
+    AStarMap.addNode(new Node(2.48-0.1,4.42+0.1));
+    AStarMap.addNode(new Node(5.36+0.1,4.42+0.1));
+    AStarMap.addNode(new Node(5.36+0.1,1.07-0.1));
+    AStarMap.addNode(new Node(2.48-0.1,1.07-0.1));
     
     // for(int i = 0; i<obstacles.size(); i++){
     //   System.out.println(obstacles.get(i));

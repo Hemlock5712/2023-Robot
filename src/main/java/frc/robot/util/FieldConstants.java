@@ -214,30 +214,17 @@ public final class FieldConstants {
   }
 
   public static List<Obstacle> obstacles = List.of(
-    // Blue Charging Station
+    // Charging Station
     new Obstacle(new double[] {
-            FieldConstants.Community.chargingStationCorners[0].getX(),
-            FieldConstants.Community.chargingStationCorners[1].getX(),
-            FieldConstants.Community.chargingStationCorners[3].getX(),
-            FieldConstants.Community.chargingStationCorners[2].getX(),
+      2.48,
+      5.36,
+      5.36,
+      2.48
     }, new double[] {
-            FieldConstants.Community.chargingStationCorners[0].getY(),
-            FieldConstants.Community.chargingStationCorners[1].getY(),
-            FieldConstants.Community.chargingStationCorners[3].getY(),
-            FieldConstants.Community.chargingStationCorners[2].getY()
-    })
-    ,
-    // Red Charging Station
-    new Obstacle(new double[] {
-            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[2]).getX(),
-            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[3]).getX(),
-            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getX(),
-            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getX(),
-    }, new double[] {
-            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[2]).getY(),
-            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[3]).getY(),
-            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[1]).getY(),
-            FieldConstants.allianceFlip(FieldConstants.Community.chargingStationCorners[0]).getY()
+      4.42,
+      4.42,
+      1.07,
+      1.07
     })
     );
 

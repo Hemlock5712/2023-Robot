@@ -51,27 +51,33 @@ public class PPAStar extends CommandBase {
   // Per-schedule setup code.
   @Override
   public void initialize() {
+    Node allianceFinal = finalPosition;
     if(DriverStation.getAlliance() == Alliance.Blue){
       startPoint = new Node(poseEstimatorSystem);
     }
     else{
       Pose2d flippedY = new Pose2d(poseEstimatorSystem.getCurrentPose().getX(),FieldConstants.fieldWidth-poseEstimatorSystem.getCurrentPose().getY(),poseEstimatorSystem.getCurrentPose().getRotation());
+      allianceFinal = new Node(finalPosition.getX(),FieldConstants.fieldWidth-finalPosition.getY(), finalPosition.getHolRot());
       startPoint = new Node(flippedY);
     }
-    startPoint = new Node(poseEstimatorSystem);
     PathPlannerTrajectory trajectory;
     List<Node> fullPath = new ArrayList<Node>();
 
     AStarMap.addNode(startPoint);
-    if (AStarMap.addEdge(new Edge(startPoint, finalPosition), obstacles)) {
+    AStarMap.addNode(allianceFinal);
+    if (AStarMap.addEdge(new Edge(startPoint, allianceFinal), obstacles)) {
       fullPath.add(0, startPoint);
-      fullPath.add(1, finalPosition);
+      fullPath.add(1, allianceFinal);
     } else {
       for (int i = 0; i < AStarMap.getNodeSize(); i++) {
         Node endNode = AStarMap.getNode(i);
         AStarMap.addEdge(new Edge(startPoint, endNode), obstacles);
       }
-      fullPath = AStarMap.findPath(startPoint, finalPosition);
+      for (int i = 0; i < AStarMap.getNodeSize(); i++) {
+        Node endNode = AStarMap.getNode(i);
+        AStarMap.addEdge(new Edge(allianceFinal, endNode), obstacles);
+      }
+      fullPath = AStarMap.findPath(startPoint, allianceFinal);
     }
     
     if(fullPath == null){
@@ -93,13 +99,13 @@ public class PPAStar extends CommandBase {
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
             poseEstimatorSystem.getCurrentPose().getRotation(), startingSpeed);
       } else if (i + 1 == fullPath.size()) {
-        fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
+        fullPathPoints[i] = new PathPoint(new Translation2d(allianceFinal.getX(), allianceFinal.getY()),
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(), fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
-            finalPosition.getHolRot());
+            allianceFinal.getHolRot());
       } else {
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
         new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
-        finalPosition.getHolRot());
+        allianceFinal.getHolRot());
       }
     }
 
@@ -109,7 +115,7 @@ public class PPAStar extends CommandBase {
     //var alliance = Alliance.Blue;
     //trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, alliance);
     trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
-    
+    poseEstimatorSystem.addTrajectory(trajectory);
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }
