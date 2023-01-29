@@ -233,7 +233,7 @@ public final class FieldConstants {
     }, new double[] {
       6.23,
       4.80,
-      1.26
+      5.52
     })
     );
 

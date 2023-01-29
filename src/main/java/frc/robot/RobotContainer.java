@@ -93,7 +93,7 @@ public class RobotContainer {
     configureDashboard();
 
     //These are points robot can drive to.
-
+    //For Visual Aid https://www.desmos.com/calculator/rohdacji0b
     //Charging Pad
     AStarMap.addNode(new Node(2.48-0.1,4.42+0.1));
     AStarMap.addNode(new Node(5.36+0.1,4.42+0.1));
