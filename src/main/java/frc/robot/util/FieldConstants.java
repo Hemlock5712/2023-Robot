@@ -225,6 +225,15 @@ public final class FieldConstants {
       4.42,
       1.07,
       1.07
+    }),
+    new Obstacle(new double[] {
+      3.84,
+      3.84,
+      1.26
+    }, new double[] {
+      6.23,
+      4.80,
+      1.26
     })
     );
 
