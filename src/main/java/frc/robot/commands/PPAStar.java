@@ -48,7 +48,7 @@ public class PPAStar extends CommandBase {
   }
 
   // ----------------------------------------------------------------------------
-  // Per-schedule setup code.
+  // Pre-schedule setup code.
   @Override
   public void initialize() {
     Node allianceFinal = finalPosition;
@@ -72,9 +72,6 @@ public class PPAStar extends CommandBase {
       for (int i = 0; i < AStarMap.getNodeSize(); i++) {
         Node endNode = AStarMap.getNode(i);
         AStarMap.addEdge(new Edge(startPoint, endNode), obstacles);
-      }
-      for (int i = 0; i < AStarMap.getNodeSize(); i++) {
-        Node endNode = AStarMap.getNode(i);
         AStarMap.addEdge(new Edge(allianceFinal, endNode), obstacles);
       }
       fullPath = AStarMap.findPath(startPoint, allianceFinal);
@@ -84,8 +81,11 @@ public class PPAStar extends CommandBase {
       return;
     }
     
+    //Gets speed of robot
     double startingSpeed = Math.hypot(driveSystem.getChassisSpeeds().vxMetersPerSecond, driveSystem.getChassisSpeeds().vyMetersPerSecond);
     Rotation2d heading = new Rotation2d(fullPath.get(1).getX()-startPoint.getX(),fullPath.get(1).getY()-startPoint.getY());
+
+    //If the robot is moving over a specified speed take movement into account.
     if(startingSpeed>0.05){
       heading = new Rotation2d(driveSystem.getChassisSpeeds().vxMetersPerSecond, driveSystem.getChassisSpeeds().vyMetersPerSecond);
     }
@@ -93,7 +93,8 @@ public class PPAStar extends CommandBase {
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
     PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
- 
+    
+    //Find path between points
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
@@ -103,6 +104,7 @@ public class PPAStar extends CommandBase {
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(), fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
             allianceFinal.getHolRot());
       } else {
+        //Change allianceFinal.getHolRot() to null if you want it to turn smoothly over path. (Needs more testing)
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
         new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
         allianceFinal.getHolRot());
@@ -112,9 +114,9 @@ public class PPAStar extends CommandBase {
     // Declare an array to hold PathPoint objects made from all other points
     // specified in constructor.
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
-    //var alliance = Alliance.Blue;
-    //trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, alliance);
+    //Change trajectory based on alliance color
     trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
+    //Display Trajectory
     poseEstimatorSystem.addTrajectory(trajectory);
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();

@@ -104,25 +104,13 @@ public class RobotContainer {
     AStarMap.addNode(new Node(2.48-0.1,1.07-0.1));
     //Divider
     AStarMap.addNode(new Node(3.84+0.1,4.80-0.1));
-    
-    // for(int i = 0; i<obstacles.size(); i++){
-    //   System.out.println(obstacles.get(i));
-    //   Constants.FieldConstants.obstacles.get(i).addNodes(AStarMap);
-    // }
 
     for(int i = 0; i<AStarMap.getNodeSize();i++){
       Node startNode = AStarMap.getNode(i);
       for(int j = i+1; j<AStarMap.getNodeSize(); j++){
         AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
       }
-    }
-
-    
-    //Obstacle o = new Obstacle(new double[]{ 0, 0, 4, 4}, new double[] {0, 4, 4, 0});
-    //Obstacle offset = o.offset(0.5f);
-    //offset.addNodes(AStarMap);
-
-    
+    }  
 
     autoBuilder = new SwerveAutoBuilder(
       poseEstimator::getCurrentPose,
