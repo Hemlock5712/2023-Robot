@@ -101,7 +101,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     photonEstimatedRobotPose = photonPoseEstimator.update();
     if(photonEstimatedRobotPose.isPresent()){
       EstimatedRobotPose pose = photonEstimatedRobotPose.get();
-      if(pose.estimatedPose.getX()<5.25){
+      //Max distance you want a tag to be read at. Found issues after 15 feet away from tag while moving.
+      if(Math.hypot(pose.estimatedPose.getX(),pose.estimatedPose.getY())<5.25){
+        //Error with WPI code https://github.com/wpilibsuite/allwpilib/issues/4952
         try{
           poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
         }catch(ConcurrentModificationException e){}
@@ -114,6 +116,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       drivetrainSubsystem.getModulePositions());
 
     field2d.setRobotPose(getCurrentPose());
+    //Conversion so robot appears where it actually is on field instead of always on blue.
     if (DriverStation.getAlliance() == Alliance.Red) {
       field2d.setRobotPose(new Pose2d(FieldConstants.fieldLength-getCurrentPose().getX(),FieldConstants.fieldWidth-getCurrentPose().getY(), new Rotation2d(getCurrentPose().getRotation().getRadians()+Math.PI)));
     } else {

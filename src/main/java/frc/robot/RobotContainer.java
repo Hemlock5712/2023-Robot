@@ -12,8 +12,6 @@ import java.util.List;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -61,13 +59,10 @@ public class RobotContainer {
       poseEstimator::getCurrentPose);
 
   VisGraph AStarMap = new VisGraph();
-  Translation2d spot4 = FieldConstants.allianceFlip(FieldConstants.StagingLocations.translations[3]);
-  //final Node finalNode = new Node(spot4, Rotation2d.fromDegrees(180));
 
-  final Node finalNode = new Node(new Translation2d(2.0146, 4.8426), Rotation2d.fromDegrees(180));
+  final Node finalNode = new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180));
   //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
-  SwerveAutoBuilder autoBuilder;
 
   HashMap<String, Command> eventMap = new HashMap<>();
 
@@ -97,6 +92,8 @@ public class RobotContainer {
     configureButtonBindings();
     configureDashboard();
 
+    //These are points robot can drive to.
+
     //Charging Pad
     AStarMap.addNode(new Node(2.48-0.1,4.42+0.1));
     AStarMap.addNode(new Node(5.36+0.1,4.42+0.1));
@@ -111,17 +108,6 @@ public class RobotContainer {
         AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
       }
     }  
-
-    autoBuilder = new SwerveAutoBuilder(
-      poseEstimator::getCurrentPose,
-      poseEstimator::setCurrentPose,
-      Constants.DrivetrainConstants.KINEMATICS,
-      new PIDConstants(.3, 0, 0),
-      new PIDConstants(3, 0, 0),
-      drivetrainSubsystem::setModuleStates,
-      eventMap,
-      drivetrainSubsystem
-    );
   }
 
   private void configureDashboard() {
