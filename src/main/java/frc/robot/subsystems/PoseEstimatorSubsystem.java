@@ -87,7 +87,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     }
     ShuffleboardTab tab = Shuffleboard.getTab("Vision");
 
-    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.CLOSEST_TO_LAST_POSE, this.photonCamera,
+    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, this.photonCamera,
         ROBOT_TO_CAMERA);
 
     poseEstimator = new SwerveDrivePoseEstimator(
@@ -98,14 +98,12 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         stateStdDevs,
         visionMeasurementStdDevs);
 
-    photonPoseEstimator.setLastPose(poseEstimator.getEstimatedPosition());
     tab.addString("Pose", this::getFomattedPose).withPosition(0, 0).withSize(2, 0);
     tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
   }
 
   @Override
   public void periodic() {
-    photonPoseEstimator.setLastPose(poseEstimator.getEstimatedPosition());
     photonEstimatedRobotPose = photonPoseEstimator.update();
     if (photonEstimatedRobotPose.isPresent()) {
       EstimatedRobotPose pose = photonEstimatedRobotPose.get();

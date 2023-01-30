@@ -61,7 +61,6 @@ public class RobotContainer {
 
   VisGraph AStarMap = new VisGraph();
 
-  final Node finalNode = new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180));
   // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
 
@@ -131,11 +130,16 @@ public class RobotContainer {
 
     controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
-    controller.a().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition));
-
     controller.x().whileTrue(new PPAStar(
         drivetrainSubsystem, poseEstimator,
-        new PathConstraints(2, 1.5), finalNode, obstacles, AStarMap));
+        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
+        AStarMap));
+
+    controller.y().whileTrue(new PPAStar(
+        drivetrainSubsystem, poseEstimator,
+        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
+        AStarMap));
+
   }
 
   /**

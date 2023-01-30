@@ -58,12 +58,12 @@ public class PPAStar extends CommandBase {
       Pose2d flippedY = new Pose2d(poseEstimatorSystem.getCurrentPose().getX(),
           FieldConstants.fieldWidth - poseEstimatorSystem.getCurrentPose().getY(),
           poseEstimatorSystem.getCurrentPose().getRotation());
-      allianceFinal = new Node(finalPosition.getX(), FieldConstants.fieldWidth - finalPosition.getY(),
-          finalPosition.getHolRot());
       startPoint = new Node(flippedY);
     }
     PathPlannerTrajectory trajectory;
     List<Node> fullPath = new ArrayList<Node>();
+    System.out.println("Starting Spot:" + startPoint.toString());
+    System.out.println("Final Spot:" + allianceFinal.toString());
 
     AStarMap.addNode(startPoint);
     AStarMap.addNode(allianceFinal);
@@ -103,7 +103,7 @@ public class PPAStar extends CommandBase {
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
-            poseEstimatorSystem.getCurrentPose().getRotation(), startingSpeed);
+            startPoint.getHolRot(), startingSpeed);
       } else if (i + 1 == fullPath.size()) {
         fullPathPoints[i] = new PathPoint(new Translation2d(allianceFinal.getX(), allianceFinal.getY()),
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(),
@@ -121,6 +121,7 @@ public class PPAStar extends CommandBase {
 
     // Declare an array to hold PathPoint objects made from all other points
     // specified in constructor.
+    System.out.println(fullPathPoints);
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
     // Change trajectory based on alliance color
     trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());

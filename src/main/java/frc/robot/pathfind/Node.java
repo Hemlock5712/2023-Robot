@@ -67,4 +67,9 @@ public class Node {
   public void setHolRot(double degree) {
     this.holonomicRotation = Rotation2d.fromDegrees(degree);
   }
+
+  @Override
+  public String toString() {
+    return "X Position: " + getX() + "\t" + "Y Position: " + getY();
+  }
 }
