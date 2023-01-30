@@ -32,7 +32,7 @@ import frc.robot.swerve.ModuleConfiguration;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  
+
   public static final class DrivetrainConstants {
 
     public static final boolean ADD_TO_DASHBOARD = true;
@@ -50,48 +50,51 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.749;
 
-    //Pick the longest side of the robot for this and measure outside bumper to outside bumper
+    // Pick the longest side of the robot for this and measure outside bumper to
+    // outside bumper
     public static final double ROBOT_LENGTH_WIDTH = 0.749;
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 1;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 2;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 9;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(8.7+180);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(8.7 + 180);
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 3;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 4;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 10;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(161.5+180);
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(161.5 + 180);
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 6;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 11;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(88.41+180);    
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(88.41 + 180);
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 7;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 8;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 12;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(45.4+180);
-    
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(45.4 + 180);
+
     public static final int PIGEON_ID = 13;
 
     /**
      * The maximum velocity of the robot in meters per second.
      * <p>
-     * This is a measure of how fast the robot should be able to drive in a straight line.
+     * This is a measure of how fast the robot should be able to drive in a straight
+     * line.
      */
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
         ModuleConfiguration.MK4I_L2.getDriveReduction() *
         ModuleConfiguration.MK4I_L2.getWheelDiameter() * PI;
 
-     /**
+    /**
      * The maximum angular velocity of the robot in radians per second.
      * <p>
      * This is a measure of how fast the robot can rotate in place.
      */
-    // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
-    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = 
-        (DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND /
+    // Here we calculate the theoretical maximum angular velocity. You can also
+    // replace this with a measured amount.
+    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = (DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND
+        /
         Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
@@ -102,8 +105,7 @@ public final class Constants {
         // Back left
         new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
         // Back right
-        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
-    );
+        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
     /** Voltage needed to overcome the motor’s static friction. kS */
     public static final double DRIVE_kS = 0.6716;
@@ -132,7 +134,7 @@ public final class Constants {
 
     public static final double HEADING_MAX_VELOCITY = PI * 2;
     public static final double HEADING_MAX_ACCELERATION = PI * 2;
-    
+
     public static final double HEADING_kP = 2.0;
     public static final double HEADING_kI = 0.0;
     public static final double HEADING_kD = 0.0;
@@ -141,7 +143,7 @@ public final class Constants {
 
     private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
     private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3, 2);
-    private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS =   new TrapezoidProfile.Constraints(8, 8);
+    private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(8, 8);
 
     public static final ProfiledPIDController xController = new ProfiledPIDController(3, 0, 0, X_CONSTRAINTS);
     public static final ProfiledPIDController yController = new ProfiledPIDController(3, 0, 0, Y_CONSTRAINTS);
@@ -152,10 +154,11 @@ public final class Constants {
   public static class VisionConstants {
 
     /**
-     * Physical location of the camera on the robot, relative to the center of the robot.
+     * Physical location of the camera on the robot, relative to the center of the
+     * robot.
      */
-    public static final Transform3d CAMERA_TO_ROBOT =
-        new Transform3d(new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(13.5), 0.0), new Rotation3d());
+    public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(
+        new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(13.5), 0.0), new Rotation3d());
     public static final Transform3d ROBOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
   }
 
@@ -164,7 +167,7 @@ public final class Constants {
     public static double THETA_kP = 2;
     public static double THETA_kI = 0.0;
     public static double THETA_kD = 0.0;
-    
+
     public static double X_kP = 5;
     public static double X_kI = 0.0;
     public static double X_kD = 0.0;
@@ -173,11 +176,13 @@ public final class Constants {
     public static double Y_kI = 0.0;
     public static double Y_kD = 0.0;
 
-    public static PIDController translationController = new PIDController(Constants.AutoConstants.X_kP, Constants.AutoConstants.X_kI, Constants.AutoConstants.X_kD);
-    public static PIDController strafeController = new PIDController(Constants.AutoConstants.Y_kP, Constants.AutoConstants.Y_kI, Constants.AutoConstants.Y_kD);
-    public static PIDController thetaController = new PIDController(Constants.AutoConstants.THETA_kP, Constants.AutoConstants.THETA_kI, Constants.AutoConstants.THETA_kD);
+    public static PIDController translationController = new PIDController(Constants.AutoConstants.X_kP,
+        Constants.AutoConstants.X_kI, Constants.AutoConstants.X_kD);
+    public static PIDController strafeController = new PIDController(Constants.AutoConstants.Y_kP,
+        Constants.AutoConstants.Y_kI, Constants.AutoConstants.Y_kD);
+    public static PIDController thetaController = new PIDController(Constants.AutoConstants.THETA_kP,
+        Constants.AutoConstants.THETA_kI, Constants.AutoConstants.THETA_kD);
 
   }
-    
-  
+
 }

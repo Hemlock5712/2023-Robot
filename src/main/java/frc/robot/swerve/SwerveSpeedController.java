@@ -58,9 +58,10 @@ public class SwerveSpeedController {
 
     // Reduce CAN status frame rates
     CtreUtils.checkCtreError(
-        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, STATUS_FRAME_GENERAL_PERIOD_MS, CAN_TIMEOUT_MS),
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, STATUS_FRAME_GENERAL_PERIOD_MS,
+            CAN_TIMEOUT_MS),
         "Failed to configure Falcon status frame period");
-    
+
     addDashboardEntries(container);
   }
 
@@ -76,15 +77,16 @@ public class SwerveSpeedController {
     this.referenceVelocity = velocity;
     var arbFeedForward = feedforward.calculate(velocity) / nominalVoltage;
     motor.set(
-          TalonFXControlMode.Velocity,
-          velocity / sensorVelocityCoefficient,
-          DemandType.ArbitraryFeedForward,
-          arbFeedForward);
+        TalonFXControlMode.Velocity,
+        velocity / sensorVelocityCoefficient,
+        DemandType.ArbitraryFeedForward,
+        arbFeedForward);
     motor.feed();
   }
 
   /**
    * Returns velocity in meters per second
+   * 
    * @return drive velocity in meters per second
    */
   public double getStateVelocity() {
@@ -93,6 +95,7 @@ public class SwerveSpeedController {
 
   /**
    * Returns position in meters
+   * 
    * @return position in meters
    */
   public double getStatePosition() {
@@ -101,6 +104,7 @@ public class SwerveSpeedController {
 
   /**
    * Sets the neutral mode for the drive motor
+   * 
    * @param neutralMode neutral mode
    */
   public void setNeutralMode(NeutralMode neutralMode) {

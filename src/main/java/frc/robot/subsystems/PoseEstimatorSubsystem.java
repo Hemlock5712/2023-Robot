@@ -37,28 +37,35 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   private final PhotonCamera photonCamera;
   private final DrivetrainSubsystem drivetrainSubsystem;
   private final PhotonPoseEstimator photonPoseEstimator;
-  
+
   // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
   // you trust your various sensors. Smaller numbers will cause the filter to
-  // "trust" the estimate from that particular component more than the others. 
+  // "trust" the estimate from that particular component more than the others.
   // This in turn means the particualr component will have a stronger influence
   // on the final pose estimate.
 
   /**
-   * Standard deviations of model states. Increase these numbers to trust your model's state estimates less. This
-   * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then meters.
+   * Standard deviations of model states. Increase these numbers to trust your
+   * model's state estimates less. This
+   * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then
+   * meters.
    */
   private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.2, 0.2, Units.degreesToRadians(5));
-  // private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.025, 0.025, Units.degreesToRadians(1));
+  // private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.025, 0.025,
+  // Units.degreesToRadians(1));
 
   private Optional<EstimatedRobotPose> photonEstimatedRobotPose = Optional.empty();
   /**
-   * Standard deviations of the vision measurements. Increase these numbers to trust global measurements from vision
-   * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and radians.
+   * Standard deviations of the vision measurements. Increase these numbers to
+   * trust global measurements from vision
+   * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and
+   * radians.
    */
   private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
-  // private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
-  //private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
+  // private static final Vector<N3> visionMeasurementStdDevs =
+  // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
+  // private static final Vector<N3> visionMeasurementStdDevs =
+  // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 
   private final SwerveDrivePoseEstimator poseEstimator;
 
@@ -71,18 +78,19 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     try {
       layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
       var alliance = DriverStation.getAlliance();
-      //var alliance = Alliance.Blue;
-      layout.setOrigin(alliance == Alliance.Blue ?
-          OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);
-    } catch(IOException e) {
+      // var alliance = Alliance.Blue;
+      layout.setOrigin(alliance == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
+          : OriginPosition.kRedAllianceWallRightSide);
+    } catch (IOException e) {
       DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
       layout = null;
     }
     ShuffleboardTab tab = Shuffleboard.getTab("Vision");
-    
-    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.CLOSEST_TO_LAST_POSE, this.photonCamera, ROBOT_TO_CAMERA);
-    
-    poseEstimator =  new SwerveDrivePoseEstimator(
+
+    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.CLOSEST_TO_LAST_POSE, this.photonCamera,
+        ROBOT_TO_CAMERA);
+
+    poseEstimator = new SwerveDrivePoseEstimator(
         DrivetrainConstants.KINEMATICS,
         drivetrainSubsystem.getGyroscopeRotation(),
         drivetrainSubsystem.getModulePositions(),
@@ -99,26 +107,31 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   public void periodic() {
     photonPoseEstimator.setLastPose(poseEstimator.getEstimatedPosition());
     photonEstimatedRobotPose = photonPoseEstimator.update();
-    if(photonEstimatedRobotPose.isPresent()){
+    if (photonEstimatedRobotPose.isPresent()) {
       EstimatedRobotPose pose = photonEstimatedRobotPose.get();
-      //Max distance you want a tag to be read at. Found issues after 15 feet away from tag while moving.
-      if(Math.hypot(pose.estimatedPose.getX(),pose.estimatedPose.getY())<5.25){
-        //Error with WPI code https://github.com/wpilibsuite/allwpilib/issues/4952
-        try{
+      // Max distance you want a tag to be read at. Found issues after 15 feet away
+      // from tag while moving.
+      if (Math.hypot(pose.estimatedPose.getX(), pose.estimatedPose.getY()) < 5.25) {
+        // Error with WPI code https://github.com/wpilibsuite/allwpilib/issues/4952
+        try {
           poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
-        }catch(ConcurrentModificationException e){}
+        } catch (ConcurrentModificationException e) {
+        }
       }
-      
+
     }
     // Update pose estimator with drivetrain sensors
     poseEstimator.update(
-      drivetrainSubsystem.getGyroscopeRotation(),
-      drivetrainSubsystem.getModulePositions());
+        drivetrainSubsystem.getGyroscopeRotation(),
+        drivetrainSubsystem.getModulePositions());
 
     field2d.setRobotPose(getCurrentPose());
-    //Conversion so robot appears where it actually is on field instead of always on blue.
+    // Conversion so robot appears where it actually is on field instead of always
+    // on blue.
     if (DriverStation.getAlliance() == Alliance.Red) {
-      field2d.setRobotPose(new Pose2d(FieldConstants.fieldLength-getCurrentPose().getX(),FieldConstants.fieldWidth-getCurrentPose().getY(), new Rotation2d(getCurrentPose().getRotation().getRadians()+Math.PI)));
+      field2d.setRobotPose(new Pose2d(FieldConstants.fieldLength - getCurrentPose().getX(),
+          FieldConstants.fieldWidth - getCurrentPose().getY(),
+          new Rotation2d(getCurrentPose().getRotation().getRadians() + Math.PI)));
     } else {
       field2d.setRobotPose(getCurrentPose());
     }
@@ -126,8 +139,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   private String getFomattedPose() {
     var pose = getCurrentPose();
-    return String.format("(%.2f, %.2f) %.2f degrees", 
-        pose.getX(), 
+    return String.format("(%.2f, %.2f) %.2f degrees",
+        pose.getX(),
         pose.getY(),
         pose.getRotation().getDegrees());
   }
@@ -140,17 +153,19 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
    * Resets the current pose to the specified pose. This should ONLY be called
    * when the robot's position on the field is known, like at the beginning of
    * a match.
+   * 
    * @param newPose new pose
    */
   public void setCurrentPose(Pose2d newPose) {
     poseEstimator.resetPosition(
-      drivetrainSubsystem.getGyroscopeRotation(),
-      drivetrainSubsystem.getModulePositions(),
-      newPose);
+        drivetrainSubsystem.getGyroscopeRotation(),
+        drivetrainSubsystem.getModulePositions(),
+        newPose);
   }
 
   /**
-   * Resets the position on the field to 0,0 0-degrees, with forward being downfield. This resets
+   * Resets the position on the field to 0,0 0-degrees, with forward being
+   * downfield. This resets
    * what "forward" is for field oriented driving.
    */
   public void resetFieldPosition() {

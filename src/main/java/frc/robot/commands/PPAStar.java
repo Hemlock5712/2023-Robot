@@ -52,12 +52,14 @@ public class PPAStar extends CommandBase {
   @Override
   public void initialize() {
     Node allianceFinal = finalPosition;
-    if(DriverStation.getAlliance() == Alliance.Blue){
+    if (DriverStation.getAlliance() == Alliance.Blue) {
       startPoint = new Node(poseEstimatorSystem);
-    }
-    else{
-      Pose2d flippedY = new Pose2d(poseEstimatorSystem.getCurrentPose().getX(),FieldConstants.fieldWidth-poseEstimatorSystem.getCurrentPose().getY(),poseEstimatorSystem.getCurrentPose().getRotation());
-      allianceFinal = new Node(finalPosition.getX(),FieldConstants.fieldWidth-finalPosition.getY(), finalPosition.getHolRot());
+    } else {
+      Pose2d flippedY = new Pose2d(poseEstimatorSystem.getCurrentPose().getX(),
+          FieldConstants.fieldWidth - poseEstimatorSystem.getCurrentPose().getY(),
+          poseEstimatorSystem.getCurrentPose().getRotation());
+      allianceFinal = new Node(finalPosition.getX(), FieldConstants.fieldWidth - finalPosition.getY(),
+          finalPosition.getHolRot());
       startPoint = new Node(flippedY);
     }
     PathPlannerTrajectory trajectory;
@@ -76,47 +78,53 @@ public class PPAStar extends CommandBase {
       }
       fullPath = AStarMap.findPath(startPoint, allianceFinal);
     }
-    
-    if(fullPath == null){
+
+    if (fullPath == null) {
       return;
     }
-    
-    //Gets speed of robot
-    double startingSpeed = Math.hypot(driveSystem.getChassisSpeeds().vxMetersPerSecond, driveSystem.getChassisSpeeds().vyMetersPerSecond);
-    Rotation2d heading = new Rotation2d(fullPath.get(1).getX()-startPoint.getX(),fullPath.get(1).getY()-startPoint.getY());
 
-    //If the robot is moving over a specified speed take movement into account.
-    if(startingSpeed>0.05){
-      heading = new Rotation2d(driveSystem.getChassisSpeeds().vxMetersPerSecond, driveSystem.getChassisSpeeds().vyMetersPerSecond);
+    // Gets speed of robot
+    double startingSpeed = Math.hypot(driveSystem.getChassisSpeeds().vxMetersPerSecond,
+        driveSystem.getChassisSpeeds().vyMetersPerSecond);
+    Rotation2d heading = new Rotation2d(fullPath.get(1).getX() - startPoint.getX(),
+        fullPath.get(1).getY() - startPoint.getY());
+
+    // If the robot is moving over a specified speed take movement into account.
+    if (startingSpeed > 0.05) {
+      heading = new Rotation2d(driveSystem.getChassisSpeeds().vxMetersPerSecond,
+          driveSystem.getChassisSpeeds().vyMetersPerSecond);
     }
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
     PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
-    
-    //Find path between points
+
+    // Find path between points
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
             poseEstimatorSystem.getCurrentPose().getRotation(), startingSpeed);
       } else if (i + 1 == fullPath.size()) {
         fullPathPoints[i] = new PathPoint(new Translation2d(allianceFinal.getX(), allianceFinal.getY()),
-            new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(), fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
+            new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(),
+                fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
             allianceFinal.getHolRot());
       } else {
-        //Change allianceFinal.getHolRot() to null if you want it to turn smoothly over path. (Needs more testing)
+        // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
+        // path. (Needs more testing)
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
-        new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(), fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
-        allianceFinal.getHolRot());
+            new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
+                fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
+            allianceFinal.getHolRot());
       }
     }
 
     // Declare an array to hold PathPoint objects made from all other points
     // specified in constructor.
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
-    //Change trajectory based on alliance color
+    // Change trajectory based on alliance color
     trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
-    //Display Trajectory
+    // Display Trajectory
     poseEstimatorSystem.addTrajectory(trajectory);
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();

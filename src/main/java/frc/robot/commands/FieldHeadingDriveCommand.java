@@ -28,10 +28,13 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 /**
  * Command for teleop driving where translation and heading are field oriented.
  * 
- * Translation is specified on the field-relative coordinate system. The Y-axis runs parallel to the alliance wall, left
- * is positive. The X-axis runs down field toward the opposing alliance wall, away from the alliance wall is positive.
+ * Translation is specified on the field-relative coordinate system. The Y-axis
+ * runs parallel to the alliance wall, left
+ * is positive. The X-axis runs down field toward the opposing alliance wall,
+ * away from the alliance wall is positive.
  * 
- * Rotation is specified as a point to make it easy to use with a joystick. The heading is the angle from the X-axis
+ * Rotation is specified as a point to make it easy to use with a joystick. The
+ * heading is the angle from the X-axis
  * to the point.
  */
 public class FieldHeadingDriveCommand extends CommandBase {
@@ -51,12 +54,14 @@ public class FieldHeadingDriveCommand extends CommandBase {
   /**
    * Constructor.
    * 
-   * @param drivetrainSubsystem drivetrain subsystem
-   * @param robotAngleSupplier supplier for the robot's current heading
-   * @param translationXSupplier supplier for field-oriented X velocity in meters/sec
-   * @param translationYSupplier supplier for field-oriented Y velocity in meters/sec
-   * @param omegaXSupplier X supplier for heading
-   * @param omegaYSupplier Y supplier for heading
+   * @param drivetrainSubsystem  drivetrain subsystem
+   * @param robotAngleSupplier   supplier for the robot's current heading
+   * @param translationXSupplier supplier for field-oriented X velocity in
+   *                             meters/sec
+   * @param translationYSupplier supplier for field-oriented Y velocity in
+   *                             meters/sec
+   * @param omegaXSupplier       X supplier for heading
+   * @param omegaYSupplier       Y supplier for heading
    */
   public FieldHeadingDriveCommand(
       DrivetrainSubsystem drivetrainSubsystem,
@@ -75,9 +80,9 @@ public class FieldHeadingDriveCommand extends CommandBase {
 
     addRequirements(drivetrainSubsystem);
 
-    TrapezoidProfile.Constraints kThetaControllerConstraints = 
-        new TrapezoidProfile.Constraints(HEADING_MAX_VELOCITY, HEADING_MAX_ACCELERATION);
-        
+    TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(HEADING_MAX_VELOCITY,
+        HEADING_MAX_ACCELERATION);
+
     thetaController = new ProfiledPIDController(HEADING_kP, HEADING_kI, HEADING_kD, kThetaControllerConstraints);
     thetaController.enableContinuousInput(-PI, PI);
     thetaController.setTolerance(Units.degreesToRadians(HEADING_TOLERANCE));
@@ -90,10 +95,11 @@ public class FieldHeadingDriveCommand extends CommandBase {
     // Reset the theta controller to the current heading
     thetaController.reset(robotAngle.getRadians());
 
-    // Calculate field relative speeds by rotating the chasis relative speeds by the robot's angle on the field
+    // Calculate field relative speeds by rotating the chasis relative speeds by the
+    // robot's angle on the field
     var chassisSpeeds = drivetrainSubsystem.getChassisSpeeds();
-    var fieldSpeeds = 
-        new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond).rotateBy(robotAngle);
+    var fieldSpeeds = new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
+        .rotateBy(robotAngle);
     var robotSpeeds = new ChassisSpeeds(fieldSpeeds.getX(), fieldSpeeds.getY(), chassisSpeeds.omegaRadiansPerSecond);
 
     // Reset the slew rate limiters, in case the robot is already moving
@@ -133,5 +139,5 @@ public class FieldHeadingDriveCommand extends CommandBase {
   public void end(boolean interrupted) {
     drivetrainSubsystem.stop();
   }
-  
+
 }

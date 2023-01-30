@@ -34,6 +34,7 @@ import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.util.FieldConstants;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -51,9 +52,9 @@ public class RobotContainer {
   private final PhotonCamera photonCamera = new PhotonCamera("photonvision");
 
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
-  // private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
+  // private final PoseEstimatorSubsystem poseEstimator = new
+  // PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
   private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
-
 
   private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
       poseEstimator::getCurrentPose);
@@ -61,7 +62,7 @@ public class RobotContainer {
   VisGraph AStarMap = new VisGraph();
 
   final Node finalNode = new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180));
-  //final List<Obstacle> obstacles = new ArrayList<Obstacle>();
+  // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
   final List<Obstacle> obstacles = FieldConstants.obstacles;
 
   HashMap<String, Command> eventMap = new HashMap<>();
@@ -75,11 +76,11 @@ public class RobotContainer {
       () -> -controller.getRightX());
 
   private final FieldOrientedDriveCommand fieldOrientedDriveCommand = new FieldOrientedDriveCommand(
-    drivetrainSubsystem,
-    () -> poseEstimator.getCurrentPose().getRotation(),
-    () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-    () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-    () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2);
+      drivetrainSubsystem,
+      () -> poseEstimator.getCurrentPose().getRotation(),
+      () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
+      () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
+      () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -92,22 +93,22 @@ public class RobotContainer {
     configureButtonBindings();
     configureDashboard();
 
-    //These are points robot can drive to.
-    //For Visual Aid https://www.desmos.com/calculator/rohdacji0b
-    //Charging Pad
-    AStarMap.addNode(new Node(2.48-0.1,4.42+0.1));
-    AStarMap.addNode(new Node(5.36+0.1,4.42+0.1));
-    AStarMap.addNode(new Node(5.36+0.1,1.07-0.1));
-    AStarMap.addNode(new Node(2.48-0.1,1.07-0.1));
-    //Divider
-    AStarMap.addNode(new Node(3.84+0.1,4.80-0.1));
+    // These are points robot can drive to.
+    // For Visual Aid https://www.desmos.com/calculator/rohdacji0b
+    // Charging Pad
+    AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
+    AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
+    AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
+    AStarMap.addNode(new Node(2.48 - 0.1, 1.07 - 0.1));
+    // Divider
+    AStarMap.addNode(new Node(3.84 + 0.1, 4.80 - 0.1));
 
-    for(int i = 0; i<AStarMap.getNodeSize();i++){
+    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
       Node startNode = AStarMap.getNode(i);
-      for(int j = i+1; j<AStarMap.getNodeSize(); j++){
+      for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
         AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
       }
-    }  
+    }
   }
 
   private void configureDashboard() {
@@ -132,10 +133,9 @@ public class RobotContainer {
 
     controller.a().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition));
 
-    controller.x().
-        whileTrue(new PPAStar(
-          drivetrainSubsystem, poseEstimator, 
-            new PathConstraints(2, 1.5), finalNode, obstacles, AStarMap));
+    controller.x().whileTrue(new PPAStar(
+        drivetrainSubsystem, poseEstimator,
+        new PathConstraints(2, 1.5), finalNode, obstacles, AStarMap));
   }
 
   /**

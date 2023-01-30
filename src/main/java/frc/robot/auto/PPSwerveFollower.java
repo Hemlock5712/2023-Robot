@@ -15,55 +15,55 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 
 public class PPSwerveFollower extends CommandBase {
-    
-    private final DrivetrainSubsystem driveSystem;
-    private final PoseEstimatorSubsystem poseEstimatorSystem;
-    private final String pathName;
-    private final PathConstraints constraints;
-    private final boolean resetOdom;
 
-    private CommandBase controllerCommand = Commands.none();
+  private final DrivetrainSubsystem driveSystem;
+  private final PoseEstimatorSubsystem poseEstimatorSystem;
+  private final String pathName;
+  private final PathConstraints constraints;
+  private final boolean resetOdom;
 
-    public PPSwerveFollower(
-            DrivetrainSubsystem d, PoseEstimatorSubsystem p, String pathName,
-            PathConstraints constraints, boolean resetOdom) {
-        this.driveSystem = d;
-        this.poseEstimatorSystem = p;
-        this.pathName = pathName;
-        this.constraints = constraints;
-        this.resetOdom = resetOdom;
-    }
-    
-    @Override
-    public void initialize() {
-        var path = PathPlanner.loadPath(pathName, constraints);
-        if(path == null) {
-            end(false);
-            return;
-        }
-        var alliancePath = PathPlannerTrajectory.transformTrajectoryForAlliance(
-            path,
-            DriverStation.getAlliance()
-        );
+  private CommandBase controllerCommand = Commands.none();
 
-        if(resetOdom) poseEstimatorSystem.setCurrentPose(alliancePath.getInitialHolonomicPose());
-        poseEstimatorSystem.addTrajectory(alliancePath);
-        controllerCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, alliancePath);
-        controllerCommand.initialize();
+  public PPSwerveFollower(
+      DrivetrainSubsystem d, PoseEstimatorSubsystem p, String pathName,
+      PathConstraints constraints, boolean resetOdom) {
+    this.driveSystem = d;
+    this.poseEstimatorSystem = p;
+    this.pathName = pathName;
+    this.constraints = constraints;
+    this.resetOdom = resetOdom;
+  }
+
+  @Override
+  public void initialize() {
+    var path = PathPlanner.loadPath(pathName, constraints);
+    if (path == null) {
+      end(false);
+      return;
     }
-    
-    @Override
-    public void execute() {
-        controllerCommand.execute();
-    }
-    
-    @Override
-    public void end(boolean interrupted) {
-        controllerCommand.end(interrupted);
-    }
-    
-    @Override
-    public boolean isFinished() {
-        return controllerCommand.isFinished();
-    }
+    var alliancePath = PathPlannerTrajectory.transformTrajectoryForAlliance(
+        path,
+        DriverStation.getAlliance());
+
+    if (resetOdom)
+      poseEstimatorSystem.setCurrentPose(alliancePath.getInitialHolonomicPose());
+    poseEstimatorSystem.addTrajectory(alliancePath);
+    controllerCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, alliancePath);
+    controllerCommand.initialize();
+  }
+
+  @Override
+  public void execute() {
+    controllerCommand.execute();
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    controllerCommand.end(interrupted);
+  }
+
+  @Override
+  public boolean isFinished() {
+    return controllerCommand.isFinished();
+  }
 }

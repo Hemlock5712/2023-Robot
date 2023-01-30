@@ -34,7 +34,7 @@ public class SwerveSteerController {
   private final double motorEncoderPositionCoefficient;
   private final double motorEncoderVelocityCoefficient;
   private final CANCoder encoder;
-  
+
   // Not sure what these represent, but smaller is faster
   private final double motionMagicVelocityConstant = .125;
   private final double motionMagicAccelerationConstant = .0625;
@@ -49,7 +49,7 @@ public class SwerveSteerController {
       int motorPort,
       int canCoderPort,
       double canCoderOffset,
-      ShuffleboardContainer container, 
+      ShuffleboardContainer container,
       ModuleConfiguration moduleConfiguration) {
 
     CANCoderConfiguration config = new CANCoderConfiguration();
@@ -77,7 +77,8 @@ public class SwerveSteerController {
 
     motorConfiguration.slot0.kF = (1023.0 * motorEncoderVelocityCoefficient / 12) * motionMagicVelocityConstant;
     motorConfiguration.motionCruiseVelocity = 2.0 / motionMagicVelocityConstant / motorEncoderVelocityCoefficient;
-    motorConfiguration.motionAcceleration = (8.0 - 2.0) / motionMagicAccelerationConstant / motorEncoderVelocityCoefficient;
+    motorConfiguration.motionAcceleration = (8.0 - 2.0) / motionMagicAccelerationConstant
+        / motorEncoderVelocityCoefficient;
 
     motorConfiguration.voltageCompSaturation = 12;
     motorConfiguration.supplyCurrLimit.currentLimit = 20;
@@ -100,9 +101,10 @@ public class SwerveSteerController {
 
     // Reduce CAN status frame rates
     CtreUtils.checkCtreError(
-        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, STATUS_FRAME_GENERAL_PERIOD_MS, CAN_TIMEOUT_MS),
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, STATUS_FRAME_GENERAL_PERIOD_MS,
+            CAN_TIMEOUT_MS),
         "Failed to configure Falcon status frame period");
-    
+
     addDashboardEntries(container);
 
   }
@@ -116,9 +118,12 @@ public class SwerveSteerController {
   }
 
   /**
-   * Configures the motor offset from the CANCoder's abosolute position. In an ideal state, this only needs to happen
-   * once. However, sometime it fails and we end up with a wheel that isn't in the right position.
+   * Configures the motor offset from the CANCoder's abosolute position. In an
+   * ideal state, this only needs to happen
+   * once. However, sometime it fails and we end up with a wheel that isn't in the
+   * right position.
    * See https://www.chiefdelphi.com/t/official-sds-mk3-mk4-code/397109/99
+   * 
    * @return the absolute angle
    */
   public double configMotorOffset(boolean logErrors) {
@@ -128,15 +133,16 @@ public class SwerveSteerController {
     if ((angleErrorCode != ErrorCode.OK) && logErrors) {
       // If this happens, we will have a misaligned wheel
       DriverStation.reportError(
-        "Failed to configure swerve module position. CANCoder ID: " + encoder.getDeviceID(), false);
-      } else {
-        var positionErrorCode = motor.setSelectedSensorPosition(angle / motorEncoderPositionCoefficient, 0, CAN_TIMEOUT_MS);
-        if (logErrors) {
-          CtreUtils.checkCtreError(
-              positionErrorCode, "Failed to set Falcon 500 encoder position. ID: " + motor.getDeviceID());
-        }
-        motorOffsetConfigured = 
-            motorOffsetConfigured || ((angleErrorCode == ErrorCode.OK) && (positionErrorCode == ErrorCode.OK));
+          "Failed to configure swerve module position. CANCoder ID: " + encoder.getDeviceID(), false);
+    } else {
+      var positionErrorCode = motor.setSelectedSensorPosition(angle / motorEncoderPositionCoefficient, 0,
+          CAN_TIMEOUT_MS);
+      if (logErrors) {
+        CtreUtils.checkCtreError(
+            positionErrorCode, "Failed to set Falcon 500 encoder position. ID: " + motor.getDeviceID());
+      }
+      motorOffsetConfigured = motorOffsetConfigured
+          || ((angleErrorCode == ErrorCode.OK) && (positionErrorCode == ErrorCode.OK));
     }
     return angle;
   }
@@ -158,8 +164,10 @@ public class SwerveSteerController {
     double currentAngleRadians = motor.getSelectedSensorPosition() * motorEncoderPositionCoefficient;
 
     // Reset the Falcon's encoder periodically when the module is not rotating.
-    // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
-    // end up getting a good reading. If we reset periodically this won't matter anymore.
+    // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't
+    // fully set up, and we don't
+    // end up getting a good reading. If we reset periodically this won't matter
+    // anymore.
     if (motor.getSelectedSensorVelocity() * motorEncoderVelocityCoefficient < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
       if (++resetIteration >= ENCODER_RESET_ITERATIONS || !motorOffsetConfigured) {
         resetIteration = 0;
@@ -199,6 +207,7 @@ public class SwerveSteerController {
 
   /**
    * Sets the neutral mode for the steer motor
+   * 
    * @param neutralMode neutral mode
    */
   public void setNeutralMode(NeutralMode neutralMode) {
