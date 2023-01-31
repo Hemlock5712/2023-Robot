@@ -27,12 +27,15 @@ import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.PPAStar;
+import frc.robot.commands.ReverseIntakeCommand;
+import frc.robot.commands.RunIntakeCommand;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
+import frc.robot.subsystems.TestSubsystem;
 import frc.robot.util.FieldConstants;
 
 /**
@@ -55,7 +58,7 @@ public class RobotContainer {
   // private final PoseEstimatorSubsystem poseEstimator = new
   // PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
   private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
-
+  private final TestSubsystem testSubsystem = new TestSubsystem();
   private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
       poseEstimator::getCurrentPose);
 
@@ -139,6 +142,9 @@ public class RobotContainer {
         drivetrainSubsystem, poseEstimator,
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
+
+        controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
+        controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
 
   }
 
