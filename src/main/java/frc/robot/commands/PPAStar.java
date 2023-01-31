@@ -43,7 +43,11 @@ public class PPAStar extends CommandBase {
     this.finalPosition = finalPosition;
     this.AStarMap = AStarMap;
     this.startPoint = new Node(p);
-
+    AStarMap.addNode(finalPosition);
+    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
+      Node endNode = AStarMap.getNode(i);
+      AStarMap.addEdge(new Edge(finalPosition, endNode), obstacles);
+    }
     addRequirements(driveSystem, poseEstimatorSystem);
   }
 
@@ -51,7 +55,7 @@ public class PPAStar extends CommandBase {
   // Pre-schedule setup code.
   @Override
   public void initialize() {
-    Node allianceFinal = finalPosition;
+    VisGraph tempGraph = AStarMap;
     if (DriverStation.getAlliance() == Alliance.Blue) {
       startPoint = new Node(poseEstimatorSystem);
     } else {
@@ -62,21 +66,17 @@ public class PPAStar extends CommandBase {
     }
     PathPlannerTrajectory trajectory;
     List<Node> fullPath = new ArrayList<Node>();
-    System.out.println("Starting Spot:" + startPoint.toString());
-    System.out.println("Final Spot:" + allianceFinal.toString());
 
-    AStarMap.addNode(startPoint);
-    AStarMap.addNode(allianceFinal);
-    if (AStarMap.addEdge(new Edge(startPoint, allianceFinal), obstacles)) {
+    tempGraph.addNode(startPoint);
+    if (tempGraph.addEdge(new Edge(startPoint, finalPosition), obstacles)) {
       fullPath.add(0, startPoint);
-      fullPath.add(1, allianceFinal);
+      fullPath.add(1, finalPosition);
     } else {
-      for (int i = 0; i < AStarMap.getNodeSize(); i++) {
-        Node endNode = AStarMap.getNode(i);
-        AStarMap.addEdge(new Edge(startPoint, endNode), obstacles);
-        AStarMap.addEdge(new Edge(allianceFinal, endNode), obstacles);
+      for (int i = 0; i < tempGraph.getNodeSize(); i++) {
+        Node endNode = tempGraph.getNode(i);
+        tempGraph.addEdge(new Edge(startPoint, endNode), obstacles);
       }
-      fullPath = AStarMap.findPath(startPoint, allianceFinal);
+      fullPath = tempGraph.findPath(startPoint, finalPosition);
     }
 
     if (fullPath == null) {
@@ -105,17 +105,17 @@ public class PPAStar extends CommandBase {
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
             startPoint.getHolRot(), startingSpeed);
       } else if (i + 1 == fullPath.size()) {
-        fullPathPoints[i] = new PathPoint(new Translation2d(allianceFinal.getX(), allianceFinal.getY()),
+        fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(),
                 fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
-            allianceFinal.getHolRot());
+                finalPosition.getHolRot());
       } else {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
                 fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
-            allianceFinal.getHolRot());
+                finalPosition.getHolRot());
       }
     }
 
