@@ -29,6 +29,7 @@ import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.PPAStar;
+import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
@@ -160,6 +161,7 @@ public class RobotContainer {
     controller.a().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition));
 
     controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
+    controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
 
     controller.x().whileTrue(new PPAStar(
         drivetrainSubsystem, poseEstimator,

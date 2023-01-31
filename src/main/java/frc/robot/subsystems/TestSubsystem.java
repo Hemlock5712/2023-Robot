@@ -11,15 +11,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TestSubsystem extends SubsystemBase {
 
-  private CANSparkMax lower = new CANSparkMax(16, MotorType.kBrushed);
-  private CANSparkMax upper = new CANSparkMax(17, MotorType.kBrushed);
+  private CANSparkMax lower = new CANSparkMax(17, MotorType.kBrushed);
+  private CANSparkMax upper = new CANSparkMax(16, MotorType.kBrushed);
 
   public TestSubsystem() {
   }
 
   public void runIntake() {
-    lower.set(.8);
-    upper.set(.5);
+    lower.set(.4);
+    upper.set(-.25);
+  }
+
+  public void reverseIntake() {
+    lower.set(-1);
+    upper.set(1);
   }
 
   public void stopIntake() {
