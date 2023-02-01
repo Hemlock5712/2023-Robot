@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import frc.robot.util.FieldConstants;
+
 public class VisGraph
 {
   
@@ -165,5 +167,17 @@ public class VisGraph
     }
     Collections.reverse(path);
     return path;
+  }
+
+  @Override
+  public VisGraph clone(){
+    VisGraph copy = new VisGraph();
+    for(Node node : this.nodes){
+      copy.addNode(node.clone());
+    }
+    for(Edge edge : this.edges){
+      copy.addEdge(edge.clone(), FieldConstants.obstacles);
+    }
+    return copy;
   }
 }

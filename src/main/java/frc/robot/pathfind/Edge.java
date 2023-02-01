@@ -22,4 +22,9 @@ public class Edge {
     double dy = n1.y - n2.y;
     return Math.hypot(dx, dy);
   }
+
+  @Override
+  public Edge clone(){
+    return new Edge(this.start.clone(), this.end.clone());
+  }
 }
