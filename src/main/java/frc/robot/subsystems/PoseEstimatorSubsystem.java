@@ -174,4 +174,11 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     field2d.getObject("Trajectory").setTrajectory(traj);
   }
 
+  public void resetHolonomicRotation(){
+    poseEstimator.resetPosition(
+      Rotation2d.fromDegrees(0),
+      drivetrainSubsystem.getModulePositions(),
+      getCurrentPose());
+  }
+
 }

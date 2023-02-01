@@ -143,8 +143,10 @@ public class RobotContainer {
         new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
 
-        controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
-        controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
+    controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
+    controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
+
+    controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation, drivetrainSubsystem));
 
   }
 
