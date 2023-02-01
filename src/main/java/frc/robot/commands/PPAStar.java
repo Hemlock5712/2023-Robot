@@ -55,7 +55,7 @@ public class PPAStar extends CommandBase {
   // Pre-schedule setup code.
   @Override
   public void initialize() {
-    VisGraph tempGraph = AStarMap.clone();
+    VisGraph tempGraph = AStarMap;
     if (DriverStation.getAlliance() == Alliance.Blue) {
       startPoint = new Node(poseEstimatorSystem);
     } else {
@@ -108,14 +108,14 @@ public class PPAStar extends CommandBase {
         fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(),
                 fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
-                finalPosition.getHolRot());
+            finalPosition.getHolRot());
       } else {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
                 fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
-                finalPosition.getHolRot());
+            finalPosition.getHolRot());
       }
     }
 
