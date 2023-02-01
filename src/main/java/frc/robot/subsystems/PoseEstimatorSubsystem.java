@@ -127,9 +127,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     // Conversion so robot appears where it actually is on field instead of always
     // on blue.
     if (DriverStation.getAlliance() == Alliance.Red) {
-      field2d.setRobotPose(new Pose2d(FieldConstants.fieldLength - getCurrentPose().getX(),
+      field2d.setRobotPose(new Pose2d(getCurrentPose().getX(),
           FieldConstants.fieldWidth - getCurrentPose().getY(),
-          new Rotation2d(getCurrentPose().getRotation().getRadians() + Math.PI)));
+          getCurrentPose().getRotation()));
     } else {
       field2d.setRobotPose(getCurrentPose());
     }
@@ -174,11 +174,15 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     field2d.getObject("Trajectory").setTrajectory(traj);
   }
 
-  public void resetHolonomicRotation(){
+  /**
+   * Resets the holonomic rotation of the robot (gyro last year)
+   * This would be used if Apriltags are not getting accurate pose estimation
+   */
+  public void resetHolonomicRotation() {
     poseEstimator.resetPosition(
-      Rotation2d.fromDegrees(0),
-      drivetrainSubsystem.getModulePositions(),
-      getCurrentPose());
+        Rotation2d.fromDegrees(0),
+        drivetrainSubsystem.getModulePositions(),
+        getCurrentPose());
   }
 
 }

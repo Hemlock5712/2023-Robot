@@ -123,10 +123,10 @@ public class PPAStar extends CommandBase {
     // specified in constructor.
     System.out.println(fullPathPoints);
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
-    // Change trajectory based on alliance color
-    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
     // Display Trajectory
     poseEstimatorSystem.addTrajectory(trajectory);
+    // Change trajectory based on alliance color
+    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }
