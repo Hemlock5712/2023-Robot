@@ -127,9 +127,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     // Conversion so robot appears where it actually is on field instead of always
     // on blue.
     if (DriverStation.getAlliance() == Alliance.Red) {
-      field2d.setRobotPose(new Pose2d(getCurrentPose().getX(),
+      field2d.setRobotPose(new Pose2d(FieldConstants.fieldLength - getCurrentPose().getX(),
           FieldConstants.fieldWidth - getCurrentPose().getY(),
-          getCurrentPose().getRotation()));
+          new Rotation2d(getCurrentPose().getRotation().getRadians() + Math.PI)));
     } else {
       field2d.setRobotPose(getCurrentPose());
     }
