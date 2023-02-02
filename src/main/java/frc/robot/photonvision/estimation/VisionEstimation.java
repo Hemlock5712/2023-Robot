@@ -33,7 +33,7 @@ public class VisionEstimation {
      * @return The transformation that maps the field origin to the camera pose
      */
     public static PNPResults estimateCamPosePNP(
-            CameraProperties prop, List<TargetCorner> corners, List<AprilTag> knownTags) {
+        CameraProperties prop, List<TargetCorner> corners, List<AprilTag> knownTags) {
         if (knownTags == null || corners == null ||
                 corners.size() != knownTags.size() * 4 || knownTags.size() == 0) {
             return new PNPResults();

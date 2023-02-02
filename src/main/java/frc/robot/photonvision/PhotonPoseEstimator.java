@@ -24,6 +24,7 @@
 
 package frc.robot.photonvision;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.photonvision.estimation.CameraProperties;
 import frc.robot.photonvision.estimation.PNPResults;
 import frc.robot.photonvision.estimation.VisionEstimation;
 
@@ -279,18 +281,23 @@ public class PhotonPoseEstimator {
 
     // multi-target solvePNP
     if (result.getTargets().size() > 1) {
+      CameraProperties temp;
+      try {
+        temp = new CameraProperties("src/main/java/frc/robot/photonvision/estimation/config.json", 640, 480);
+        PNPResults pnpResults = VisionEstimation.estimateCamPosePNP(
+            temp, visCorners, knownVisTags);
+        Pose3d best = new Pose3d()
+            .plus(pnpResults.best) // field-to-camera
+            .plus(robotToCamera.inverse()); // field-to-robot
+        // var alt = new Pose3d()
+        // .plus(pnpResults.alt) // field-to-camera
+        // .plus(robotToCamera.inverse()); // field-to-robot
 
-      PNPResults pnpResults = VisionEstimation.estimateCamPosePNP(
-          result.getFrameProperties(), visCorners, knownVisTags);
-      Pose3d best = new Pose3d()
-          .plus(pnpResults.best) // field-to-camera
-          .plus(robotToCamera.inverse()); // field-to-robot
-      // var alt = new Pose3d()
-      // .plus(pnpResults.alt) // field-to-camera
-      // .plus(robotToCamera.inverse()); // field-to-robot
-
-      return Optional.of(
-          new EstimatedRobotPose(best, result.getTimestampSeconds(), result.getTargets()));
+        return Optional.of(
+            new EstimatedRobotPose(best, result.getTimestampSeconds(), result.getTargets()));
+      } catch (IOException e) {
+      }
+      return Optional.empty();
     } else {
       return Optional.empty();
     }
