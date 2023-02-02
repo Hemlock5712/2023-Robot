@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.util.ConcurrentModificationException;
 import java.util.Optional;
 
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -30,6 +27,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.photonvision.EstimatedRobotPose;
+import frc.robot.photonvision.PhotonPoseEstimator;
+import frc.robot.photonvision.PhotonPoseEstimator.PoseStrategy;
 import frc.robot.util.FieldConstants;
 
 public class PoseEstimatorSubsystem extends SubsystemBase {
@@ -87,7 +87,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     }
     ShuffleboardTab tab = Shuffleboard.getTab("Vision");
 
-    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, this.photonCamera,
+    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP, this.photonCamera,
         ROBOT_TO_CAMERA);
 
     poseEstimator = new SwerveDrivePoseEstimator(

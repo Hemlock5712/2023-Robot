@@ -55,7 +55,7 @@ public class PPAStar extends CommandBase {
   // Pre-schedule setup code.
   @Override
   public void initialize() {
-    VisGraph tempGraph = AStarMap.clone();
+    VisGraph tempGraph = AStarMap;
     if (DriverStation.getAlliance() == Alliance.Blue) {
       startPoint = new Node(poseEstimatorSystem);
     } else {
