@@ -284,7 +284,6 @@ public class PhotonPoseEstimator {
     }
 
     // multi-target solvePNP
-    System.out.println("SIZE: " + result.getTargets().size());
     if (result.getTargets().size() > 1) {
       CameraProperties temp = new CameraProperties();
       temp = new CameraProperties();
@@ -305,7 +304,6 @@ public class PhotonPoseEstimator {
               -0.0004920895708678603,
               -0.0003070108890406358,
               0.03838543381210005));
-      System.out.println("4");
       PNPResults pnpResults = VisionEstimation.estimateCamPosePNP(
           temp, visCorners, knownVisTags);
       Pose3d best = new Pose3d()
