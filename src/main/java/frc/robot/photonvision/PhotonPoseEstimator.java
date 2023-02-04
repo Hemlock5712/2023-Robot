@@ -269,16 +269,19 @@ public class PhotonPoseEstimator {
     var knownVisTags = new ArrayList<AprilTag>();
     var fieldToCams = new ArrayList<Pose3d>();
     var fieldToCamsAlt = new ArrayList<Pose3d>();
-    
+
     for (var target : result.getTargets()) {
       visCorners.addAll(target.getDetectedCorners());
-      Pose3d tagPose = fieldTags.getTagPose(target.getFiducialId()).get();
+      Optional<Pose3d> potentialPose = fieldTags.getTagPose(target.getFiducialId());
+      Optional<Pose3d> compareEmpty = Optional.empty();
+      if (potentialPose != compareEmpty) {
+        Pose3d tagPose = potentialPose.get();
+        // actual layout poses of visible tags -- not exposed, so have to recreate
+        knownVisTags.add(new AprilTag(target.getFiducialId(), tagPose));
 
-      // actual layout poses of visible tags -- not exposed, so have to recreate
-      knownVisTags.add(new AprilTag(target.getFiducialId(), tagPose));
-
-      fieldToCams.add(tagPose.transformBy(target.getBestCameraToTarget().inverse()));
-      fieldToCamsAlt.add(tagPose.transformBy(target.getAlternateCameraToTarget().inverse()));
+        fieldToCams.add(tagPose.transformBy(target.getBestCameraToTarget().inverse()));
+        fieldToCamsAlt.add(tagPose.transformBy(target.getAlternateCameraToTarget().inverse()));
+      }
     }
 
     // multi-target solvePNP
