@@ -24,6 +24,7 @@
 
 package frc.robot.photonvision;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,6 +46,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.photonvision.estimation.CameraProperties;
 import frc.robot.photonvision.estimation.PNPResults;
 import frc.robot.photonvision.estimation.VisionEstimation;
@@ -267,7 +269,7 @@ public class PhotonPoseEstimator {
     var knownVisTags = new ArrayList<AprilTag>();
     var fieldToCams = new ArrayList<Pose3d>();
     var fieldToCamsAlt = new ArrayList<Pose3d>();
-
+    
     for (var target : result.getTargets()) {
       visCorners.addAll(target.getDetectedCorners());
       Pose3d tagPose = fieldTags.getTagPose(target.getFiducialId()).get();
@@ -283,7 +285,9 @@ public class PhotonPoseEstimator {
     if (result.getTargets().size() > 1) {
       CameraProperties temp;
       try {
-        temp = new CameraProperties("src/main/deploy/config.json", 1280, 960);
+        File deployDir = Filesystem.getDeployDirectory();
+        File branchFile = new File(deployDir, "config.json");
+        temp = new CameraProperties(branchFile.getAbsolutePath(), 1280, 720);
         PNPResults pnpResults = VisionEstimation.estimateCamPosePNP(
             temp, visCorners, knownVisTags);
         Pose3d best = new Pose3d()

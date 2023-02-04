@@ -91,7 +91,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     }
     ShuffleboardTab tab = Shuffleboard.getTab("Vision");
 
-    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, this.photonCamera,
+    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP, this.photonCamera,
         ROBOT_TO_CAMERA);
 
     poseEstimator = new SwerveDrivePoseEstimator(
