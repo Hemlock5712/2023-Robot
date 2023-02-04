@@ -146,7 +146,10 @@ public class RobotContainer {
     controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
     controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
 
-    controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation, drivetrainSubsystem));
+    // controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation,
+    // drivetrainSubsystem));
+
+    controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
 
   }
 
