@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Optional;
 
@@ -69,6 +70,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   private final SwerveDrivePoseEstimator poseEstimator;
 
+  private final ArrayList<Double> xValues = new ArrayList<Double>();
+  private final ArrayList<Double> yValues = new ArrayList<Double>();
+
   private final Field2d field2d = new Field2d();
 
   public PoseEstimatorSubsystem(PhotonCamera photonCamera, DrivetrainSubsystem drivetrainSubsystem) {
@@ -109,12 +113,13 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       EstimatedRobotPose pose = photonEstimatedRobotPose.get();
       // Max distance you want a tag to be read at. Found issues after 15 feet away
       // from tag while moving.
-      if (Math.hypot(pose.estimatedPose.getX(), pose.estimatedPose.getY()) < 5.25) {
-        // Error with WPI code https://github.com/wpilibsuite/allwpilib/issues/4952
-        try {
-          poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
-        } catch (ConcurrentModificationException e) {
-        }
+      // if (Math.hypot(pose.estimatedPose.getX(), pose.estimatedPose.getY()) < 5.25)
+      // {
+      // Error with WPI code https://github.com/wpilibsuite/allwpilib/issues/4952
+      try {
+        poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+      } catch (ConcurrentModificationException e) {
+        // }
       }
 
     }
@@ -126,6 +131,16 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     field2d.setRobotPose(getCurrentPose());
     // Conversion so robot appears where it actually is on field instead of always
     // on blue.
+    xValues.add(getCurrentPose().getX());
+    yValues.add(getCurrentPose().getY());
+    double xAverage = xValues.stream().mapToDouble(a -> a).average().getAsDouble();
+    double yAverage = yValues.stream().mapToDouble(a -> a).average().getAsDouble();
+    double summation = 0.0;
+    for (int i = 0; i < xValues.size(); i++) {
+      summation += (Math.pow(xValues.get(i) - xAverage, 2) + Math.pow(yValues.get(i) - yAverage, 2));
+    }
+    double RMS = Math.sqrt((1.0 / (double) xValues.size() * summation));
+    System.out.println("RMS: " + RMS);
     if (DriverStation.getAlliance() == Alliance.Red) {
       field2d.setRobotPose(new Pose2d(getCurrentPose().getX(),
           FieldConstants.fieldWidth - getCurrentPose().getY(),
@@ -185,4 +200,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         getCurrentPose());
   }
 
+  public void resetPoseRating() {
+    xValues.clear();
+    yValues.clear();
+  }
 }

@@ -283,7 +283,7 @@ public class PhotonPoseEstimator {
     if (result.getTargets().size() > 1) {
       CameraProperties temp;
       try {
-        temp = new CameraProperties("src/main/java/frc/robot/photonvision/estimation/config.json", 640, 480);
+        temp = new CameraProperties("src/main/deploy/config.json", 1280, 960);
         PNPResults pnpResults = VisionEstimation.estimateCamPosePNP(
             temp, visCorners, knownVisTags);
         Pose3d best = new Pose3d()
