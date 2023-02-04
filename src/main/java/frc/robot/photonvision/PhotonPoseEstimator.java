@@ -24,8 +24,6 @@
 
 package frc.robot.photonvision;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +37,8 @@ import org.photonvision.targeting.TargetCorner;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -46,7 +46,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.photonvision.estimation.CameraProperties;
 import frc.robot.photonvision.estimation.PNPResults;
 import frc.robot.photonvision.estimation.VisionEstimation;
@@ -287,29 +286,37 @@ public class PhotonPoseEstimator {
     // multi-target solvePNP
     System.out.println("SIZE: " + result.getTargets().size());
     if (result.getTargets().size() > 1) {
-      CameraProperties temp;
-      try {
-        System.out.println("1");
-        File deployDir = Filesystem.getDeployDirectory();
-        System.out.println("2");
-        File branchFile = new File(deployDir, "config.json");
-        System.out.println("3");
-        temp = new CameraProperties(branchFile, 1280, 720);
-        System.out.println("4");
-        PNPResults pnpResults = VisionEstimation.estimateCamPosePNP(
-            temp, visCorners, knownVisTags);
-        Pose3d best = new Pose3d()
-            .plus(pnpResults.best) // field-to-camera
-            .plus(robotToCamera.inverse()); // field-to-robot
-        // var alt = new Pose3d()
-        // .plus(pnpResults.alt) // field-to-camera
-        // .plus(robotToCamera.inverse()); // field-to-robot
+      CameraProperties temp = new CameraProperties();
+      temp = new CameraProperties();
+      temp.setCalibration(1270, 720,
+          new MatBuilder<>(Nat.N3(), Nat.N3()).fill(
+              1084.3353319253022,
+              0,
+              626.1862545593823,
+              0,
+              1084.612741895493,
+              352.3084322606119,
+              0,
+              0,
+              1),
+          new MatBuilder<>(Nat.N5(), Nat.N1()).fill(
+              0.07328341092509434,
+              -0.10626017357952933,
+              -0.0004920895708678603,
+              -0.0003070108890406358,
+              0.03838543381210005));
+      System.out.println("4");
+      PNPResults pnpResults = VisionEstimation.estimateCamPosePNP(
+          temp, visCorners, knownVisTags);
+      Pose3d best = new Pose3d()
+          .plus(pnpResults.best) // field-to-camera
+          .plus(robotToCamera.inverse()); // field-to-robot
+      // var alt = new Pose3d()
+      // .plus(pnpResults.alt) // field-to-camera
+      // .plus(robotToCamera.inverse()); // field-to-robot
 
-        return Optional.of(
-            new EstimatedRobotPose(best, result.getTimestampSeconds(), result.getTargets()));
-      } catch (IOException e) {
-      }
-      return Optional.empty();
+      return Optional.of(
+          new EstimatedRobotPose(best, result.getTimestampSeconds(), result.getTargets()));
     } else {
       return Optional.empty();
     }
