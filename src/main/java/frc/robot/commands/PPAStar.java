@@ -108,20 +108,20 @@ public class PPAStar extends CommandBase {
         fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
             new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(),
                 fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
-                finalPosition.getHolRot());
+            finalPosition.getHolRot());
       } else {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
                 fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
-                finalPosition.getHolRot());
+            finalPosition.getHolRot());
       }
     }
 
     // Declare an array to hold PathPoint objects made from all other points
     // specified in constructor.
-    System.out.println(fullPathPoints);
+    // System.out.println(fullPathPoints);
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
     // Display Trajectory
     poseEstimatorSystem.addTrajectory(trajectory);

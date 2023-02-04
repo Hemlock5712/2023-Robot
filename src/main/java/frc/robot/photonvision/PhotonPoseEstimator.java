@@ -285,12 +285,17 @@ public class PhotonPoseEstimator {
     }
 
     // multi-target solvePNP
+    System.out.println("SIZE: " + result.getTargets().size());
     if (result.getTargets().size() > 1) {
       CameraProperties temp;
       try {
+        System.out.println("1");
         File deployDir = Filesystem.getDeployDirectory();
+        System.out.println("2");
         File branchFile = new File(deployDir, "config.json");
-        temp = new CameraProperties(branchFile.getAbsolutePath(), 1280, 720);
+        System.out.println("3");
+        temp = new CameraProperties(branchFile, 1280, 720);
+        System.out.println("4");
         PNPResults pnpResults = VisionEstimation.estimateCamPosePNP(
             temp, visCorners, knownVisTags);
         Pose3d best = new Pose3d()

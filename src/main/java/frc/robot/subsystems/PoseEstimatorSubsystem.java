@@ -140,7 +140,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       summation += (Math.pow(xValues.get(i) - xAverage, 2) + Math.pow(yValues.get(i) - yAverage, 2));
     }
     double RMS = Math.sqrt((1.0 / (double) xValues.size() * summation));
-    System.out.println("RMS: " + RMS);
+    // System.out.println("RMS: " + RMS);
     if (DriverStation.getAlliance() == Alliance.Red) {
       field2d.setRobotPose(new Pose2d(getCurrentPose().getX(),
           FieldConstants.fieldWidth - getCurrentPose().getY(),
