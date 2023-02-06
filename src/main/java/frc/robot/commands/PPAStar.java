@@ -102,19 +102,24 @@ public class PPAStar extends CommandBase {
     // Find path between points
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
+        System.out.println("X: "+startPoint.getX()+"\tY:"+startPoint.getY()+"\tHol"+startPoint.getHolRot().getDegrees()+"\tHeading"+heading.getDegrees());
         fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
             startPoint.getHolRot(), startingSpeed);
       } else if (i + 1 == fullPath.size()) {
+        heading = new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(),
+                  fullPath.get(i).getY() - fullPath.get(i - 1).getY());
+        System.out.println("X: "+finalPosition.getX()+"\tY:"+finalPosition.getY()+"\tHol"+finalPosition.getHolRot().getDegrees()+"\tHeading"+heading.getDegrees());
         fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
-            new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(),
-                fullPath.get(i).getY() - fullPath.get(i - 1).getY()),
+            heading,
             finalPosition.getHolRot());
       } else {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
+        heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
+                  fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+        System.out.println("X: "+fullPath.get(i).getX()+"\tY:"+fullPath.get(i).getY()+"\tHol"+finalPosition.getHolRot().getDegrees()+"\tHeading"+heading.getDegrees());
         fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
-            new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
-                fullPath.get(i + 1).getY() - fullPath.get(i).getY()),
+            heading,
             finalPosition.getHolRot());
       }
     }

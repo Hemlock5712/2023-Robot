@@ -127,24 +127,23 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     poseEstimator.update(
         drivetrainSubsystem.getGyroscopeRotation(),
         drivetrainSubsystem.getModulePositions());
-
-    field2d.setRobotPose(getCurrentPose());
+        
     // Conversion so robot appears where it actually is on field instead of always
     // on blue.
-    xValues.add(getCurrentPose().getX());
-    yValues.add(getCurrentPose().getY());
-    double xAverage = xValues.stream().mapToDouble(a -> a).average().getAsDouble();
-    double yAverage = yValues.stream().mapToDouble(a -> a).average().getAsDouble();
-    double summation = 0.0;
-    for (int i = 0; i < xValues.size(); i++) {
-      summation += (Math.pow(xValues.get(i) - xAverage, 2) + Math.pow(yValues.get(i) - yAverage, 2));
-    }
-    double RMS = Math.sqrt((1.0 / (double) xValues.size() * summation));
-    System.out.println("RMS: " + RMS);
+    // xValues.add(getCurrentPose().getX());
+    // yValues.add(getCurrentPose().getY());
+    // double xAverage = xValues.stream().mapToDouble(a -> a).average().getAsDouble();
+    // double yAverage = yValues.stream().mapToDouble(a -> a).average().getAsDouble();
+    // double summation = 0.0;
+    // for (int i = 0; i < xValues.size(); i++) {
+    //   summation += (Math.pow(xValues.get(i) - xAverage, 2) + Math.pow(yValues.get(i) - yAverage, 2));
+    // }
+    // double RMS = Math.sqrt((1.0 / (double) xValues.size() * summation));
+    // System.out.println("RMS: " + RMS);
     if (DriverStation.getAlliance() == Alliance.Red) {
-      field2d.setRobotPose(new Pose2d(getCurrentPose().getX(),
+      field2d.setRobotPose(new Pose2d(FieldConstants.fieldLength - getCurrentPose().getX(),
           FieldConstants.fieldWidth - getCurrentPose().getY(),
-          getCurrentPose().getRotation()));
+          new Rotation2d(getCurrentPose().getRotation().getRadians() + Math.PI)));
     } else {
       field2d.setRobotPose(getCurrentPose());
     }
