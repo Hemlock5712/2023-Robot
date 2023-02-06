@@ -121,7 +121,7 @@ public class PPAStar extends CommandBase {
 
     // Declare an array to hold PathPoint objects made from all other points
     // specified in constructor.
-    System.out.println(fullPathPoints);
+    // System.out.println(fullPathPoints);
     trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
     // Display Trajectory
     poseEstimatorSystem.addTrajectory(trajectory);
