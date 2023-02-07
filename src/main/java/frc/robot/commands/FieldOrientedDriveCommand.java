@@ -67,9 +67,8 @@ public class FieldOrientedDriveCommand extends CommandBase {
 
     // Calculate field relative speeds
     var chassisSpeeds = drivetrainSubsystem.getChassisSpeeds();
-    var fieldSpeeds = new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
-        .rotateBy(robotAngle);
-    var robotSpeeds = new ChassisSpeeds(fieldSpeeds.getX(), fieldSpeeds.getY(), chassisSpeeds.omegaRadiansPerSecond);
+    var fieldSpeeds = getFieldSpeeds(chassisSpeeds, robotAngle);
+    var robotSpeeds = getRobotSpeeds(fieldSpeeds, chassisSpeeds);
 
     // Reset the slew rate limiters, in case the robot is already moving
     translateXRateLimiter.reset(robotSpeeds.vxMetersPerSecond);
@@ -90,5 +89,14 @@ public class FieldOrientedDriveCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drivetrainSubsystem.stop();
+  }
+
+  public static Translation2d getFieldSpeeds(ChassisSpeeds chassisSpeeds, Rotation2d robotAngle) {
+    return new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
+        .rotateBy(robotAngle);
+  }
+
+  public static ChassisSpeeds getRobotSpeeds(Translation2d fieldSpeeds, ChassisSpeeds chassisSpeeds) {
+    return new ChassisSpeeds(fieldSpeeds.getX(), fieldSpeeds.getY(), chassisSpeeds.omegaRadiansPerSecond);
   }
 }
