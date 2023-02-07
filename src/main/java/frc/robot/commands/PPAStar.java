@@ -89,10 +89,11 @@ public class PPAStar extends CommandBase {
         poseEstimatorSystem.getCurrentPose().getRotation());
     var robotSpeeds = FieldOrientedDriveCommand.getRobotSpeeds(fieldSpeeds, chassisSpeeds);
     double startingSpeed = Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
-    // Rotation2d heading = new Rotation2d(fullPath.get(1).getX() -
-    // startPoint.getX(),
-    // fullPath.get(1).getY() - startPoint.getY());
-    Rotation2d heading = new Rotation2d(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+    Rotation2d heading = new Rotation2d(fullPath.get(1).getX() -
+        startPoint.getX(),
+        fullPath.get(1).getY() - startPoint.getY());
+    // Rotation2d heading = new Rotation2d(robotSpeeds.vxMetersPerSecond,
+    // robotSpeeds.vyMetersPerSecond);
 
     // If the robot is moving over a specified speed take movement into account.
     // if (startingSpeed > 0.05) {
