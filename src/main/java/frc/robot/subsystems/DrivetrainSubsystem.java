@@ -131,8 +131,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * with inverting motors.
      * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
      */
-    Timer.delay(1.0);
-    reseedSteerMotorOffsets();
+    // Timer.delay(1.0);
+    // reseedSteerMotorOffsets();
 
     // Put the motors in brake mode when enabled, coast mode when disabled
     new Trigger(RobotState::isEnabled).onTrue(new StartEndCommand(() -> {

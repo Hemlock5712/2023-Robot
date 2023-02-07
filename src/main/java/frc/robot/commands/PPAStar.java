@@ -108,22 +108,8 @@ public class PPAStar extends CommandBase {
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
         fullPathPoints.add(new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
-            startPoint.getHolRot(), startingSpeed));
-        
-        double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
-            fullPath.get(i + 1).getY() - fullPath.get(i).getY());
-        int midpoints = (int) Math.floor(distance / 4);
-
-        for (int j = 0; j < midpoints; j++) {
-          heading = new Rotation2d((fullPath.get(i + 1).getX() - fullPath.get(i).getX()),
-              (fullPath.get(i + 1).getY() - fullPath.get(i).getY()));
-
-          fullPathPoints.add(new PathPoint(
-              new Translation2d((fullPath.get(i + 1).getX() - fullPath.get(i).getX()) * ((j + 1) / (midpoints + 1)),
-                  (fullPath.get(i + 1).getY() - fullPath.get(i).getY()) * ((j + 1) / (midpoints + 1))),
-              heading,
-              finalPosition.getHolRot()));
-        }
+            startPoint.getHolRot(), startingSpeed));    
+        addMidPoints(fullPathPoints, i, finalPosition.getHolRot());
       }
 
       else if (i + 1 == fullPath.size()) {
@@ -142,21 +128,7 @@ public class PPAStar extends CommandBase {
         fullPathPoints.add(new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             heading,
             finalPosition.getHolRot()));
-
-        double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
-            fullPath.get(i + 1).getY() - fullPath.get(i).getY());
-        int midpoints = (int) Math.floor(distance / 4);
-
-        for (int j = 0; j < midpoints; j++) {
-          heading = new Rotation2d((fullPath.get(i + 1).getX() - fullPath.get(i).getX()) * ((j + 1) / (midpoints + 1)),
-              (fullPath.get(i + 1).getY() - fullPath.get(i).getY()) * ((j + 1) / (midpoints + 1)));
-
-          fullPathPoints.add(new PathPoint(
-              new Translation2d((fullPath.get(i + 1).getX() - fullPath.get(i).getX()) * ((j + 1) / (midpoints + 1)),
-                  (fullPath.get(i + 1).getY() - fullPath.get(i).getY()) * ((j + 1) / (midpoints + 1))),
-              heading,
-              finalPosition.getHolRot()));
-        }
+        addMidPoints(fullPathPoints, i, finalPosition.getHolRot());
       }
     }
 
@@ -184,5 +156,20 @@ public class PPAStar extends CommandBase {
     }
 
     driveSystem.stop();
+  }
+
+  public void addMidPoints(ArrayList<PathPoint> fullPath, int i, Rotation2d midPointHol){
+    double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
+        fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+    int midpoints = (int) Math.floor(distance / 4);
+    Rotation2d heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
+      fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+    for (int j = 0; j < midpoints; j++) {
+      fullPathPoints.add(new PathPoint(
+          new Translation2d((fullPath.get(i + 1).getX() + fullPath.get(i).getX()) * ((j + 1) / (midpoints + 1)),
+              (fullPath.get(i + 1).getY() + fullPath.get(i).getY()) * ((j + 1) / (midpoints + 1))),
+          heading,
+          midPointHol));
+    }
   }
 }
