@@ -109,7 +109,7 @@ public class PPAStar extends CommandBase {
       if (i == 0) {
         fullPathPoints.add(new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
             startPoint.getHolRot(), startingSpeed));    
-        addMidPoints(fullPathPoints, i, finalPosition.getHolRot());
+        addMidPoints(fullPathPoints, fullPath, i, finalPosition.getHolRot());
       }
 
       else if (i + 1 == fullPath.size()) {
@@ -128,7 +128,7 @@ public class PPAStar extends CommandBase {
         fullPathPoints.add(new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             heading,
             finalPosition.getHolRot()));
-        addMidPoints(fullPathPoints, i, finalPosition.getHolRot());
+        addMidPoints(fullPathPoints, fullPath, i, finalPosition.getHolRot());
       }
     }
 
@@ -158,7 +158,7 @@ public class PPAStar extends CommandBase {
     driveSystem.stop();
   }
 
-  public void addMidPoints(ArrayList<PathPoint> fullPath, int i, Rotation2d midPointHol){
+  public void addMidPoints(ArrayList<PathPoint> fullPathPoints, List<Node> fullPath, int i, Rotation2d midPointHol){
     double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
     int midpoints = (int) Math.floor(distance / 4);
