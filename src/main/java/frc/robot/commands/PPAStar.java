@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
@@ -103,34 +102,68 @@ public class PPAStar extends CommandBase {
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
-    PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
-
+    // PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
+    ArrayList<PathPoint> fullPathPoints = new ArrayList<PathPoint>();
     // Find path between points
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
-        fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
-            startPoint.getHolRot(), startingSpeed);
-      } else if (i + 1 == fullPath.size()) {
+        fullPathPoints.add(new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
+            startPoint.getHolRot(), startingSpeed));
+        
+        double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
+            fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+        int midpoints = (int) Math.floor(distance / 4);
+
+        for (int j = 0; j < midpoints; j++) {
+          heading = new Rotation2d((fullPath.get(i + 1).getX() - fullPath.get(i).getX()),
+              (fullPath.get(i + 1).getY() - fullPath.get(i).getY()));
+
+          fullPathPoints.add(new PathPoint(
+              new Translation2d((fullPath.get(i + 1).getX() - fullPath.get(i).getX()) * ((j + 1) / (midpoints + 1)),
+                  (fullPath.get(i + 1).getY() - fullPath.get(i).getY()) * ((j + 1) / (midpoints + 1))),
+              heading,
+              finalPosition.getHolRot()));
+        }
+      }
+
+      else if (i + 1 == fullPath.size()) {
         heading = new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(),
             fullPath.get(i).getY() - fullPath.get(i - 1).getY());
-        fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
+        fullPathPoints.add(new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
             heading,
-            finalPosition.getHolRot());
-      } else {
+            finalPosition.getHolRot()));
+      }
+
+      else {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
         heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
             fullPath.get(i + 1).getY() - fullPath.get(i).getY());
-        fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
+        fullPathPoints.add(new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             heading,
-            finalPosition.getHolRot());
+            finalPosition.getHolRot()));
+
+        double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
+            fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+        int midpoints = (int) Math.floor(distance / 4);
+
+        for (int j = 0; j < midpoints; j++) {
+          heading = new Rotation2d((fullPath.get(i + 1).getX() - fullPath.get(i).getX()) * ((j + 1) / (midpoints + 1)),
+              (fullPath.get(i + 1).getY() - fullPath.get(i).getY()) * ((j + 1) / (midpoints + 1)));
+
+          fullPathPoints.add(new PathPoint(
+              new Translation2d((fullPath.get(i + 1).getX() - fullPath.get(i).getX()) * ((j + 1) / (midpoints + 1)),
+                  (fullPath.get(i + 1).getY() - fullPath.get(i).getY()) * ((j + 1) / (midpoints + 1))),
+              heading,
+              finalPosition.getHolRot()));
+        }
       }
     }
 
     // Declare an array to hold PathPoint objects made from all other points
     // specified in constructor.
     // System.out.println(fullPathPoints);
-    trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
+    trajectory = PathPlanner.generatePath(constraints, fullPathPoints);
     // Display Trajectory
     poseEstimatorSystem.addTrajectory(trajectory);
     // Change trajectory based on alliance color
