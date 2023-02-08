@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
@@ -84,50 +83,59 @@ public class PPAStar extends CommandBase {
     }
 
     // Gets speed of robot
-    double startingSpeed = Math.hypot(driveSystem.getChassisSpeeds().vxMetersPerSecond,
-        driveSystem.getChassisSpeeds().vyMetersPerSecond);
-    Rotation2d heading = new Rotation2d(fullPath.get(1).getX() - startPoint.getX(),
+    var chassisSpeeds = driveSystem.getChassisSpeeds();
+    var fieldSpeeds = FieldOrientedDriveCommand.getFieldSpeeds(chassisSpeeds,
+        poseEstimatorSystem.getCurrentPose().getRotation());
+    var robotSpeeds = FieldOrientedDriveCommand.getRobotSpeeds(fieldSpeeds, chassisSpeeds);
+    double startingSpeed = Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+    Rotation2d heading = new Rotation2d(fullPath.get(1).getX() -
+        startPoint.getX(),
         fullPath.get(1).getY() - startPoint.getY());
+    // Rotation2d heading = new Rotation2d(robotSpeeds.vxMetersPerSecond,
+    // robotSpeeds.vyMetersPerSecond);
 
     // If the robot is moving over a specified speed take movement into account.
-    if (startingSpeed > 0.05) {
-      heading = new Rotation2d(driveSystem.getChassisSpeeds().vxMetersPerSecond,
-          driveSystem.getChassisSpeeds().vyMetersPerSecond);
-    }
+    // if (startingSpeed > 0.05) {
+    // heading = new Rotation2d(driveSystem.getChassisSpeeds().vxMetersPerSecond,
+    // driveSystem.getChassisSpeeds().vyMetersPerSecond);
+    // }
 
     // Depending on if internal points are present, make a new array of the other
     // points in the path.
-    PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
-
+    // PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
+    ArrayList<PathPoint> fullPathPoints = new ArrayList<PathPoint>();
     // Find path between points
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
-        System.out.println("X: "+startPoint.getX()+"\tY:"+startPoint.getY()+"\tHol"+startPoint.getHolRot().getDegrees()+"\tHeading"+heading.getDegrees());
-        fullPathPoints[i] = new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
-            startPoint.getHolRot(), startingSpeed);
-      } else if (i + 1 == fullPath.size()) {
+        fullPathPoints.add(new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
+            startPoint.getHolRot(), startingSpeed));
+        addMidPoints(fullPathPoints, fullPath, i, finalPosition.getHolRot());
+      }
+
+      else if (i + 1 == fullPath.size()) {
         heading = new Rotation2d(fullPath.get(i).getX() - fullPath.get(i - 1).getX(),
-                  fullPath.get(i).getY() - fullPath.get(i - 1).getY());
-        System.out.println("X: "+finalPosition.getX()+"\tY:"+finalPosition.getY()+"\tHol"+finalPosition.getHolRot().getDegrees()+"\tHeading"+heading.getDegrees());
-        fullPathPoints[i] = new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
+            fullPath.get(i).getY() - fullPath.get(i - 1).getY());
+        fullPathPoints.add(new PathPoint(new Translation2d(finalPosition.getX(), finalPosition.getY()),
             heading,
-            finalPosition.getHolRot());
-      } else {
+            finalPosition.getHolRot()));
+      }
+
+      else {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
         heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
-                  fullPath.get(i + 1).getY() - fullPath.get(i).getY());
-        System.out.println("X: "+fullPath.get(i).getX()+"\tY:"+fullPath.get(i).getY()+"\tHol"+finalPosition.getHolRot().getDegrees()+"\tHeading"+heading.getDegrees());
-        fullPathPoints[i] = new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
+            fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+        fullPathPoints.add(new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             heading,
-            finalPosition.getHolRot());
+            finalPosition.getHolRot()));
+        addMidPoints(fullPathPoints, fullPath, i, finalPosition.getHolRot());
       }
     }
 
     // Declare an array to hold PathPoint objects made from all other points
     // specified in constructor.
     // System.out.println(fullPathPoints);
-    trajectory = PathPlanner.generatePath(constraints, Arrays.asList(fullPathPoints));
+    trajectory = PathPlanner.generatePath(constraints, fullPathPoints);
     // Display Trajectory
     poseEstimatorSystem.addTrajectory(trajectory);
     // Change trajectory based on alliance color
@@ -148,5 +156,30 @@ public class PPAStar extends CommandBase {
     }
 
     driveSystem.stop();
+  }
+
+  public void addMidPoints(ArrayList<PathPoint> fullPathPoints, List<Node> fullPath, int i, Rotation2d midPointHol) {
+    double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
+        fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+    int midpoints = (int) Math.floor(distance / 2);
+    // System.out.println(midpoints);
+    Rotation2d tempHol = null;
+    Rotation2d heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
+        fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+    for (int j = 0; j < midpoints; j++) {
+      if (j % 2 == 0) {
+        tempHol = null;
+      } else {
+        tempHol = midPointHol;
+      }
+      fullPathPoints.add(new PathPoint(
+          new Translation2d(
+              fullPath.get(i).getX()
+                  + (fullPath.get(i + 1).getX() - fullPath.get(i).getX()) * ((j + 1.0) / (midpoints + 1.0)),
+              fullPath.get(i).getY()
+                  + (fullPath.get(i + 1).getY() - fullPath.get(i).getY()) * ((j + 1.0) / (midpoints + 1.0))),
+          heading,
+          tempHol));
+    }
   }
 }

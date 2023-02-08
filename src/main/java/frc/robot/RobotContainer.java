@@ -17,6 +17,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -84,6 +85,8 @@ public class RobotContainer {
       () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
       () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2);
 
+  private final Timer reseedTimer = new Timer();
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -94,6 +97,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
     configureDashboard();
+    reseedTimer.start();
 
     // These are points robot can drive to.
     // For Visual Aid https://www.desmos.com/calculator/rohdacji0b
@@ -117,6 +121,14 @@ public class RobotContainer {
 
   }
 
+  public void disabledPeriodic() {
+    // Reseed the motor offset continuously when the robot is disabled to help solve
+    // dead wheel issue
+    if (reseedTimer.advanceIfElapsed(1.0)) {
+      drivetrainSubsystem.reseedSteerMotorOffsets();
+    }
+  }
+
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by
@@ -135,7 +147,7 @@ public class RobotContainer {
 
     controller.x().whileTrue(new PPAStar(
         drivetrainSubsystem, poseEstimator,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
+        new PathConstraints(3, 2), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
 
     controller.y().whileTrue(new PPAStar(

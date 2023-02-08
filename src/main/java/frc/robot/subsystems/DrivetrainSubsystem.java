@@ -40,7 +40,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -131,8 +130,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * with inverting motors.
      * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
      */
-    Timer.delay(1.0);
-    reseedSteerMotorOffsets();
+    // Timer.delay(1.0);
+    // reseedSteerMotorOffsets();
 
     // Put the motors in brake mode when enabled, coast mode when disabled
     new Trigger(RobotState::isEnabled).onTrue(new StartEndCommand(() -> {
