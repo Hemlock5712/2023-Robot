@@ -86,6 +86,7 @@ public class RobotContainer {
       () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2);
 
   private final Timer reseedTimer = new Timer();
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -121,7 +122,8 @@ public class RobotContainer {
   }
 
   public void disabledPeriodic() {
-    // Reseed the motor offset continuously when the robot is disabled to help solve dead wheel issue
+    // Reseed the motor offset continuously when the robot is disabled to help solve
+    // dead wheel issue
     if (reseedTimer.advanceIfElapsed(1.0)) {
       drivetrainSubsystem.reseedSteerMotorOffsets();
     }
@@ -145,7 +147,7 @@ public class RobotContainer {
 
     controller.x().whileTrue(new PPAStar(
         drivetrainSubsystem, poseEstimator,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
+        new PathConstraints(3, 2), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
         AStarMap));
 
     controller.y().whileTrue(new PPAStar(

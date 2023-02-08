@@ -108,7 +108,7 @@ public class PPAStar extends CommandBase {
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
         fullPathPoints.add(new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
-            startPoint.getHolRot(), startingSpeed));    
+            startPoint.getHolRot(), startingSpeed));
         addMidPoints(fullPathPoints, fullPath, i, finalPosition.getHolRot());
       }
 
@@ -158,18 +158,28 @@ public class PPAStar extends CommandBase {
     driveSystem.stop();
   }
 
-  public void addMidPoints(ArrayList<PathPoint> fullPathPoints, List<Node> fullPath, int i, Rotation2d midPointHol){
+  public void addMidPoints(ArrayList<PathPoint> fullPathPoints, List<Node> fullPath, int i, Rotation2d midPointHol) {
     double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
-    int midpoints = (int) Math.floor(distance / 4);
+    int midpoints = (int) Math.floor(distance / 2);
+    // System.out.println(midpoints);
+    Rotation2d tempHol = null;
     Rotation2d heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
-      fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+        fullPath.get(i + 1).getY() - fullPath.get(i).getY());
     for (int j = 0; j < midpoints; j++) {
+      if (j % 2 == 0) {
+        tempHol = null;
+      } else {
+        tempHol = midPointHol;
+      }
       fullPathPoints.add(new PathPoint(
-          new Translation2d((fullPath.get(i + 1).getX() + fullPath.get(i).getX()) * ((j + 1) / (midpoints + 1)),
-              (fullPath.get(i + 1).getY() + fullPath.get(i).getY()) * ((j + 1) / (midpoints + 1))),
+          new Translation2d(
+              fullPath.get(i).getX()
+                  + (fullPath.get(i + 1).getX() - fullPath.get(i).getX()) * ((j + 1.0) / (midpoints + 1.0)),
+              fullPath.get(i).getY()
+                  + (fullPath.get(i + 1).getY() - fullPath.get(i).getY()) * ((j + 1.0) / (midpoints + 1.0))),
           heading,
-          midPointHol));
+          tempHol));
     }
   }
 }
