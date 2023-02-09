@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.auto.PPSwerveFollower;
+import frc.robot.auto.PPAutoDynamic;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
@@ -154,8 +154,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new PPSwerveFollower(drivetrainSubsystem, poseEstimator, "New Path", new PathConstraints(2, 1), false);
-  }
+    return new PPAutoDynamic(drivetrainSubsystem, poseEstimator, AStarMap, obstacles, new PathConstraints(1,1));  }
 
   private static double modifyAxis(double value) {
     // Deadband

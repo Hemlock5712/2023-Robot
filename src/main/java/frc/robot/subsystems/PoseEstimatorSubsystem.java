@@ -11,8 +11,6 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -22,6 +20,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -170,8 +169,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     setCurrentPose(new Pose2d());
   }
 
-  public void addTrajectory(PathPlannerTrajectory traj) {
-    field2d.getObject("Trajectory").setTrajectory(traj);
+  public void addTrajectory(Trajectory currentPath) {
+    field2d.getObject("Trajectory").setTrajectory(currentPath);
   }
 
 }
