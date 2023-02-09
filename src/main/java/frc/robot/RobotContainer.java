@@ -30,7 +30,7 @@ import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.PPAStar;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.pathfind.Edge;
+import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
@@ -56,17 +56,18 @@ public class RobotContainer {
   private final PhotonCamera photonCamera = new PhotonCamera("photonvision");
 
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
-  // private final PoseEstimatorSubsystem poseEstimator = new
-  // PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
+
   private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
   private final TestSubsystem testSubsystem = new TestSubsystem();
   private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
       poseEstimator::getCurrentPose);
 
-  VisGraph AStarMap = new VisGraph();
+  final List<Obstacle> standardObstacles = FieldConstants.standardObstacles;
+  final List<Obstacle> cablePath = FieldConstants.cablePath;
 
-  // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
-  final List<Obstacle> obstacles = FieldConstants.obstacles;
+  public MapCreator map = new MapCreator();
+  public VisGraph standardMap = new VisGraph();
+  public VisGraph cableMap = new VisGraph();
 
   HashMap<String, Command> eventMap = new HashMap<>();
 
@@ -94,27 +95,13 @@ public class RobotContainer {
     // Set up the default command for the drivetrain.
     drivetrainSubsystem.setDefaultCommand(fieldOrientedDriveCommand);
 
+    map.createGraph(standardMap, standardObstacles);
+    map.createGraph(cableMap, cablePath);
+
     // Configure the button bindings
     configureButtonBindings();
     configureDashboard();
     reseedTimer.start();
-
-    // These are points robot can drive to.
-    // For Visual Aid https://www.desmos.com/calculator/rohdacji0b
-    // Charging Pad
-    AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
-    AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
-    AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
-    AStarMap.addNode(new Node(2.48 - 0.1, 1.07 - 0.1));
-    // Divider
-    AStarMap.addNode(new Node(3.84 + 0.1, 4.80 - 0.1));
-
-    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
-      Node startNode = AStarMap.getNode(i);
-      for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
-        AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
-      }
-    }
   }
 
   private void configureDashboard() {
@@ -147,13 +134,15 @@ public class RobotContainer {
 
     controller.x().whileTrue(new PPAStar(
         drivetrainSubsystem, poseEstimator,
-        new PathConstraints(3, 2), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
-        AStarMap));
+        new PathConstraints(4, 3), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)),
+        standardObstacles,
+        standardMap));
 
     controller.y().whileTrue(new PPAStar(
         drivetrainSubsystem, poseEstimator,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
-        AStarMap));
+        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)),
+        standardObstacles,
+        standardMap));
 
     controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
     controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));

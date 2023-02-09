@@ -91,18 +91,7 @@ public class PPAStar extends CommandBase {
     Rotation2d heading = new Rotation2d(fullPath.get(1).getX() -
         startPoint.getX(),
         fullPath.get(1).getY() - startPoint.getY());
-    // Rotation2d heading = new Rotation2d(robotSpeeds.vxMetersPerSecond,
-    // robotSpeeds.vyMetersPerSecond);
-
-    // If the robot is moving over a specified speed take movement into account.
-    // if (startingSpeed > 0.05) {
-    // heading = new Rotation2d(driveSystem.getChassisSpeeds().vxMetersPerSecond,
-    // driveSystem.getChassisSpeeds().vyMetersPerSecond);
-    // }
-
-    // Depending on if internal points are present, make a new array of the other
-    // points in the path.
-    // PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
+        
     ArrayList<PathPoint> fullPathPoints = new ArrayList<PathPoint>();
     // Find path between points
     for (int i = 0; i < fullPath.size(); i++) {

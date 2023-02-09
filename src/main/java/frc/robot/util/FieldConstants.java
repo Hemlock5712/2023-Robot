@@ -211,7 +211,7 @@ public final class FieldConstants {
     }
   }
 
-  public static List<Obstacle> obstacles = List.of(
+  public static List<Obstacle> standardObstacles = List.of(
       // Charging Station
       new Obstacle(new double[] {
           2.48,
@@ -234,4 +234,27 @@ public final class FieldConstants {
           5.52
       }));
 
+  //Forces robot to go over cable. In case of defense.
+  public static List<Obstacle> cablePath = List.of(
+      // Charging Station
+      new Obstacle(new double[] {
+          2.48,
+          5.36,
+          5.36,
+          2.48
+      }, new double[] {
+          4.81,
+          4.81,
+          1.07,
+          1.07
+      }),
+      new Obstacle(new double[] {
+          3.84,
+          3.84,
+          1.26
+      }, new double[] {
+          6.23,
+          4.80,
+          5.52
+      }));
 }
