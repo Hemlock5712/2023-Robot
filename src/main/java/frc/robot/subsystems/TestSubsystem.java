@@ -4,32 +4,42 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TestSubsystem extends SubsystemBase {
 
-  private CANSparkMax lower = new CANSparkMax(17, MotorType.kBrushed);
-  private CANSparkMax upper = new CANSparkMax(16, MotorType.kBrushed);
+  // private CANSparkMax lower = new CANSparkMax(17, MotorType.kBrushed);
+  // private CANSparkMax upper = new CANSparkMax(16, MotorType.kBrushed);
+
+  private TalonFX intake = new TalonFX(33);
+  private Solenoid claw = new Solenoid(PneumaticsModuleType.REVPH, 0);
 
   public TestSubsystem() {
   }
 
   public void runIntake() {
-    lower.set(0.5);
-    upper.set(-.5);
+    intake.set(ControlMode.PercentOutput, .8);
   }
 
   public void reverseIntake() {
-    lower.set(-1);
-    upper.set(1);
+    intake.set(ControlMode.PercentOutput, -.8);
   }
 
   public void stopIntake() {
-    lower.set(0);
-    upper.set(0);
+    intake.set(ControlMode.PercentOutput, 0);
+  }
+
+  public void openIntake() {
+    claw.set(true);
+  }
+
+  public void closeIntake() {
+    claw.set(false);
   }
 
   @Override

@@ -9,14 +9,14 @@ import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 import java.util.HashMap;
 import java.util.List;
 
+import frc.robot.commands.*;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,14 +24,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.auto.PPSwerveFollower;
-import frc.robot.commands.ChaseTagCommand;
-import frc.robot.commands.FieldHeadingDriveCommand;
-import frc.robot.commands.FieldOrientedDriveCommand;
-import frc.robot.commands.PPAStar;
-import frc.robot.commands.ReverseIntakeCommand;
-import frc.robot.commands.RunIntakeCommand;
+import frc.robot.commands.driver.GoToLoad;
+import frc.robot.commands.driver.GoToPlace;
+import frc.robot.commands.operator.PlaceHigh;
 import frc.robot.pathfind.MapCreator;
-import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -69,6 +65,8 @@ public class RobotContainer {
   public VisGraph standardMap = new VisGraph();
   public VisGraph cableMap = new VisGraph();
 
+  private PneumaticHub pch = new PneumaticHub();
+
   HashMap<String, Command> eventMap = new HashMap<>();
 
   private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new FieldHeadingDriveCommand(
@@ -102,6 +100,7 @@ public class RobotContainer {
     configureButtonBindings();
     configureDashboard();
     reseedTimer.start();
+    pch.enableCompressorAnalog(80, 120);
   }
 
   private void configureDashboard() {
@@ -130,28 +129,37 @@ public class RobotContainer {
 
     controller.b().whileTrue(chaseTagCommand);
 
-    controller.start().toggleOnTrue(fieldHeadingDriveCommand);
+    // controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
-    controller.x().whileTrue(new PPAStar(
-        drivetrainSubsystem, poseEstimator,
-        new PathConstraints(4, 3), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)),
-        standardObstacles,
-        standardMap));
+    // controller.x().whileTrue(new PPAStar(
+    // drivetrainSubsystem, poseEstimator,
+    // new PathConstraints(4, 3), new Node(new Translation2d(2.0146, 2.75),
+    // Rotation2d.fromDegrees(180)),
+    // standardObstacles,
+    // standardMap));
 
-    controller.y().whileTrue(new PPAStar(
-        drivetrainSubsystem, poseEstimator,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)),
-        standardObstacles,
-        standardMap));
+    // controller.y().whileTrue(new PPAStar(
+    // drivetrainSubsystem, poseEstimator,
+    // new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75),
+    // Rotation2d.fromDegrees(180)),
+    // standardObstacles,
+    // standardMap));
+
+    controller.x().whileTrue(
+        new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
+    controller.y().whileTrue(
+        new GoToPlace(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
 
     controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
     controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
+    controller.rightTrigger(.5).whileTrue(new OpenClaw(testSubsystem));
 
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation,
     // drivetrainSubsystem));
 
     controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
 
+    controller.start().whileTrue(new PlaceHigh(drivetrainSubsystem));
   }
 
   /**

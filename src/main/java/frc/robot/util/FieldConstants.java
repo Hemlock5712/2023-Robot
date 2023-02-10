@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -234,7 +235,7 @@ public final class FieldConstants {
           5.52
       }));
 
-  //Forces robot to go over cable. In case of defense.
+  // Forces robot to go over cable. In case of defense.
   public static List<Obstacle> cablePath = List.of(
       // Charging Station
       new Obstacle(new double[] {
@@ -257,4 +258,24 @@ public final class FieldConstants {
           4.80,
           5.52
       }));
+
+  public static Map<TargetPosition, Pose2d> PlacementPositions = Map.of(
+      TargetPosition.Position1,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[0].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position2,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[1].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position3,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[2].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position4,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[3].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position5,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[4].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position6,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[5].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position7,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[6].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position8,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[7].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position9,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[8].getY(), Rotation2d.fromDegrees(180)));
 }
