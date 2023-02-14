@@ -18,4 +18,11 @@ public class PlacementPosition {
     this.position = position;
     this.level = level;
   }
+
+  public boolean equals(Object other) {
+    if (other instanceof PlacementPosition) {
+      return ((PlacementPosition) other).level == level && ((PlacementPosition) other).position == position;
+    }
+    return false;
+  }
 }

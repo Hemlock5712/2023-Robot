@@ -37,7 +37,7 @@ public class PlaceHigh extends CommandBase {
         TargetLevel.Top);
     drivetrain.setTargetPosition(nextPosition.getPosition());
     SmartDashboard.putNumber("NextPosition", nextPosition.getPosition().ordinal());
-    SmartDashboard.putNumber("NextLevel", nextPosition.getLevel().ordinal());
+    SmartDashboard.putNumber("NextLevel", 2 - nextPosition.getLevel().ordinal());
   }
 
   // Returns true when the command should end.

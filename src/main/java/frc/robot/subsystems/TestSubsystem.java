@@ -7,8 +7,11 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TestSubsystem extends SubsystemBase {
@@ -18,20 +21,33 @@ public class TestSubsystem extends SubsystemBase {
 
   private TalonFX intake = new TalonFX(33);
   private Solenoid claw = new Solenoid(PneumaticsModuleType.REVPH, 0);
+  private double speedSetpoint = 0;
+
+  private PIDController intakePID = new PIDController(1, 0, 0);
+  private SimpleMotorFeedforward intakeFF = new SimpleMotorFeedforward(0.01, 1.18, 0.01);
 
   public TestSubsystem() {
+    intake.setInverted(true);
   }
 
   public void runIntake() {
-    intake.set(ControlMode.PercentOutput, .8);
+    if (claw.get()) {
+      intake.set(ControlMode.PercentOutput, -0.1);
+      speedSetpoint = 15;
+    } else {
+      intake.set(ControlMode.PercentOutput, -1);
+      speedSetpoint = 1500;
+    }
   }
 
   public void reverseIntake() {
-    intake.set(ControlMode.PercentOutput, -.8);
+    speedSetpoint = -800;
+    intake.set(ControlMode.PercentOutput, .8);
   }
 
   public void stopIntake() {
     intake.set(ControlMode.PercentOutput, 0);
+    speedSetpoint = 0;
   }
 
   public void openIntake() {
@@ -44,6 +60,15 @@ public class TestSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    double currentSpeed = intake.getSelectedSensorVelocity();
+    double targetVoltage = (intakePID.calculate(currentSpeed, speedSetpoint)
+        + intakeFF.calculate(currentSpeed, speedSetpoint, 0.2)) / 12.0;
+    // intake.set(ControlMode.PercentOutput,
+    // targetVoltage);
+    // intake.set(ControlMode.PercentOutput, 0);
+    SmartDashboard.putNumber("Intake/TargetVoltage", intake.getMotorOutputPercent());
+    SmartDashboard.putNumber("Intake/TargetSpeed", speedSetpoint);
+    speedSetpoint = 0;
     // This method will be called once per scheduler run
   }
 }

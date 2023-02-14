@@ -68,7 +68,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private ChassisSpeeds desiredChassisSpeeds;
 
-  private TargetPosition targetPosition = TargetPosition.Position1;
+  private TargetPosition targetPosition = TargetPosition.Position9;
 
   public DrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
