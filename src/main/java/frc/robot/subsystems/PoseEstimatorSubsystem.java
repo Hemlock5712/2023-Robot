@@ -8,7 +8,10 @@ import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -29,16 +32,13 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.photonvision.EstimatedRobotPose;
-import frc.robot.photonvision.PhotonPoseEstimator;
-import frc.robot.photonvision.PhotonPoseEstimator.PoseStrategy;
 import frc.robot.util.FieldConstants;
 
 public class PoseEstimatorSubsystem extends SubsystemBase {
 
   private final PhotonCamera photonCamera;
   private final DrivetrainSubsystem drivetrainSubsystem;
-  private final PhotonPoseEstimator photonPoseEstimator;
+  private PhotonPoseEstimator photonPoseEstimator;
 
   // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
   // you trust your various sensors. Smaller numbers will cause the filter to
@@ -79,21 +79,25 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   public PoseEstimatorSubsystem(PhotonCamera photonCamera, DrivetrainSubsystem drivetrainSubsystem) {
     this.photonCamera = photonCamera;
     this.drivetrainSubsystem = drivetrainSubsystem;
-    AprilTagFieldLayout layout;
     try {
-      layout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+      // Attempt to load the AprilTagFieldLayout that will tell us where the tags are
+      // on the field.
+      AprilTagFieldLayout fieldLayout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
       var alliance = DriverStation.getAlliance();
       // var alliance = Alliance.Blue;
-      layout.setOrigin(alliance == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
+      fieldLayout.setOrigin(alliance == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
           : OriginPosition.kRedAllianceWallRightSide);
+      // Create pose estimator
+      photonPoseEstimator = new PhotonPoseEstimator(
+          fieldLayout, PoseStrategy.MULTI_TAG_PNP, this.photonCamera, ROBOT_TO_CAMERA);
+      photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     } catch (IOException e) {
+      // The AprilTagFieldLayout failed to load. We won't be able to estimate poses if
+      // we don't know
+      // where the tags are.
       DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
-      layout = null;
+      photonPoseEstimator = null;
     }
-    ShuffleboardTab tab = Shuffleboard.getTab("Vision");
-
-    photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP, this.photonCamera,
-        ROBOT_TO_CAMERA);
 
     poseEstimator = new SwerveDrivePoseEstimator(
         DrivetrainConstants.KINEMATICS,
@@ -102,7 +106,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         new Pose2d(),
         stateStdDevs,
         visionMeasurementStdDevs);
-
+    ShuffleboardTab tab = Shuffleboard.getTab("Vision");
     tab.addString("Pose", this::getFomattedPose).withPosition(0, 0).withSize(2, 0);
     tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
   }
