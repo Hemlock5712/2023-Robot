@@ -1,13 +1,33 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.balance;
 
-// TODO: Import DriveTrain and other code to handle positioning.
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.PoseEstimatorSubsystem;
 
 
-public class Balance {
 
-  // This is a temporary definition of distanceFromCenter until actual code is
-  // implemented to detect the distance from the center of the Charging Station.
-  private static double distanceFromCenter = 0.0;
+
+public class TestBalance extends CommandBase {
+  /** Creates a new TestBalance. */
+
+
+
+
+
+  private final DrivetrainSubsystem driveSystem;
+  private final PoseEstimatorSubsystem poseEstimatorSystem;
+  private final ProfiledPIDController xController = Constants.TeleopDriveConstants.xController;
+  private final ProfiledPIDController yController = Constants.TeleopDriveConstants.yController;
+  private final ProfiledPIDController omegaController = Constants.TeleopDriveConstants.omegaController;
+
 
 
 
@@ -62,23 +82,38 @@ public class Balance {
    // --------------------------------------------------------------------------
 
 
+  double targetY = 3.94;
+
+
+  private final double x, y;
+
+    public TestBalance(DrivetrainSubsystem d, PoseEstimatorSubsystem p, double x, double y) {
+      this.driveSystem = d;
+      poseEstimatorSystem = p;
   
+      this.x = x;
+      this.y = y;
+  
+      this.xController.setTolerance(0.2);
+      
+      this.yController.setTolerance(0.2);
+  
+      omegaController.setTolerance(Units.degreesToRadians(3));
+      omegaController.enableContinuousInput(-Math.PI, Math.PI);
+  
+      addRequirements(driveSystem, poseEstimatorSystem);
+    }
 
-  public Balance() {
-    pigeon.configMountPosePitch(0);
 
-    // TODO: Possibility - Let robot drive onto the drive Station without slowing down.
-    // TODO: Make sure robot can actually go onto the Charge Station from location.
-    // TODO: When button clicked drive onto the Charge Station.
+  private double getDistanceFromY() {
+    return poseEstimatorSystem.getCurrentPose().getY() - targetY;
+  }
 
-    if (controller.getStartButton()) {
-      double pitch = pigeon.getPitch();
-
-      // TODO: Get distance from center point of Charging Station.
-
-      double velocity;
-
-      if (
+  private double getVelocity() {
+    double pitch = driveSystem.getPitch();
+    double distanceFromCenter = getDistanceFromY();
+    double velocity = 0.0;
+    if (
         (useDisableOnPitch && ((-pitchRangeDisable < pitch) && (pitchRangeDisable > pitch))) ||
         (useDisableOnPos && ((-posRangeDisable < distanceFromCenter) && (posRangeDisable > distanceFromCenter)))
       ) {
@@ -102,11 +137,39 @@ public class Balance {
           }
         velocity = velocityOfGravity + velocityOfDistance + velocityAdded;
       }
+      
+      return velocity;
+  }
 
-      // TODO: Make Swerve Drive behave like normal arcade drive.
-      // TODO: Send velocity to Drive Terrain.
+  private void canDriveOnPlatform() {
+    // TODO: Check to see whether the robot can drive onto the platform
+  }
+
+  private void goToPositionAndDriveUp() {
+    // TODO: Get robot to line up with and drive up the platform
+  }
+
+  private void selfBalancing() {
+    driveSystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, getVelocity(), 0.0, poseEstimatorSystem.getCurrentPose().getRotation()));
+  }
+  
+  @Override
+  public void initialize() {
+    driveSystem.resetPitch();
+  }
+
+  @Override
+  public void execute() {
+    // TODO: Set up a sytem to switch between lining up and balancing
+  }
 
 
-    }
+  @Override
+  public void end(boolean interrupted) {}
+
+
+  @Override
+  public boolean isFinished() {
+    return false;
   }
 }
