@@ -87,6 +87,8 @@ public class TestBalance extends CommandBase {
   double minTargetX = 1.51;
   double maxTargetX = 3.95;
 
+  double halfRobotWidth = 0.375;
+
   // Only need blue side - Don't need side specifics.
   // double minTargetXRed = 4.03;
   // double maxTargetXRed = 6.47;
@@ -150,7 +152,7 @@ public class TestBalance extends CommandBase {
 
   private boolean canDriveOnPlatform() {
     double x = poseEstimatorSystem.getCurrentPose().getX();
-    return ((minTargetX < x) && (x < maxTargetX));
+    return (((minTargetX + halfRobotWidth) < x) && (x < (maxTargetX - halfRobotWidth)));
   }
 
   private void goToPositionAndDriveUp() {
