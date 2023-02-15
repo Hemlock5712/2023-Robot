@@ -59,7 +59,7 @@ public class PPAStar extends CommandBase {
       startPoint = new Node(poseEstimatorSystem);
     } else {
       Pose2d flippedY = new Pose2d(poseEstimatorSystem.getCurrentPose().getX(),
-          FieldConstants.fieldWidth - poseEstimatorSystem.getCurrentPose().getY(),
+          FieldConstants.FIELD_WIDTH_METERS - poseEstimatorSystem.getCurrentPose().getY(),
           poseEstimatorSystem.getCurrentPose().getRotation());
       startPoint = new Node(flippedY);
     }
@@ -91,7 +91,7 @@ public class PPAStar extends CommandBase {
     Rotation2d heading = new Rotation2d(fullPath.get(1).getX() -
         startPoint.getX(),
         fullPath.get(1).getY() - startPoint.getY());
-        
+
     ArrayList<PathPoint> fullPathPoints = new ArrayList<PathPoint>();
     // Find path between points
     for (int i = 0; i < fullPath.size(); i++) {

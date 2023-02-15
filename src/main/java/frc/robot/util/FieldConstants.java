@@ -14,8 +14,8 @@ import frc.robot.pathfind.Obstacle;
 
 public final class FieldConstants {
 
-  public static final double fieldLength = Units.inchesToMeters(651.25);
-  public static final double fieldWidth = Units.inchesToMeters(315.5);
+  public static final double FIELD_LENGTH_METERS = Units.inchesToMeters(651.25);
+  public static final double FIELD_WIDTH_METERS = Units.inchesToMeters(315.5);
   public static final double tapeWidth = Units.inchesToMeters(2.0);
 
   // Dimensions for community and charging station, including the tape.
@@ -128,10 +128,10 @@ public final class FieldConstants {
   public static final class LoadingZone {
     // Region dimensions
     public static final double width = Units.inchesToMeters(99.0);
-    public static final double innerX = FieldConstants.fieldLength;
-    public static final double midX = fieldLength - Units.inchesToMeters(132.25);
-    public static final double outerX = fieldLength - Units.inchesToMeters(264.25);
-    public static final double leftY = FieldConstants.fieldWidth;
+    public static final double innerX = FieldConstants.FIELD_LENGTH_METERS;
+    public static final double midX = FIELD_LENGTH_METERS - Units.inchesToMeters(132.25);
+    public static final double outerX = FIELD_LENGTH_METERS - Units.inchesToMeters(264.25);
+    public static final double leftY = FieldConstants.FIELD_WIDTH_METERS;
     public static final double midY = leftY - Units.inchesToMeters(50.5);
     public static final double rightY = leftY - width;
     public static final Translation2d[] regionCorners = new Translation2d[] {
@@ -151,7 +151,7 @@ public final class FieldConstants {
 
     // Single substation dimensions
     public static final double singleSubstationWidth = Units.inchesToMeters(22.75);
-    public static final double singleSubstationLeftX = FieldConstants.fieldLength - doubleSubstationLength
+    public static final double singleSubstationLeftX = FieldConstants.FIELD_LENGTH_METERS - doubleSubstationLength
         - Units.inchesToMeters(88.77);
     public static final double singleSubstationCenterX = singleSubstationLeftX + (singleSubstationWidth / 2.0);
     public static final double singleSubstationRightX = singleSubstationLeftX + singleSubstationWidth;
@@ -167,7 +167,7 @@ public final class FieldConstants {
   // Locations of staged game pieces
   public static final class StagingLocations {
     public static final double centerOffsetX = Units.inchesToMeters(47.36);
-    public static final double positionX = fieldLength / 2.0 - Units.inchesToMeters(47.36);
+    public static final double positionX = FIELD_LENGTH_METERS / 2.0 - Units.inchesToMeters(47.36);
     public static final double firstY = Units.inchesToMeters(36.19);
     public static final double separationY = Units.inchesToMeters(48.0);
     public static final Translation2d[] translations = new Translation2d[4];
@@ -188,7 +188,7 @@ public final class FieldConstants {
    */
   public static Translation2d allianceFlip(Translation2d translation) {
     if (DriverStation.getAlliance() == Alliance.Red) {
-      return new Translation2d(FieldConstants.fieldLength - translation.getX(), translation.getY());
+      return new Translation2d(FieldConstants.FIELD_LENGTH_METERS - translation.getX(), translation.getY());
     } else {
       return translation;
     }
@@ -204,7 +204,7 @@ public final class FieldConstants {
   public static Pose2d allianceFlip(Pose2d pose) {
     if (DriverStation.getAlliance() == Alliance.Red) {
       return new Pose2d(
-          FieldConstants.fieldLength - pose.getX(),
+          FieldConstants.FIELD_LENGTH_METERS - pose.getX(),
           pose.getY(),
           new Rotation2d(-pose.getRotation().getCos(), pose.getRotation().getSin()));
     } else {
