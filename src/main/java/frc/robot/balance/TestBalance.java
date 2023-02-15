@@ -84,6 +84,13 @@ public class TestBalance extends CommandBase {
 
   double targetY = 3.94;
 
+  double minTargetX = 1.51;
+  double maxTargetX = 3.95;
+
+  // Only need blue side - Don't need side specifics.
+  // double minTargetXRed = 4.03;
+  // double maxTargetXRed = 6.47;
+
 
   private final double x, y;
 
@@ -141,8 +148,9 @@ public class TestBalance extends CommandBase {
       return velocity;
   }
 
-  private void canDriveOnPlatform() {
-    // TODO: Check to see whether the robot can drive onto the platform
+  private boolean canDriveOnPlatform() {
+    double x = poseEstimatorSystem.getCurrentPose().getX();
+    return ((minTargetX < x) && (x < maxTargetX));
   }
 
   private void goToPositionAndDriveUp() {
