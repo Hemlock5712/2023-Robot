@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
@@ -55,7 +56,7 @@ public class PPAStar extends CommandBase {
   @Override
   public void initialize() {
     VisGraph tempGraph = AStarMap;
-    if (DriverStation.getAlliance() == Alliance.Blue) {
+    if (Constants.DrivetrainConstants.alliance == Alliance.Blue) {
       startPoint = new Node(poseEstimatorSystem);
     } else {
       Pose2d flippedY = new Pose2d(poseEstimatorSystem.getCurrentPose().getX(),
@@ -128,7 +129,7 @@ public class PPAStar extends CommandBase {
     // Display Trajectory
     poseEstimatorSystem.addTrajectory(trajectory);
     // Change trajectory based on alliance color
-    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
+    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, Constants.DrivetrainConstants.alliance);
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }

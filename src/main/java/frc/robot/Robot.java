@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-  private Alliance alliance = Alliance.Invalid;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -159,9 +158,9 @@ public class Robot extends LoggedRobot {
     Alliance currentAlliance = DriverStation.getAlliance();
 
     // If we have data, and have a new alliance from last time
-    if (DriverStation.isDSAttached() && currentAlliance != alliance) {
+    if (DriverStation.isDSAttached() && currentAlliance != Constants.DrivetrainConstants.alliance) {
       robotContainer.onAllianceChanged(currentAlliance);
-      alliance = currentAlliance;
+      Constants.DrivetrainConstants.alliance = currentAlliance;
     }
   }
 }
