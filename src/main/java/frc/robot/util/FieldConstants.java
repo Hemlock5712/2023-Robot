@@ -179,39 +179,6 @@ public final class FieldConstants {
     }
   }
 
-  /**
-   * Flips a translation to the correct side of the field based on the current
-   * alliance color. By
-   * default, all translations and poses in {@link FieldConstants} are stored with
-   * the origin at the
-   * rightmost point on the BLUE ALLIANCE wall.
-   */
-  public static Translation2d allianceFlip(Translation2d translation) {
-    if (DriverStation.getAlliance() == Alliance.Red) {
-      return new Translation2d(FieldConstants.FIELD_LENGTH_METERS - translation.getX(), translation.getY());
-    } else {
-      return translation;
-    }
-  }
-
-  /**
-   * Flips a pose to the correct side of the field based on the current alliance
-   * color. By default,
-   * all translations and poses in {@link FieldConstants} are stored with the
-   * origin at the
-   * rightmost point on the BLUE ALLIANCE wall.
-   */
-  public static Pose2d allianceFlip(Pose2d pose) {
-    if (DriverStation.getAlliance() == Alliance.Red) {
-      return new Pose2d(
-          FieldConstants.FIELD_LENGTH_METERS - pose.getX(),
-          pose.getY(),
-          new Rotation2d(-pose.getRotation().getCos(), pose.getRotation().getSin()));
-    } else {
-      return pose;
-    }
-  }
-
   public static List<Obstacle> standardObstacles = List.of(
       // Charging Station
       new Obstacle(new double[] {
