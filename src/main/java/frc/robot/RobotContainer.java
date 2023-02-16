@@ -14,6 +14,7 @@ import org.photonvision.PhotonCamera;
 import com.pathplanner.lib.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.Timer;
@@ -192,5 +193,9 @@ public class RobotContainer {
     value = Math.copySign(value * value, value);
 
     return value;
+  }
+
+  public void onAllianceChanged(Alliance currentAlliance) {
+    poseEstimator.setAlliance(currentAlliance);
   }
 }
