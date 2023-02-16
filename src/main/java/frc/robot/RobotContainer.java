@@ -34,10 +34,6 @@ import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.OpenClaw;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.pathfind.Node;
-import frc.robot.pathfind.MapCreator;
-import frc.robot.commands.operator.PlaceHigh;
-import frc.robot.commands.driver.GoToPlace;
 import frc.robot.commands.driver.GoToLoad;
 import frc.robot.commands.driver.GoToPlace;
 import frc.robot.pathfind.MapCreator;
@@ -194,7 +190,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-return new PPAutoDynamic(drivetrainSubsystem, poseEstimator, AStarMap, obstacles, new PathConstraints(1,1));
+return new PPAutoDynamic(drivetrainSubsystem, poseEstimator, standardMap, standardObstacles, new PathConstraints(1,1));
   }
 
   private static double modifyAxis(double value) {
