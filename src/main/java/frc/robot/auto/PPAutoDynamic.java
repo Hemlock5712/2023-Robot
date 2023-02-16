@@ -11,12 +11,15 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -184,11 +187,22 @@ public class PPAutoDynamic extends CommandBase {
 
       Node finalPosition;
       finalPosition = pinList.get(closeIndex).getNode();
-      PathPlannerTrajectory StartPath = FindTrajectory.getPathTrajectory(Drivetrain, PoseEstimator, constraints ,obstacles,AStarMap,startingPoint,finalPosition);
 
-      PoseEstimator.addTrajectory(StartPath);
+    
+      if (DriverStation.getAlliance() == Alliance.Red) {
+        Pose2d flippedY = new Pose2d(startingPoint.getX(),
+            FieldConstants.fieldWidth - startingPoint.getY(),
+            startingPoint.getHolRot());
+        startingPoint = new Node(flippedY);
+      }
 
-      System.out.println(StartPath.getTotalTimeSeconds()+"________________________");
+      PathPlannerTrajectory StartPath = FindTrajectory.getPathTrajectory(Drivetrain, constraints ,obstacles,AStarMap,startingPoint,finalPosition);
+
+      // PoseEstimator.addTrajectory(StartPath);
+
+      // System.out.println(StartPath.getTotalTimeSeconds()+"________________________");
+
+      finalPosition.setHolRot(Rotation2d.fromDegrees(180));
 
       
 
@@ -211,12 +225,11 @@ public class PPAutoDynamic extends CommandBase {
         if(i%2 != 1){
           
           
-          BestPath = FindTrajectory.getPathTrajectory(Drivetrain, PoseEstimator, constraints,obstacles,AStarMap,startingPoint,preplacedList.get(0).getNode());
-          
+          BestPath = FindTrajectory.getPathTrajectory(Drivetrain, constraints,obstacles,AStarMap,startingPoint,preplacedList.get(0).getNode());
+
           for (int j = 0; j < preplacedList.size(); j++) {
             
-            currentPath = FindTrajectory.getPathTrajectory(Drivetrain, PoseEstimator, constraints,obstacles,AStarMap,startingPoint,preplacedList.get(j).getNode());
-            System.out.println(currentPath.getTotalTimeSeconds());
+            currentPath = FindTrajectory.getPathTrajectory(Drivetrain, constraints,obstacles,AStarMap,startingPoint,preplacedList.get(j).getNode());
             if(BestPath.getTotalTimeSeconds()>currentPath.getTotalTimeSeconds()){
               BestPath = currentPath;
               closeIndex = j;
@@ -226,6 +239,8 @@ public class PPAutoDynamic extends CommandBase {
           
           // PoseEstimator.addTrajectory(BestPath);
           finalPosition = preplacedList.get(closeIndex).getNode();
+          finalPosition.setHolRot(Rotation2d.fromDegrees(180));
+
 
           XYList = addNode(XYList, startingPoint);
 
@@ -238,9 +253,9 @@ public class PPAutoDynamic extends CommandBase {
           if(pinList.size() != 0){
             
 
-            BestPath = FindTrajectory.getPathTrajectory(Drivetrain, PoseEstimator, constraints,obstacles,AStarMap,startingPoint,pinList.get(0).getNode());
+            BestPath = FindTrajectory.getPathTrajectory(Drivetrain, constraints,obstacles,AStarMap,startingPoint,pinList.get(0).getNode());
               for (int j = 0; j < pinList.size(); j++) {
-                currentPath = FindTrajectory.getPathTrajectory(Drivetrain, PoseEstimator, constraints,obstacles,AStarMap,startingPoint,pinList.get(j).getNode());
+                currentPath = FindTrajectory.getPathTrajectory(Drivetrain, constraints,obstacles,AStarMap,startingPoint,pinList.get(j).getNode());
                 if(BestPath.getTotalTimeSeconds()>currentPath.getTotalTimeSeconds()){
                   BestPath = currentPath;
                   closeIndex = j;
@@ -248,6 +263,7 @@ public class PPAutoDynamic extends CommandBase {
               }
 
             finalPosition = pinList.get(closeIndex).getNode();
+            finalPosition.setHolRot(Rotation2d.fromDegrees(180));
 
 
             XYList = addNode(XYList, startingPoint);
@@ -291,7 +307,7 @@ public class PPAutoDynamic extends CommandBase {
     // pathDrivingCommand.schedule();
 
     Command command = new SequentialCommandGroup(followPathCommands);
-    // command.schedule();
+    command.schedule();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
