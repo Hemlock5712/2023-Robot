@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.swerve.ModuleConfiguration;
 
 /**
@@ -34,6 +35,8 @@ import frc.robot.swerve.ModuleConfiguration;
 public final class Constants {
 
   public static final class DrivetrainConstants {
+
+    public static Alliance alliance = Alliance.Invalid;
 
     public static final boolean ADD_TO_DASHBOARD = true;
 
@@ -183,6 +186,11 @@ public final class Constants {
     public static PIDController thetaController = new PIDController(Constants.AutoConstants.THETA_kP,
         Constants.AutoConstants.THETA_kI, Constants.AutoConstants.THETA_kD);
 
+  }
+
+  public static class PneumaticsConstants {
+    public static final double MIN_PRESSURE = 80;
+    public static final double MAX_PRESSURE = 120;
   }
 
 }

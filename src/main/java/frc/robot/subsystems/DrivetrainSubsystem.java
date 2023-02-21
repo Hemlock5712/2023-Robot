@@ -40,7 +40,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -58,6 +57,7 @@ import frc.robot.swerve.ModuleConfiguration;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSpeedController;
 import frc.robot.swerve.SwerveSteerController;
+import frc.robot.util.TargetPosition;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -68,8 +68,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private ChassisSpeeds desiredChassisSpeeds;
 
+  private TargetPosition targetPosition = TargetPosition.Position9;
+
   public DrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+    SmartDashboard.putNumber("NextPosition", 0);
+    SmartDashboard.putNumber("NextLevel", 0);
     pigeon.configMountPoseRoll(0);
     pigeon.configMountPoseYaw(0);
 
@@ -131,8 +135,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * with inverting motors.
      * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
      */
-    Timer.delay(1.0);
-    reseedSteerMotorOffsets();
+    // Timer.delay(1.0);
+    // reseedSteerMotorOffsets();
 
     // Put the motors in brake mode when enabled, coast mode when disabled
     new Trigger(RobotState::isEnabled).onTrue(new StartEndCommand(() -> {
@@ -288,6 +292,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
    */
   public void reseedSteerMotorOffsets() {
     Arrays.stream(swerveModules).forEach(SwerveModule::reseedSteerMotorOffset);
+  }
+
+  public TargetPosition getTargetPosition() {
+    return targetPosition;
+  }
+
+  public void setTargetPosition(TargetPosition target) {
+    this.targetPosition = target;
   }
 
   /**

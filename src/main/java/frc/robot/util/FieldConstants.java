@@ -1,20 +1,19 @@
 package frc.robot.util;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.pathfind.Obstacle;
 
 public final class FieldConstants {
 
-  public static final double fieldLength = Units.inchesToMeters(651.25);
-  public static final double fieldWidth = Units.inchesToMeters(315.5);
+  public static final double FIELD_LENGTH_METERS = Units.inchesToMeters(651.25);
+  public static final double FIELD_WIDTH_METERS = Units.inchesToMeters(315.5);
   public static final double tapeWidth = Units.inchesToMeters(2.0);
 
   // Dimensions for community and charging station, including the tape.
@@ -127,10 +126,10 @@ public final class FieldConstants {
   public static final class LoadingZone {
     // Region dimensions
     public static final double width = Units.inchesToMeters(99.0);
-    public static final double innerX = FieldConstants.fieldLength;
-    public static final double midX = fieldLength - Units.inchesToMeters(132.25);
-    public static final double outerX = fieldLength - Units.inchesToMeters(264.25);
-    public static final double leftY = FieldConstants.fieldWidth;
+    public static final double innerX = FieldConstants.FIELD_LENGTH_METERS;
+    public static final double midX = FIELD_LENGTH_METERS - Units.inchesToMeters(132.25);
+    public static final double outerX = FIELD_LENGTH_METERS - Units.inchesToMeters(264.25);
+    public static final double leftY = FieldConstants.FIELD_WIDTH_METERS;
     public static final double midY = leftY - Units.inchesToMeters(50.5);
     public static final double rightY = leftY - width;
     public static final Translation2d[] regionCorners = new Translation2d[] {
@@ -150,7 +149,7 @@ public final class FieldConstants {
 
     // Single substation dimensions
     public static final double singleSubstationWidth = Units.inchesToMeters(22.75);
-    public static final double singleSubstationLeftX = FieldConstants.fieldLength - doubleSubstationLength
+    public static final double singleSubstationLeftX = FieldConstants.FIELD_LENGTH_METERS - doubleSubstationLength
         - Units.inchesToMeters(88.77);
     public static final double singleSubstationCenterX = singleSubstationLeftX + (singleSubstationWidth / 2.0);
     public static final double singleSubstationRightX = singleSubstationLeftX + singleSubstationWidth;
@@ -166,7 +165,7 @@ public final class FieldConstants {
   // Locations of staged game pieces
   public static final class StagingLocations {
     public static final double centerOffsetX = Units.inchesToMeters(47.36);
-    public static final double positionX = fieldLength / 2.0 - Units.inchesToMeters(47.36);
+    public static final double positionX = FIELD_LENGTH_METERS / 2.0 - Units.inchesToMeters(47.36);
     public static final double firstY = Units.inchesToMeters(36.19);
     public static final double separationY = Units.inchesToMeters(48.0);
     public static final Translation2d[] translations = new Translation2d[4];
@@ -178,40 +177,7 @@ public final class FieldConstants {
     }
   }
 
-  /**
-   * Flips a translation to the correct side of the field based on the current
-   * alliance color. By
-   * default, all translations and poses in {@link FieldConstants} are stored with
-   * the origin at the
-   * rightmost point on the BLUE ALLIANCE wall.
-   */
-  public static Translation2d allianceFlip(Translation2d translation) {
-    if (DriverStation.getAlliance() == Alliance.Red) {
-      return new Translation2d(FieldConstants.fieldLength - translation.getX(), translation.getY());
-    } else {
-      return translation;
-    }
-  }
-
-  /**
-   * Flips a pose to the correct side of the field based on the current alliance
-   * color. By default,
-   * all translations and poses in {@link FieldConstants} are stored with the
-   * origin at the
-   * rightmost point on the BLUE ALLIANCE wall.
-   */
-  public static Pose2d allianceFlip(Pose2d pose) {
-    if (DriverStation.getAlliance() == Alliance.Red) {
-      return new Pose2d(
-          FieldConstants.fieldLength - pose.getX(),
-          pose.getY(),
-          new Rotation2d(-pose.getRotation().getCos(), pose.getRotation().getSin()));
-    } else {
-      return pose;
-    }
-  }
-
-  public static List<Obstacle> obstacles = List.of(
+  public static List<Obstacle> standardObstacles = List.of(
       // Charging Station
       new Obstacle(new double[] {
           2.48,
@@ -234,4 +200,47 @@ public final class FieldConstants {
           5.52
       }));
 
+  // Forces robot to go over cable. In case of defense.
+  public static List<Obstacle> cablePath = List.of(
+      // Charging Station
+      new Obstacle(new double[] {
+          2.48,
+          5.36,
+          5.36,
+          2.48
+      }, new double[] {
+          4.81,
+          4.81,
+          1.07,
+          1.07
+      }),
+      new Obstacle(new double[] {
+          3.84,
+          3.84,
+          1.26
+      }, new double[] {
+          6.23,
+          4.80,
+          5.52
+      }));
+
+  public static Map<TargetPosition, Pose2d> PlacementPositions = Map.of(
+      TargetPosition.Position1,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[0].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position2,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[1].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position3,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[2].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position4,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[3].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position5,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[4].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position6,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[5].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position7,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[6].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position8,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[7].getY(), Rotation2d.fromDegrees(180)),
+      TargetPosition.Position9,
+      new Pose2d(2, FieldConstants.Grids.lowTranslations[8].getY(), Rotation2d.fromDegrees(180)));
 }

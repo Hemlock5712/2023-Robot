@@ -14,10 +14,12 @@ import org.photonvision.PhotonCamera;
 import com.pathplanner.lib.PathConstraints;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -26,11 +28,13 @@ import frc.robot.auto.PPSwerveFollower;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
-import frc.robot.commands.PPAStar;
+import frc.robot.commands.OpenClaw;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.pathfind.Edge;
-import frc.robot.pathfind.Node;
+import frc.robot.commands.driver.GoToLoad;
+import frc.robot.commands.driver.GoToPlace;
+import frc.robot.commands.operator.PlaceHigh;
+import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -55,17 +59,20 @@ public class RobotContainer {
   private final PhotonCamera photonCamera = new PhotonCamera("photonvision");
 
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
-  // private final PoseEstimatorSubsystem poseEstimator = new
-  // PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
+
   private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
   private final TestSubsystem testSubsystem = new TestSubsystem();
   private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
       poseEstimator::getCurrentPose);
 
-  VisGraph AStarMap = new VisGraph();
+  final List<Obstacle> standardObstacles = FieldConstants.standardObstacles;
+  final List<Obstacle> cablePath = FieldConstants.cablePath;
 
-  // final List<Obstacle> obstacles = new ArrayList<Obstacle>();
-  final List<Obstacle> obstacles = FieldConstants.obstacles;
+  public MapCreator map = new MapCreator();
+  public VisGraph standardMap = new VisGraph();
+  public VisGraph cableMap = new VisGraph();
+
+  private PneumaticHub pch = new PneumaticHub();
 
   HashMap<String, Command> eventMap = new HashMap<>();
 
@@ -84,6 +91,8 @@ public class RobotContainer {
       () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
       () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2);
 
+  private final Timer reseedTimer = new Timer();
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -91,30 +100,33 @@ public class RobotContainer {
     // Set up the default command for the drivetrain.
     drivetrainSubsystem.setDefaultCommand(fieldOrientedDriveCommand);
 
+    map.createGraph(standardMap, standardObstacles);
+    map.createGraph(cableMap, cablePath);
+
     // Configure the button bindings
     configureButtonBindings();
     configureDashboard();
-
-    // These are points robot can drive to.
-    // For Visual Aid https://www.desmos.com/calculator/rohdacji0b
-    // Charging Pad
-    AStarMap.addNode(new Node(2.48 - 0.1, 4.42 + 0.1));
-    AStarMap.addNode(new Node(5.36 + 0.1, 4.42 + 0.1));
-    AStarMap.addNode(new Node(5.36 + 0.1, 1.07 - 0.1));
-    AStarMap.addNode(new Node(2.48 - 0.1, 1.07 - 0.1));
-    // Divider
-    AStarMap.addNode(new Node(3.84 + 0.1, 4.80 - 0.1));
-
-    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
-      Node startNode = AStarMap.getNode(i);
-      for (int j = i + 1; j < AStarMap.getNodeSize(); j++) {
-        AStarMap.addEdge(new Edge(startNode, AStarMap.getNode(j)), obstacles);
-      }
-    }
+    reseedTimer.start();
+    pch.enableCompressorAnalog(80, 120);
   }
 
   private void configureDashboard() {
 
+  }
+
+  public void periodic() {
+    SmartDashboard.putNumber("PCH/Pressure", pch.getPressure(0));
+    SmartDashboard.putNumber("PCH/MinPressure", Constants.PneumaticsConstants.MIN_PRESSURE);
+    SmartDashboard.putNumber("PCH/MaxPressure", Constants.PneumaticsConstants.MAX_PRESSURE);
+    SmartDashboard.putBoolean("PCH/IsRunning", pch.getCompressor());
+  }
+
+  public void disabledPeriodic() {
+    // Reseed the motor offset continuously when the robot is disabled to help solve
+    // dead wheel issue
+    if (reseedTimer.advanceIfElapsed(1.0)) {
+      drivetrainSubsystem.reseedSteerMotorOffsets();
+    }
   }
 
   /**
@@ -131,21 +143,37 @@ public class RobotContainer {
 
     controller.b().whileTrue(chaseTagCommand);
 
-    controller.start().toggleOnTrue(fieldHeadingDriveCommand);
+    // controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
-    controller.x().whileTrue(new PPAStar(
-        drivetrainSubsystem, poseEstimator,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
-        AStarMap));
+    // controller.x().whileTrue(new PPAStar(
+    // drivetrainSubsystem, poseEstimator,
+    // new PathConstraints(4, 3), new Node(new Translation2d(2.0146, 2.75),
+    // Rotation2d.fromDegrees(180)),
+    // standardObstacles,
+    // standardMap));
 
-    controller.y().whileTrue(new PPAStar(
-        drivetrainSubsystem, poseEstimator,
-        new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75), Rotation2d.fromDegrees(180)), obstacles,
-        AStarMap));
+    // controller.y().whileTrue(new PPAStar(
+    // drivetrainSubsystem, poseEstimator,
+    // new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75),
+    // Rotation2d.fromDegrees(180)),
+    // standardObstacles,
+    // standardMap));
 
-        controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
-        controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
+    controller.x().whileTrue(
+        new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
+    controller.y().whileTrue(
+        new GoToPlace(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
 
+    controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
+    controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
+    controller.rightTrigger(.5).whileTrue(new OpenClaw(testSubsystem));
+
+    // controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation,
+    // drivetrainSubsystem));
+
+    controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
+
+    controller.start().whileTrue(new PlaceHigh(drivetrainSubsystem));
   }
 
   /**
@@ -165,5 +193,9 @@ public class RobotContainer {
     value = Math.copySign(value * value, value);
 
     return value;
+  }
+
+  public void onAllianceChanged(Alliance currentAlliance) {
+    poseEstimator.setAlliance(currentAlliance);
   }
 }

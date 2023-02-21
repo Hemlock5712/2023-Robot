@@ -13,6 +13,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.server.PathPlannerServer;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -27,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
-
   private RobotContainer robotContainer;
 
   /**
@@ -54,11 +55,13 @@ public class Robot extends LoggedRobot {
     }
 
     Logger.getInstance().start();
+
     PathPlannerServer.startServer(5811);
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+    checkDriverStationUpdate();
   }
 
   /**
@@ -74,6 +77,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
+    checkDriverStationUpdate();
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
     // commands, running already-scheduled commands, removing finished or
@@ -81,6 +85,7 @@ public class Robot extends LoggedRobot {
     // and running subsystem periodic() methods. This must be called from the
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
+    robotContainer.periodic();
     CommandScheduler.getInstance().run();
   }
 
@@ -91,6 +96,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledPeriodic() {
+    robotContainer.disabledPeriodic();
   }
 
   /**
@@ -99,6 +105,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
+    checkDriverStationUpdate();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -121,6 +128,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    checkDriverStationUpdate();
   }
 
   /** This function is called periodically during operator control. */
@@ -137,5 +145,22 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+  }
+
+  /**
+   * Checks the driverstation alliance. We have have to check repeatedly because
+   * we don't know when the
+   * driverstation/FMS will connect, and the alliance can change at any time in
+   * the shop.
+   */
+  private void checkDriverStationUpdate() {
+    // https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
+    Alliance currentAlliance = DriverStation.getAlliance();
+
+    // If we have data, and have a new alliance from last time
+    if (DriverStation.isDSAttached() && currentAlliance != Constants.DrivetrainConstants.alliance) {
+      robotContainer.onAllianceChanged(currentAlliance);
+      Constants.DrivetrainConstants.alliance = currentAlliance;
+    }
   }
 }
