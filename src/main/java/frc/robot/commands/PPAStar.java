@@ -12,9 +12,9 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.pathfind.Edge;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
@@ -55,11 +55,11 @@ public class PPAStar extends CommandBase {
   @Override
   public void initialize() {
     VisGraph tempGraph = AStarMap;
-    if (DriverStation.getAlliance() == Alliance.Blue) {
+    if (Constants.DrivetrainConstants.alliance == Alliance.Blue) {
       startPoint = new Node(poseEstimatorSystem);
     } else {
       Pose2d flippedY = new Pose2d(poseEstimatorSystem.getCurrentPose().getX(),
-          FieldConstants.fieldWidth - poseEstimatorSystem.getCurrentPose().getY(),
+          FieldConstants.FIELD_WIDTH_METERS - poseEstimatorSystem.getCurrentPose().getY(),
           poseEstimatorSystem.getCurrentPose().getRotation());
       startPoint = new Node(flippedY);
     }
@@ -91,18 +91,7 @@ public class PPAStar extends CommandBase {
     Rotation2d heading = new Rotation2d(fullPath.get(1).getX() -
         startPoint.getX(),
         fullPath.get(1).getY() - startPoint.getY());
-    // Rotation2d heading = new Rotation2d(robotSpeeds.vxMetersPerSecond,
-    // robotSpeeds.vyMetersPerSecond);
 
-    // If the robot is moving over a specified speed take movement into account.
-    // if (startingSpeed > 0.05) {
-    // heading = new Rotation2d(driveSystem.getChassisSpeeds().vxMetersPerSecond,
-    // driveSystem.getChassisSpeeds().vyMetersPerSecond);
-    // }
-
-    // Depending on if internal points are present, make a new array of the other
-    // points in the path.
-    // PathPoint[] fullPathPoints = new PathPoint[fullPath.size()];
     ArrayList<PathPoint> fullPathPoints = new ArrayList<PathPoint>();
     // Find path between points
     for (int i = 0; i < fullPath.size(); i++) {
@@ -139,7 +128,7 @@ public class PPAStar extends CommandBase {
     // Display Trajectory
     poseEstimatorSystem.addTrajectory(trajectory);
     // Change trajectory based on alliance color
-    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
+    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, Constants.DrivetrainConstants.alliance);
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }

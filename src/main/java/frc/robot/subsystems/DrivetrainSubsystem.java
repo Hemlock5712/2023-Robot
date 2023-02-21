@@ -57,6 +57,7 @@ import frc.robot.swerve.ModuleConfiguration;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSpeedController;
 import frc.robot.swerve.SwerveSteerController;
+import frc.robot.util.TargetPosition;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -67,8 +68,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private ChassisSpeeds desiredChassisSpeeds;
 
+  private TargetPosition targetPosition = TargetPosition.Position9;
+
   public DrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+    SmartDashboard.putNumber("NextPosition", 0);
+    SmartDashboard.putNumber("NextLevel", 0);
     pigeon.configMountPoseRoll(0);
     pigeon.configMountPoseYaw(0);
 
@@ -287,6 +292,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
    */
   public void reseedSteerMotorOffsets() {
     Arrays.stream(swerveModules).forEach(SwerveModule::reseedSteerMotorOffset);
+  }
+
+  public TargetPosition getTargetPosition() {
+    return targetPosition;
+  }
+
+  public void setTargetPosition(TargetPosition target) {
+    this.targetPosition = target;
   }
 
   /**
