@@ -92,14 +92,9 @@ public class TestBalance extends CommandBase {
   // double maxTargetXRed = 6.47;
 
 
-  private final double x, y;
-
-    public TestBalance(DrivetrainSubsystem d, PoseEstimatorSubsystem p, double x, double y) {
+    public TestBalance(DrivetrainSubsystem d, PoseEstimatorSubsystem p) {
       this.driveSystem = d;
-      poseEstimatorSystem = p;
-  
-      this.x = x;
-      this.y = y;
+      this.poseEstimatorSystem = p;
   
       this.xController.setTolerance(0.2);
       
