@@ -18,7 +18,7 @@ public class PlaceHigh extends CommandBase {
   DrivetrainSubsystem drivetrain;
 
   /** Creates a new PlaceHigh. */
-  public PlaceHigh(DrivetrainSubsystem drivetrainSubsystem, ) {
+  public PlaceHigh(DrivetrainSubsystem drivetrainSubsystem) {
     this.drivetrain = drivetrainSubsystem;
   }
 
