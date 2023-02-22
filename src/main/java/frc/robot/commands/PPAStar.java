@@ -112,11 +112,15 @@ public class PPAStar extends CommandBase {
       else {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
+        Rotation2d tempHol = finalPosition.getHolRot();
+        if (fullPath.get(i).getX() <= 5.36 + 0.1) {
+          tempHol = Rotation2d.fromDegrees(180);
+        }
         heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
             fullPath.get(i + 1).getY() - fullPath.get(i).getY());
         fullPathPoints.add(new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             heading,
-            finalPosition.getHolRot()));
+            tempHol));
         addMidPoints(fullPathPoints, fullPath, i, finalPosition.getHolRot());
       }
     }
@@ -128,7 +132,8 @@ public class PPAStar extends CommandBase {
     // Display Trajectory
     poseEstimatorSystem.addTrajectory(trajectory);
     // Change trajectory based on alliance color
-    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, Constants.DrivetrainConstants.alliance);
+    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory,
+        Constants.DrivetrainConstants.alliance);
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
   }

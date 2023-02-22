@@ -45,37 +45,33 @@ public final class Constants {
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.6;
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.57785;
     /**
      * The front-to-back distance between the drivetrain wheels.
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.749;
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.57785;
 
-    // Pick the longest side of the robot for this and measure outside bumper to
-    // outside bumper
-    public static final double ROBOT_LENGTH_WIDTH = 0.749;
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2;
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 9;
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(329.24);
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 1;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 2;
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 9;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(8.7 + 180);
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 4;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 10;
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(118.91);
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 3;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 4;
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 10;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(161.5 + 180);
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 5;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(183);
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 6;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 11;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(88.41 + 180);
-
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 7;
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 8;
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 12;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(45.4 + 180);
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 7;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 8;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 12;
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(191);
 
     public static final int PIGEON_ID = 13;
 
