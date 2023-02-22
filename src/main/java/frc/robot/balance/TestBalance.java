@@ -54,6 +54,9 @@ public class TestBalance extends CommandBase {
   // being added.
   private static double pitchRangeDisable = 0.0;
 
+  // Limit how fast the robot can go at any time in meters per second
+  private static double speedLimit = 1.5;
+
 
 
   // This code is only for testing! Remove for production!
@@ -82,12 +85,7 @@ public class TestBalance extends CommandBase {
    // --------------------------------------------------------------------------
 
 
-  double targetY = 3.94;
-
-  double minTargetX = 1.51;
-  double maxTargetX = 3.95;
-
-  double halfRobotWidth = 0.375;
+  double targetX = 3.94;
 
   // Only need blue side - Don't need side specifics.
   // double minTargetXRed = 4.03;
@@ -114,13 +112,13 @@ public class TestBalance extends CommandBase {
     }
 
 
-  private double getDistanceFromY() {
-    return poseEstimatorSystem.getCurrentPose().getY() - targetY;
+  private double getDistanceFromX() {
+    return poseEstimatorSystem.getCurrentPose().getX() - targetX;
   }
 
   private double getVelocity() {
     double pitch = driveSystem.getPitch();
-    double distanceFromCenter = getDistanceFromY();
+    double distanceFromCenter = getDistanceFromX();
     double velocity = 0.0;
     if (
         (useDisableOnPitch && ((-pitchRangeDisable < pitch) && (pitchRangeDisable > pitch))) ||
@@ -146,21 +144,18 @@ public class TestBalance extends CommandBase {
           }
         velocity = velocityOfGravity + velocityOfDistance + velocityAdded;
       }
+
+      if (velocity > speedLimit) {
+        velocity = speedLimit;
+      } else if (velocity < -speedLimit) {
+        velocity = -speedLimit;
+      }
       
       return velocity;
   }
 
-  private boolean canDriveOnPlatform() {
-    double x = poseEstimatorSystem.getCurrentPose().getX();
-    return (((minTargetX + halfRobotWidth) < x) && (x < (maxTargetX - halfRobotWidth)));
-  }
-
-  private void goToPositionAndDriveUp() {
-    // TODO: Get robot to line up with and drive up the platform
-  }
-
   private void selfBalancing() {
-    driveSystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, getVelocity(), 0.0, poseEstimatorSystem.getCurrentPose().getRotation()));
+    driveSystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(getVelocity(), 0.0, 0.0, poseEstimatorSystem.getCurrentPose().getRotation()));
   }
   
   @Override
@@ -170,7 +165,7 @@ public class TestBalance extends CommandBase {
 
   @Override
   public void execute() {
-    // TODO: Set up a sytem to switch between lining up and balancing
+    selfBalancing();
   }
 
 
