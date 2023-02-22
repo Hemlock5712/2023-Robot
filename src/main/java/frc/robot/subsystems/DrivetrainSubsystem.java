@@ -187,7 +187,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public double getPitch() {
-    return pigeon.getPitch();
+    return pigeon.getRoll();
   }
 
   public void resetPitch() {

@@ -7,11 +7,11 @@ package frc.robot.balance;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
-
 
 
 
@@ -55,7 +55,8 @@ public class TestBalance extends CommandBase {
   private static double pitchRangeDisable = 0.0;
 
   // Limit how fast the robot can go at any time in meters per second
-  private static double speedLimit = 1.5;
+  private static double speedLimitHigh = 1.5;
+  private static double speedLimitLow = 0.05;
 
 
 
@@ -72,7 +73,7 @@ public class TestBalance extends CommandBase {
 
   // Set true you don't want constantAddedVelocity to be added within a certain
   // specified amount of radians from 0 radians.
-  private boolean useDisableConstantOnPitch = true;
+  private boolean useDisableConstantOnPitch = false;
 
   // Set true you don't want any velocity to be added within a certain
   // specified amount of meters from the center of the Charging Station.
@@ -112,7 +113,8 @@ public class TestBalance extends CommandBase {
   }
 
   private double getVelocity() {
-    double pitch = driveSystem.getPitch();
+    double pitch = Units.degreesToRadians(driveSystem.getPitch());
+    //SmartDashboard.putNumber("gyroPitch", pitch);
     double distanceFromCenter = getDistanceFromX();
     double velocity = 0.0;
     if (
@@ -125,7 +127,7 @@ public class TestBalance extends CommandBase {
       } else {
         // Calculating how much the robot accelerates downward based upon gravity and the angle of the platform.
         double velocityOfGravity = 9.81 * Math.sin(pitch) * (useGravity ? 1.0 : 0.0); //Ternary operator is for testing! DON'T use in production!
-        double velocityOfDistance = velocityPerMeter * distanceFromCenter;
+        double velocityOfDistance = -velocityPerMeter * distanceFromCenter;
         double velocityAdded;
         // Checking if useDisableConstantOnPitch or useDisableConstantOnPos are in use and if so
         // we will set the velocity added to zero otherwise set it to our velocity constant.
@@ -137,15 +139,21 @@ public class TestBalance extends CommandBase {
           } else {
             velocityAdded = constantAddedVelocity;
           }
-        velocity = velocityOfGravity + velocityOfDistance + velocityAdded;
+        velocity = 1 * (velocityOfGravity + velocityOfDistance + velocityAdded);
       }
 
-      if (velocity > speedLimit) {
-        velocity = speedLimit;
-      } else if (velocity < -speedLimit) {
-        velocity = -speedLimit;
+      if (velocity > speedLimitHigh) {
+        velocity = speedLimitHigh;
+      } else if (velocity < -speedLimitHigh) {
+        velocity = -speedLimitHigh;
       }
       
+      if (velocity < speedLimitLow && velocity > 0) {
+        velocity = 0;
+      } else if (velocity > -speedLimitLow && velocity < 0) {
+        velocity = 0;
+      }
+
       return velocity;
   }
 
@@ -155,7 +163,7 @@ public class TestBalance extends CommandBase {
   
   @Override
   public void initialize() {
-    driveSystem.resetPitch();
+    //driveSystem.resetPitch();
   }
 
   @Override
