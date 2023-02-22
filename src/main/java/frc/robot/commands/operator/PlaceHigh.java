@@ -4,19 +4,27 @@
 
 package frc.robot.commands.operator;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.util.PlacementCalculator;
 import frc.robot.util.PlacementPosition;
 import frc.robot.util.TargetLevel;
 
 public class PlaceHigh extends CommandBase {
   DrivetrainSubsystem drivetrain;
+  ExtensionSubsystem extension;
+  ElevatorSubsystem elevator;
 
   /** Creates a new PlaceHigh. */
-  public PlaceHigh(DrivetrainSubsystem drivetrainSubsystem) {
+  public PlaceHigh(DrivetrainSubsystem drivetrainSubsystem, ExtensionSubsystem extensionSubsystem,
+      ElevatorSubsystem elevatorSubsystem) {
     this.drivetrain = drivetrainSubsystem;
+    this.extension = extensionSubsystem;
+    this.elevator = elevatorSubsystem;
   }
 
   // Called when the command is initially scheduled.
