@@ -16,15 +16,10 @@ import frc.robot.util.TargetLevel;
 
 public class PlaceHigh extends CommandBase {
   DrivetrainSubsystem drivetrain;
-  ExtensionSubsystem extension;
-  ElevatorSubsystem elevator;
 
   /** Creates a new PlaceHigh. */
-  public PlaceHigh(DrivetrainSubsystem drivetrainSubsystem, ExtensionSubsystem extensionSubsystem,
-      ElevatorSubsystem elevatorSubsystem) {
+  public PlaceHigh(DrivetrainSubsystem drivetrainSubsystem, ) {
     this.drivetrain = drivetrainSubsystem;
-    this.extension = extensionSubsystem;
-    this.elevator = elevatorSubsystem;
   }
 
   // Called when the command is initially scheduled.
