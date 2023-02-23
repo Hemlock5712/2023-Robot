@@ -199,55 +199,55 @@ public final class Constants {
     /**
      * CAN ID of the arm angle encoder (at the pivot point)
      */
-    public static final int ARM_ANGLE_ENCODER_ID = 18;
+    public static final int ARM_ANGLE_ENCODER_ID = 20;
     /**
      * CAN ID of the front elevator motor
      */
-    public static final int ELEVATOR_FRONT_FALCON_ID = 19;
+    public static final int ELEVATOR_FRONT_FALCON_ID = 25;
     /**
      * CAN ID of the back elevator motor
      */
-    public static final int ELEVATOR_BACK_FALCON_ID = 20;
+    public static final int ELEVATOR_BACK_FALCON_ID = 23;
     /**
      * Radius of the spool in meters
      */
-    public static final double DRUM_RADIUS = Units.inchesToMeters(1);
+    public static final double DRUM_RADIUS = Units.inchesToMeters(5.0/8.0);
     /**
      * Mass of the arm in kg
      */
-    public static final double ARM_MASS = Units.lbsToKilograms(20);
+    public static final double ARM_MASS = Units.lbsToKilograms(65);
     /**
      * Maximum speed of the arm in m/s
      *
      * This should be tuned later once we determine how fast we want it to move
      */
-    public static final double MAX_SPEED = 0.2;
+    public static final double MAX_SPEED = 0.05;
     /**
      * Maximum acceleration of the arm in m/s^2
      *
      * This should be tuned later once we determine how fast we want it to move
      */
-    public static final double MAX_ACCELERATION = 0.2;
+    public static final double MAX_ACCELERATION = 0.05;
     /**
      * Gear ratio of the elevator from the motors to the spool
      */
-    public static final double ELEVATOR_GEARING = 1;
+    public static final double ELEVATOR_GEARING = 3.80;
     /**
      * Height of the pivot point from the ground.
      */
-    public static final double PIVOT_POINT_HEIGHT = Units.inchesToMeters(36);
+    public static final double PIVOT_POINT_HEIGHT = Units.inchesToMeters(21);
     /**
      * How far out the mount point is from the pivot point.
      */
-    public static final double MOUNT_POINT_DISTANCE_ON_ARM = Units.inchesToMeters(18);
+    public static final double MOUNT_POINT_DISTANCE_ON_ARM = Units.inchesToMeters(21);
     /**
      * Angle offset of CANCoder relative to the arm. This is the angle between the
      * arm and the encoder's zero position.
      *
      * Should be set to 0 when the arm is parallel to the ground.
      */
-    public static final double ARM_ANGLE_ABSOLUTE_OFFSET = 0;
-    public static final double MAX_ARM_LEMGTH = Units.inchesToMeters(36);
+    public static final double ARM_ANGLE_ABSOLUTE_OFFSET = 62.42;
+    public static final double MAX_ARM_LENGTH = Units.inchesToMeters(36);
     /**
      * Tolerance for when the elevator considers itself to be at the target point
      */
@@ -258,7 +258,7 @@ public final class Constants {
     /**
      * CAN ID of the extension encoder
      */
-    public static final int EXTENSION_FALCON_ID = 21;
+    public static final int EXTENSION_FALCON_ID = 24;
     /**
      * Gear ratio of the extension from the motor to the spool
      */
@@ -266,7 +266,7 @@ public final class Constants {
     /**
      * Mass of the extension in kg
      */
-    public static final double EXTENSION_MASS = Units.lbsToKilograms(10);
+    public static final double EXTENSION_MASS = Units.lbsToKilograms(66);
     /**
      * Maximum speed of the extension in m/s
      *

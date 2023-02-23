@@ -9,6 +9,9 @@ import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 import java.util.HashMap;
 import java.util.List;
 
+import frc.robot.commands.operator.*;
+import frc.robot.commands.operator.subcommands.MoveArmToMid;
+import frc.robot.subsystems.*;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
@@ -32,9 +35,6 @@ import frc.robot.commands.operator.NextNode;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.PoseEstimatorSubsystem;
-import frc.robot.subsystems.TestSubsystem;
 import frc.robot.util.FieldConstants;
 
 /**
@@ -57,6 +57,10 @@ public class RobotContainer {
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
 
   private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
+  private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+  private final ExtensionSubsystem extensionSubsystem = new ExtensionSubsystem();
+  private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
+      poseEstimator::getCurrentPose);
   private final TestSubsystem testSubsystem = new TestSubsystem();
 
   final List<Obstacle> standardObstacles = FieldConstants.standardObstacles;
@@ -136,7 +140,7 @@ public class RobotContainer {
     // controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition,
     // drivetrainSubsystem));
 
-    // controller.b().whileTrue(chaseTagCommand);
+//    controller.b().whileTrue(chaseTagCommand);
 
     // controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
@@ -145,17 +149,23 @@ public class RobotContainer {
     controller.leftBumper().whileTrue(
         new GoToPlace(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
 
-    // controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
-    // controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
-    // controller.rightTrigger(.5).whileTrue(new OpenClaw(testSubsystem));
+//    controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
+//    controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
+//    controller.rightTrigger(.5).whileTrue(new OpenClaw(testSubsystem));
 
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation,
     // drivetrainSubsystem));
 
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
 
-    controller2.rightBumper().whileTrue(new NextNode(true));
-    controller2.leftBumper().whileTrue(new NextNode(false));
+    controller.start().whileTrue(new PlaceHigh(drivetrainSubsystem));
+
+    controller.b().whileTrue(new MoveArmToMid(elevatorSubsystem, extensionSubsystem));
+
+    controller.pov(0).whileTrue(new ManualLiftUp(elevatorSubsystem));
+    controller.pov(90).whileTrue(new ManualExtensionOut(extensionSubsystem));
+    controller.pov(180).whileTrue(new ManualLiftDown(elevatorSubsystem));
+    controller.pov(270).whileTrue(new ManualExtensionIn(extensionSubsystem));
   }
 
   /**
