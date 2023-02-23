@@ -6,6 +6,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.subsystems.ElevatorSubsystemBase;
 
@@ -25,6 +26,7 @@ public class ExtensionSubsystem extends ElevatorSubsystemBase {
                 Constants.ExtensionConstants.MAX_ACCELERATION,
                 Constants.ExtensionConstants.EXTENSION_GEARING
         );
+        motor.setInverted(true);
     }
 
     /**
@@ -60,7 +62,19 @@ public class ExtensionSubsystem extends ElevatorSubsystemBase {
 
     @Override
     public boolean atTarget() {
-        return Math.abs(getHeight() - goal.position) < Constants.ExtensionConstants.AT_TARGET_TOLERANCE;
+        if (goal != null) {
+            return Math.abs(getHeight() - goal.position) < Constants.ExtensionConstants.AT_TARGET_TOLERANCE;
+        }
+        return true;
+    }
+
+    public void rawDrive(double percentage) {
+        autoPosition = false;
+        motor.set(ControlMode.PercentOutput, percentage);
+    }
+
+    public void enableAutoDrive() {
+        autoPosition = true;
     }
 
     /**
@@ -71,5 +85,6 @@ public class ExtensionSubsystem extends ElevatorSubsystemBase {
         super.periodic();
         extensionLengthEntry.setDouble(getHeight());
         motorVoltageEntry.setDouble(motor.getMotorOutputVoltage());
+        SmartDashboard.putData(this);
     }
 }

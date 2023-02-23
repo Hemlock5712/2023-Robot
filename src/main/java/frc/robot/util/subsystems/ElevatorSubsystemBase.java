@@ -25,6 +25,7 @@ public abstract class ElevatorSubsystemBase extends SubsystemBase {
     protected final KalmanFilter<N2, N1, N1> observer;
     protected final LinearQuadraticRegulator<N2, N1, N1> controller;
     protected LinearSystemLoop<N2, N1, N1> loop;
+    protected boolean autoPosition = false;
 
     public ElevatorSubsystemBase(DCMotor motorConfig, double drumRadius, double carriageMass, double maxSpeed, double maxAcceleration, double elevatorGearing) {
         constraints = new TrapezoidProfile.Constraints(
@@ -46,9 +47,9 @@ public abstract class ElevatorSubsystemBase extends SubsystemBase {
                 VecBuilder.fill(12.0),
                 0.020
         );
-        loop = new LinearSystemLoop<>(plant, controller, observer, 12.0, 0.020);
+        loop = new LinearSystemLoop<>(plant, controller, observer, 6.0, 0.020);
         elevatorGearRatio = elevatorGearing;
-        goal = new TrapezoidProfile.State(0, 0.0);
+        goal = null;
     }
 
     public abstract double getHeight();
@@ -61,12 +62,20 @@ public abstract class ElevatorSubsystemBase extends SubsystemBase {
 
     @Override
     public void periodic() {
-        lastProfiledReference = (new TrapezoidProfile(constraints, goal, lastProfiledReference).calculate(0.020));
-        loop.setNextR(lastProfiledReference.position, lastProfiledReference.velocity);
-        loop.correct(VecBuilder.fill(getHeight()));
-        loop.predict(0.020);
+        if(goal != null) {
+            if(autoPosition) {
+                lastProfiledReference = (new TrapezoidProfile(constraints, goal, lastProfiledReference).calculate(0.020));
+                loop.setNextR(lastProfiledReference.position, lastProfiledReference.velocity);
+                loop.correct(VecBuilder.fill(getHeight()));
+                loop.predict(0.020);
 
-        double nextVoltage = loop.getU(0);
-        setMotorVoltage(nextVoltage);
+                double nextVoltage = loop.getU(0);
+                setMotorVoltage(nextVoltage);
+            } else {
+//                goal = new TrapezoidProfile.State(getHeight(), 0);
+            }
+        } else {
+            goal = new TrapezoidProfile.State(getHeight(), 0);
+        }
     }
 }

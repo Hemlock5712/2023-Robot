@@ -15,9 +15,14 @@ public class MoveArmToMid extends CommandBase {
         this.extension = extension;
     }
 
+    @Override
+    public void initialize() {
+        elevator.enableAutoDrive();
+    }
+
     public void execute() {
-        extension.setTargetHeight(Units.inchesToMeters(20));
-        elevator.setTargetHeight(Units.inchesToMeters(30));
+//        extension.setTargetHeight(Units.inchesToMeters(20));
+        elevator.setTargetHeight(Units.inchesToMeters(32));
     }
 
     @Override
