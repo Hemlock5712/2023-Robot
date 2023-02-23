@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
@@ -16,6 +17,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -154,10 +156,20 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         // Make sure we have a new measurement, and that it's on the field
         if (estimatedRobotPose.timestampSeconds != previousPipelineTimestamp
             && estimatedPose.getX() > 0.0 && estimatedPose.getX() <= FieldConstants.FIELD_LENGTH_METERS
-            && estimatedPose.getY() > 0.0 && estimatedPose.getY() <= FieldConstants.FIELD_WIDTH_METERS
-            && (estimatedRobotPose.targetsUsed.size() > 1 && estimatedPose.getX() < 4)) {
-          previousPipelineTimestamp = estimatedRobotPose.timestampSeconds;
-          poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), estimatedRobotPose.timestampSeconds);
+            && estimatedPose.getY() > 0.0 && estimatedPose.getY() <= FieldConstants.FIELD_WIDTH_METERS) {
+          if (estimatedRobotPose.targetsUsed.size() > 1 && estimatedPose.getX() < 4) {
+            for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
+              Transform3d bestTarget = target.getBestCameraToTarget();
+              double distance = Math.hypot(bestTarget.getX(), bestTarget.getY());
+              if (distance < 4) {
+                previousPipelineTimestamp = estimatedRobotPose.timestampSeconds;
+                poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), estimatedRobotPose.timestampSeconds);
+              }
+            }
+          } else {
+            previousPipelineTimestamp = estimatedRobotPose.timestampSeconds;
+            poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), estimatedRobotPose.timestampSeconds);
+          }
         }
       });
     }
