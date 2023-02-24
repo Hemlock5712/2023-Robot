@@ -247,7 +247,8 @@ public final class Constants {
      * Should be set to 0 when the arm is parallel to the ground.
      */
     public static final double ARM_ANGLE_ABSOLUTE_OFFSET = 62.42;
-    public static final double MAX_ARM_LENGTH = Units.inchesToMeters(36);
+    public static final double MAX_ARM_LENGTH = Units.inchesToMeters(40);
+    public static final double MIN_ARM_LENGTH = Units.inchesToMeters(10);
     /**
      * Tolerance for when the elevator considers itself to be at the target point
      */

@@ -9,8 +9,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.subsystems.ElevatorSubsystemBase;
+import frc.robot.util.subsystems.ElevatorSubsystemBasePID;
 
-public class ExtensionSubsystem extends ElevatorSubsystemBase {
+public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
 
     private TalonFX motor = new TalonFX(Constants.ExtensionConstants.EXTENSION_FALCON_ID);
 
@@ -18,14 +19,7 @@ public class ExtensionSubsystem extends ElevatorSubsystemBase {
     private NetworkTableEntry motorVoltageEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem").getEntry("currentVoltage");
 
     public ExtensionSubsystem() {
-        super(
-                DCMotor.getFalcon500(1),
-                Constants.ExtensionConstants.SPOOL_RADIUS,
-                Constants.ExtensionConstants.EXTENSION_MASS,
-                Constants.ExtensionConstants.MAX_SPEED,
-                Constants.ExtensionConstants.MAX_ACCELERATION,
-                Constants.ExtensionConstants.EXTENSION_GEARING
-        );
+        super(8, 0, 0, .05, .71, .2, 0.1, Constants.ExtensionConstants.EXTENSION_GEARING);
         motor.setInverted(true);
     }
 
@@ -48,7 +42,7 @@ public class ExtensionSubsystem extends ElevatorSubsystemBase {
      */
     @Override
     public void setTargetHeight(double height) {
-        this.goal = new TrapezoidProfile.State(height, 0.0);
+        this.setpoint = height;
     }
 
     /**
@@ -62,8 +56,8 @@ public class ExtensionSubsystem extends ElevatorSubsystemBase {
 
     @Override
     public boolean atTarget() {
-        if (goal != null) {
-            return Math.abs(getHeight() - goal.position) < Constants.ExtensionConstants.AT_TARGET_TOLERANCE;
+        if (hasValidSetpoint) {
+            return Math.abs(getHeight() - setpoint) < Constants.ExtensionConstants.AT_TARGET_TOLERANCE;
         }
         return true;
     }

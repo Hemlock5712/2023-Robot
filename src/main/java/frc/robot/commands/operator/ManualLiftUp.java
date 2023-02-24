@@ -11,7 +11,7 @@ public class ManualLiftUp extends CommandBase {
     }
 
     public void execute() {
-        elevator.rawDrive(0.3);
+        elevator.rawDrive(0.5);
     }
 
     @Override

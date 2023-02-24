@@ -13,8 +13,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.subsystems.ElevatorSubsystemBase;
+import frc.robot.util.subsystems.ElevatorSubsystemBasePID;
 
-public class ElevatorSubsystem extends ElevatorSubsystemBase {
+public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
 
   CANCoder angleEncoder = new CANCoder(Constants.ArmConstants.ARM_ANGLE_ENCODER_ID);
   TalonFX elevatorMotorFront = new TalonFX(Constants.ArmConstants.ELEVATOR_FRONT_FALCON_ID);
@@ -36,9 +37,7 @@ public class ElevatorSubsystem extends ElevatorSubsystemBase {
    * but can easily be replaced with a PID controller
    */
   public ElevatorSubsystem() {
-    super(DCMotor.getFalcon500(2), Constants.ArmConstants.DRUM_RADIUS, Constants.ArmConstants.ARM_MASS,
-        Constants.ArmConstants.MAX_SPEED, Constants.ArmConstants.MAX_ACCELERATION,
-        Constants.ArmConstants.ELEVATOR_GEARING);
+    super(8, 0, 0, .05, .71, .2, 0.1, Constants.ArmConstants.ELEVATOR_GEARING);
     elevatorMotorBack.follow(elevatorMotorFront);
     elevatorMotorFront.setInverted(true);
     elevatorMotorBack.setInverted(true);
@@ -64,12 +63,13 @@ public class ElevatorSubsystem extends ElevatorSubsystemBase {
   /**
    * Sets the target height that the elevator should attempt to go to
    *
-   * The State Space model should automatically handle the movement to this
+   * The PID control should automatically handle the movement to this
    * position
    */
   @Override
   public void setTargetHeight(double height) {
-    this.goal = new TrapezoidProfile.State(height, 0.0);
+    hasValidSetpoint = true;
+    this.setpoint = Math.min(Math.max(height, Constants.ArmConstants.MIN_ARM_LENGTH), Constants.ArmConstants.MAX_ARM_LENGTH);
   }
 
   /**
@@ -85,13 +85,13 @@ public class ElevatorSubsystem extends ElevatorSubsystemBase {
    */
   @Override
   public void setMotorVoltage(double voltage) {
-    elevatorMotorFront.set(ControlMode.PercentOutput, Math.min(.2, Math.max(-.1, voltage / 12)));
+    elevatorMotorFront.set(ControlMode.PercentOutput, Math.min(.6, Math.max(-.3, voltage / 12)));
   }
 
   @Override
   public boolean atTarget() {
-    if(goal != null) {
-      return Math.abs(getHeight() - goal.position) < Constants.ArmConstants.AT_TARGET_TOLERANCE;
+    if(hasValidSetpoint) {
+      return Math.abs(getHeight() - setpoint) < Constants.ArmConstants.AT_TARGET_TOLERANCE;
     }
     return true;
   }
@@ -109,6 +109,7 @@ public class ElevatorSubsystem extends ElevatorSubsystemBase {
 
   public void rawDrive(double percentage) {
     autoPosition = false;
+    hasValidSetpoint = false;
     elevatorMotorFront.set(ControlMode.PercentOutput, percentage);
   }
 
@@ -128,6 +129,8 @@ public class ElevatorSubsystem extends ElevatorSubsystemBase {
     motorCurrentEntry.setDouble(elevatorMotorFront.getStatorCurrent());
     SmartDashboard.putData(this);
     tempEntry.setDouble(elevatorMotorFront.getTemperature());
-    targetHeight.setDouble(goal.position);
+    targetHeight.setDouble(setpoint);
+    SmartDashboard.putNumber("ElevatorSubsystem/PID", pidController.calculate(getHeight()));
+    SmartDashboard.putNumber("ElevatorSubsystem/Feedforward", feedforward.calculate(getHeight()));
   }
 }
