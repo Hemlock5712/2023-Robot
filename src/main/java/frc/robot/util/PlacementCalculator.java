@@ -4,7 +4,7 @@ import java.util.List;
 
 public class PlacementCalculator {
 
-  private static List<PlacementPosition> order = List.of(
+  public static List<PlacementPosition> order = List.of(
       new PlacementPosition(TargetPosition.Position9, TargetLevel.Top),
       new PlacementPosition(TargetPosition.Position8, TargetLevel.Top),
       new PlacementPosition(TargetPosition.Position7, TargetLevel.Top),
@@ -19,7 +19,7 @@ public class PlacementCalculator {
       new PlacementPosition(TargetPosition.Position7, TargetLevel.Mid),
       new PlacementPosition(TargetPosition.Position6, TargetLevel.Mid),
       new PlacementPosition(TargetPosition.Position5, TargetLevel.Mid),
-      new PlacementPosition(TargetPosition.Position4, TargetLevel.Mid),      
+      new PlacementPosition(TargetPosition.Position4, TargetLevel.Mid),
       new PlacementPosition(TargetPosition.Position3, TargetLevel.Mid),
       new PlacementPosition(TargetPosition.Position2, TargetLevel.Mid),
       new PlacementPosition(TargetPosition.Position1, TargetLevel.Mid),
@@ -49,19 +49,35 @@ public class PlacementCalculator {
     return order.get(0);
   }
 
-  /**
+    /**
    * Determine the next position to drive the robot to
    * 
    * @param position Position where robot just placed game piece
    * @param level    Level where robot just placed game piece
+   * @return Next position
+   */
+  public static PlacementPosition getNextPlacementPosition(PlacementPosition currentPosition) {
+    int i = order.indexOf(new PlacementPosition(currentPosition.getPosition(), currentPosition.getLevel()));
+
+    if (i < order.size()) {
+      return order.get((i + 1) % order.size());
+    }
+    return order.get(0);
+  }
+
+
+    /**
+   * Determine the next position to drive the robot to
+   * 
+   * @param currentPosition Position where robot just placed game piece
    * @return Prev position
    */
-  public static PlacementPosition getPreviousPlacementPosition(TargetPosition position, TargetLevel level) {
-  int i = order.indexOf(new PlacementPosition(position, level));
-  System.out.println(i);
-  if (i < 0) {
-    return order.get((order.size()-1) % order.size());     
+  public static PlacementPosition getPreviousPlacementPosition(PlacementPosition currentPosition) {
+    int i = order.indexOf(new PlacementPosition(currentPosition.getPosition(), currentPosition.getLevel()));
+    System.out.println(i);
+    if (i < 0) {
+      return order.get((order.size() - 1) % order.size());
+    }
+    return order.get((i - 1) % order.size());
   }
-  return order.get((i - 1) % order.size());
-}
 }

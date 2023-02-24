@@ -39,7 +39,7 @@ public class GoToPlace extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    TargetPosition target = drivetrain.getTargetPosition();
+    TargetPosition target = drivetrain.getPlacementPosition().getPosition();
     Node targetPosition = new Node(FieldConstants.PlacementPositions.get(target));
     pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap);
     pathfindCommand.schedule();

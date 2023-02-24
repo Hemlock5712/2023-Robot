@@ -11,7 +11,6 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.util.PlacementCalculator;
 import frc.robot.util.PlacementPosition;
-import frc.robot.util.TargetLevel;
 
 public class NextNode extends CommandBase {
   DrivetrainSubsystem drivetrain;
@@ -43,16 +42,13 @@ public class NextNode extends CommandBase {
       direction = 1 - direction;
     }
     if(direction == 1){
-       nextPosition = PlacementCalculator.getNextPlacementPosition(drivetrain.getTargetPosition(),
-        TargetLevel.Top);
+       nextPosition = PlacementCalculator.getNextPlacementPosition(drivetrain.getPlacementPosition());
     }
     else{
-      nextPosition = PlacementCalculator.getPreviousPlacementPosition(drivetrain.getTargetPosition(),
-        TargetLevel.Top);
+      nextPosition = PlacementCalculator.getPreviousPlacementPosition(drivetrain.getPlacementPosition());
     }
   
-    
-    drivetrain.setTargetPosition(nextPosition.getPosition());
+    drivetrain.setTargetPosition(nextPosition);
     SmartDashboard.putNumber("NextPosition", nextPosition.getPosition().ordinal());
     SmartDashboard.putNumber("NextLevel", 2 - nextPosition.getLevel().ordinal());
   }

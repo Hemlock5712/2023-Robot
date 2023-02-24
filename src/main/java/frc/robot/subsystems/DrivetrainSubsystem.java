@@ -57,7 +57,8 @@ import frc.robot.swerve.ModuleConfiguration;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSpeedController;
 import frc.robot.swerve.SwerveSteerController;
-import frc.robot.util.TargetPosition;
+import frc.robot.util.PlacementCalculator;
+import frc.robot.util.PlacementPosition;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -68,7 +69,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private ChassisSpeeds desiredChassisSpeeds;
 
-  private TargetPosition targetPosition = TargetPosition.Position9;
+  private PlacementPosition targetPosition = PlacementCalculator.order.get(0);
 
   public DrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -294,11 +295,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     Arrays.stream(swerveModules).forEach(SwerveModule::reseedSteerMotorOffset);
   }
 
-  public TargetPosition getTargetPosition() {
+  public PlacementPosition getPlacementPosition() {
     return targetPosition;
   }
 
-  public void setTargetPosition(TargetPosition target) {
+  public void setTargetPosition(PlacementPosition target) {
     this.targetPosition = target;
   }
 
