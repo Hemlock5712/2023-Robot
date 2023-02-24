@@ -108,7 +108,7 @@ public class RobotContainer {
     configureButtonBindings();
     configureDashboard();
     reseedTimer.start();
-    pch.enableCompressorAnalog(80, 120);
+    //pch.enableCompressorAnalog(80, 120);
   }
 
   private void configureDashboard() {
@@ -116,10 +116,10 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    SmartDashboard.putNumber("PCH/Pressure", pch.getPressure(0));
+    //SmartDashboard.putNumber("PCH/Pressure", pch.getPressure(0));
     SmartDashboard.putNumber("PCH/MinPressure", Constants.PneumaticsConstants.MIN_PRESSURE);
     SmartDashboard.putNumber("PCH/MaxPressure", Constants.PneumaticsConstants.MAX_PRESSURE);
-    SmartDashboard.putBoolean("PCH/IsRunning", pch.getCompressor());
+    ///SmartDashboard.putBoolean("PCH/IsRunning", pch.getCompressor());
   }
 
   public void disabledPeriodic() {
