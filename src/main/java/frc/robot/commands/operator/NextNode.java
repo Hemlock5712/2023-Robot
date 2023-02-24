@@ -11,12 +11,14 @@ import frc.robot.util.PlacementCalculator;
 import frc.robot.util.PlacementPosition;
 import frc.robot.util.TargetLevel;
 
-public class PlaceHigh extends CommandBase {
+public class NextNode extends CommandBase {
   DrivetrainSubsystem drivetrain;
+  int movement;
 
-  /** Creates a new PlaceHigh. */
-  public PlaceHigh(DrivetrainSubsystem drivetrainSubsystem) {
+  /** Creates a new NextNode. */
+  public NextNode(DrivetrainSubsystem drivetrainSubsystem, int movement) {
     this.drivetrain = drivetrainSubsystem;
+    this.movement = movement;
   }
 
   // Called when the command is initially scheduled.
@@ -33,8 +35,21 @@ public class PlaceHigh extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    PlacementPosition nextPosition = PlacementCalculator.getNextPlacementPosition(drivetrain.getTargetPosition(),
+    int direction = movement;
+    PlacementPosition nextPosition;
+    if(Constants.DrivetrainConstants.alliance == Alliance.Red){
+      direction = 1 - direction;
+    }
+    if(direction == 1){
+       nextPosition = PlacementCalculator.getNextPlacementPosition(drivetrain.getTargetPosition(),
         TargetLevel.Top);
+    }
+    else{
+      nextPosition = PlacementCalculator.getPreviousPlacementPosition(drivetrain.getTargetPosition(),
+        TargetLevel.Top);
+    }
+  
+    
     drivetrain.setTargetPosition(nextPosition.getPosition());
     SmartDashboard.putNumber("NextPosition", nextPosition.getPosition().ordinal());
     SmartDashboard.putNumber("NextLevel", 2 - nextPosition.getLevel().ordinal());

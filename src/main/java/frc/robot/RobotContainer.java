@@ -33,7 +33,7 @@ import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.driver.GoToLoad;
 import frc.robot.commands.driver.GoToPlace;
-import frc.robot.commands.operator.PlaceHigh;
+import frc.robot.commands.operator.NextNode;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
@@ -54,6 +54,7 @@ import frc.robot.util.FieldConstants;
 public class RobotContainer {
 
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController controller2 = new CommandXboxController(1);
   // Set IP to 10.57.12.11
   // Set RoboRio to 10.57.12.2
   private final PhotonCamera photonCamera = new PhotonCamera("photonvision");
@@ -145,23 +146,9 @@ public class RobotContainer {
 
     // controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
-    // controller.x().whileTrue(new PPAStar(
-    // drivetrainSubsystem, poseEstimator,
-    // new PathConstraints(4, 3), new Node(new Translation2d(2.0146, 2.75),
-    // Rotation2d.fromDegrees(180)),
-    // standardObstacles,
-    // standardMap));
-
-    // controller.y().whileTrue(new PPAStar(
-    // drivetrainSubsystem, poseEstimator,
-    // new PathConstraints(2, 1.5), new Node(new Translation2d(2.0146, 2.75),
-    // Rotation2d.fromDegrees(180)),
-    // standardObstacles,
-    // standardMap));
-
-    controller.x().whileTrue(
-        new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
     controller.y().whileTrue(
+        new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
+    controller.a().whileTrue(
         new GoToPlace(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
 
     controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
@@ -171,9 +158,10 @@ public class RobotContainer {
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation,
     // drivetrainSubsystem));
 
-    controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
+    // controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
 
-    controller.start().whileTrue(new PlaceHigh(drivetrainSubsystem));
+    controller2.rightBumper().whileTrue(new NextNode(drivetrainSubsystem, 1));
+    controller2.leftBumper().whileTrue(new NextNode(drivetrainSubsystem, 0));
   }
 
   /**
