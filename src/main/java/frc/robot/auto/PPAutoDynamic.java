@@ -191,7 +191,7 @@ public class PPAutoDynamic extends CommandBase {
     
       if (DriverStation.getAlliance() == Alliance.Red) {
         Pose2d flippedY = new Pose2d(startingPoint.getX(),
-            FieldConstants.fieldWidth - startingPoint.getY(),
+            FieldConstants.FIELD_WIDTH_METERS - startingPoint.getY(),
             startingPoint.getHolRot());
         startingPoint = new Node(flippedY);
       }
