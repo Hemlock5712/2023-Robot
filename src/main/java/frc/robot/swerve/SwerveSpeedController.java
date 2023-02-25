@@ -48,11 +48,7 @@ public class SwerveSpeedController {
     motorConfiguration.slot0.kI = DRIVE_kI;
     motorConfiguration.slot0.kD = DRIVE_kD;
 
-    if (port == 7 || port == 8 || port == 12) {
-      motor = new WPI_TalonFX(port);    
-    } else {
-      motor = new WPI_TalonFX(port, "chassis");
-    }
+    motor = new WPI_TalonFX(port);
 
     CtreUtils.checkCtreError(motor.configAllSettings(motorConfiguration), "Failed to configure Falcon 500");
     motor.enableVoltageCompensation(true);

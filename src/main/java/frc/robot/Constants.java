@@ -56,22 +56,22 @@ public final class Constants {
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 9;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(0);
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(145.19);
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 4;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 10;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(0);
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(297.42);
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 5;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(0);
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(2.54);
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 7;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 8;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 12;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(0);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(11.65);
 
     public static final int PIGEON_ID = 13;
 
@@ -157,7 +157,10 @@ public final class Constants {
      * robot.
      */
     public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(
-        new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(13.5), 0.0), new Rotation3d());
+        // new Translation3d(Units.inchesToMeters(6.5615), Units.inchesToMeters(-12.21),
+        // Units.inchesToMeters(30.0)), new Rotation3d(0,-10.62,45));
+        new Translation3d(Units.inchesToMeters(-6.5615), Units.inchesToMeters(-12.21), Units.inchesToMeters(30.0)),
+        new Rotation3d(0, -10.62, -45));
     public static final Transform3d ROBOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
   }
 

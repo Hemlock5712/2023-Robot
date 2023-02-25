@@ -62,7 +62,7 @@ import frc.robot.util.PlacementPosition;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
-  private final static WPI_Pigeon2 pigeon = new WPI_Pigeon2(PIGEON_ID, "chassis");
+  private final static WPI_Pigeon2 pigeon = new WPI_Pigeon2(PIGEON_ID);
   // private final AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX
   // connected over MXP
   private final SwerveModule[] swerveModules;
@@ -244,7 +244,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         IntStream.range(0, currentStates.length).forEach(i -> desiredStates[i].angle = currentStates[i].angle);
       }
       // Positive should be counter clockwise.
-      // System.out.println(desiredChassisSpeeds.omegaRadiansPerSecond);
+      System.out.println(desiredChassisSpeeds.omegaRadiansPerSecond);
 
       setModuleStates(desiredStates);
     }

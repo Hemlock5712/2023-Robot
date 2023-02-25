@@ -81,11 +81,7 @@ public class SwerveSteerController {
     motorConfiguration.supplyCurrLimit.currentLimit = 20;
     motorConfiguration.supplyCurrLimit.enable = true;
 
-    if (motorPort == 7 || motorPort == 8 || motorPort == 12) {
-      motor = new WPI_TalonFX(motorPort);
-    } else {
-      motor = new WPI_TalonFX(motorPort, "chassis");
-    }
+    motor = new WPI_TalonFX(motorPort);
 
     CtreUtils.checkCtreError(motor.configAllSettings(motorConfiguration, CAN_TIMEOUT_MS),
         "Failed to configure Falcon 500 settings");
