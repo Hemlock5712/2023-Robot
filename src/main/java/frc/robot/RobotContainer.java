@@ -21,16 +21,12 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.auto.PPSwerveFollower;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
-import frc.robot.commands.OpenClaw;
-import frc.robot.commands.ReverseIntakeCommand;
-import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.driver.GoToLoad;
 import frc.robot.commands.driver.GoToPlace;
 import frc.robot.commands.operator.NextNode;
@@ -108,7 +104,7 @@ public class RobotContainer {
     configureButtonBindings();
     configureDashboard();
     reseedTimer.start();
-    //pch.enableCompressorAnalog(80, 120);
+    // pch.enableCompressorAnalog(80, 120);
   }
 
   private void configureDashboard() {
@@ -116,10 +112,10 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    //SmartDashboard.putNumber("PCH/Pressure", pch.getPressure(0));
+    // SmartDashboard.putNumber("PCH/Pressure", pch.getPressure(0));
     SmartDashboard.putNumber("PCH/MinPressure", Constants.PneumaticsConstants.MIN_PRESSURE);
     SmartDashboard.putNumber("PCH/MaxPressure", Constants.PneumaticsConstants.MAX_PRESSURE);
-    ///SmartDashboard.putBoolean("PCH/IsRunning", pch.getCompressor());
+    /// SmartDashboard.putBoolean("PCH/IsRunning", pch.getCompressor());
   }
 
   public void disabledPeriodic() {
@@ -140,20 +136,21 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Back button resets the robot pose
-    controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition, drivetrainSubsystem));
+    // controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition,
+    // drivetrainSubsystem));
 
-    controller.b().whileTrue(chaseTagCommand);
+    // controller.b().whileTrue(chaseTagCommand);
 
     // controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
-    controller.y().whileTrue(
+    controller.rightBumper().whileTrue(
         new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
-    controller.a().whileTrue(
+    controller.leftBumper().whileTrue(
         new GoToPlace(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
 
-    controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
-    controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
-    controller.rightTrigger(.5).whileTrue(new OpenClaw(testSubsystem));
+    // controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
+    // controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
+    // controller.rightTrigger(.5).whileTrue(new OpenClaw(testSubsystem));
 
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation,
     // drivetrainSubsystem));

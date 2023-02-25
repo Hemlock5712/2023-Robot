@@ -49,7 +49,7 @@ public class PlacementCalculator {
     return order.get(0);
   }
 
-    /**
+  /**
    * Determine the next position to drive the robot to
    * 
    * @param position Position where robot just placed game piece
@@ -65,8 +65,7 @@ public class PlacementCalculator {
     return order.get(0);
   }
 
-
-    /**
+  /**
    * Determine the next position to drive the robot to
    * 
    * @param currentPosition Position where robot just placed game piece
