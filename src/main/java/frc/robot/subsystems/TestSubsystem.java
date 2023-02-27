@@ -63,9 +63,9 @@ public class TestSubsystem extends SubsystemBase {
     double currentSpeed = intake.getSelectedSensorVelocity();
     double targetVoltage = (intakePID.calculate(currentSpeed, speedSetpoint)
         + intakeFF.calculate(currentSpeed, speedSetpoint, 0.2)) / 12.0;
-    // intake.set(ControlMode.PercentOutput,
-    // targetVoltage);
-    // intake.set(ControlMode.PercentOutput, 0);
+    intake.set(ControlMode.PercentOutput,
+        targetVoltage);
+    intake.set(ControlMode.PercentOutput, 0);
     SmartDashboard.putNumber("Intake/TargetVoltage", intake.getMotorOutputPercent());
     SmartDashboard.putNumber("Intake/TargetSpeed", speedSetpoint);
     speedSetpoint = 0;
