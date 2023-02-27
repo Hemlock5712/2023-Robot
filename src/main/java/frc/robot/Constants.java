@@ -159,8 +159,8 @@ public final class Constants {
     public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(
         // new Translation3d(Units.inchesToMeters(6.5615), Units.inchesToMeters(-12.21),
         // Units.inchesToMeters(30.0)), new Rotation3d(0,-10.62,45));
-        new Translation3d(Units.inchesToMeters(-6.5615), Units.inchesToMeters(-12.21), Units.inchesToMeters(30.0)),
-        new Rotation3d(0, -10.62, -45));
+        new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(6.5615), Units.inchesToMeters(-30.0)),
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(45)));
     public static final Transform3d ROBOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
   }
 
