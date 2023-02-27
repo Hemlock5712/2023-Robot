@@ -14,12 +14,12 @@ import frc.robot.util.PlacementPosition;
 
 public class NextNode extends CommandBase {
   DrivetrainSubsystem drivetrain;
-  int movement;
+  Boolean moveRight;
 
   /** Creates a new NextNode. */
-  public NextNode(DrivetrainSubsystem drivetrainSubsystem, int movement) {
+  public NextNode(DrivetrainSubsystem drivetrainSubsystem, Boolean moveRight) {
     this.drivetrain = drivetrainSubsystem;
-    this.movement = movement;
+    this.moveRight = moveRight;
   }
 
   // Called when the command is initially scheduled.
@@ -36,12 +36,12 @@ public class NextNode extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    int direction = movement;
+    Boolean direction = moveRight;
     PlacementPosition nextPosition;
     if(Constants.DrivetrainConstants.alliance == Alliance.Red){
-      direction = 1 - direction;
+      direction = !direction;
     }
-    if(direction == 1){
+    if(direction == true){
        nextPosition = PlacementCalculator.getNextPlacementPosition(drivetrain.getPlacementPosition());
     }
     else{

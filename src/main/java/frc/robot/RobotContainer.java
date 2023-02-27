@@ -157,8 +157,8 @@ public class RobotContainer {
 
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
 
-    controller2.rightBumper().whileTrue(new NextNode(drivetrainSubsystem, 1));
-    controller2.leftBumper().whileTrue(new NextNode(drivetrainSubsystem, 0));
+    controller2.rightBumper().whileTrue(new NextNode(drivetrainSubsystem, true));
+    controller2.leftBumper().whileTrue(new NextNode(drivetrainSubsystem, false));
   }
 
   /**
