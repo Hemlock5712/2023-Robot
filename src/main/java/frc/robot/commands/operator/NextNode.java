@@ -17,8 +17,7 @@ public class NextNode extends CommandBase {
   Boolean moveRight;
 
   /** Creates a new NextNode. */
-  public NextNode(DrivetrainSubsystem drivetrainSubsystem, Boolean moveRight) {
-    this.drivetrain = drivetrainSubsystem;
+  public NextNode(Boolean moveRight) {
     this.moveRight = moveRight;
   }
 
@@ -38,17 +37,16 @@ public class NextNode extends CommandBase {
   public void end(boolean interrupted) {
     Boolean direction = moveRight;
     PlacementPosition nextPosition;
-    if(Constants.DrivetrainConstants.alliance == Alliance.Red){
+    if (Constants.DrivetrainConstants.alliance == Alliance.Red) {
       direction = !direction;
     }
-    if(direction == true){
-       nextPosition = PlacementCalculator.getNextPlacementPosition(drivetrain.getPlacementPosition());
+    if (direction == true) {
+      nextPosition = PlacementCalculator.getNextPlacementPosition(Position.getPlacementPosition());
+    } else {
+      nextPosition = PlacementCalculator.getPreviousPlacementPosition(Position.getPlacementPosition());
     }
-    else{
-      nextPosition = PlacementCalculator.getPreviousPlacementPosition(drivetrain.getPlacementPosition());
-    }
-  
-    drivetrain.setTargetPosition(nextPosition);
+
+    Position.setPlacementPosition(nextPosition);
     SmartDashboard.putNumber("NextPosition", nextPosition.getPosition().ordinal());
     SmartDashboard.putNumber("NextLevel", 2 - nextPosition.getLevel().ordinal());
   }

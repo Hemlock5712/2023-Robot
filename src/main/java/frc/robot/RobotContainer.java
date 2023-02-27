@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.auto.PPSwerveFollower;
-import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.driver.GoToLoad;
@@ -59,8 +58,6 @@ public class RobotContainer {
 
   private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
   private final TestSubsystem testSubsystem = new TestSubsystem();
-  private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
-      poseEstimator::getCurrentPose);
 
   final List<Obstacle> standardObstacles = FieldConstants.standardObstacles;
   final List<Obstacle> cablePath = FieldConstants.cablePath;
@@ -157,8 +154,8 @@ public class RobotContainer {
 
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
 
-    controller2.rightBumper().whileTrue(new NextNode(drivetrainSubsystem, true));
-    controller2.leftBumper().whileTrue(new NextNode(drivetrainSubsystem, false));
+    controller2.rightBumper().whileTrue(new NextNode(true));
+    controller2.leftBumper().whileTrue(new NextNode(false));
   }
 
   /**

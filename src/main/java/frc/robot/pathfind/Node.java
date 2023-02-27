@@ -72,9 +72,4 @@ public class Node {
   public String toString() {
     return "X Position: " + getX() + "\t" + "Y Position: " + getY();
   }
-
-  @Override
-  public Node clone(){
-    return new Node(this.x,this.y, this.holonomicRotation);
-  }
 }

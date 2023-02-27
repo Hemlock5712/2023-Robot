@@ -10,6 +10,7 @@ import com.pathplanner.lib.PathConstraints;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commands.PPAStar;
+import frc.robot.commands.operator.Position;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
@@ -39,7 +40,7 @@ public class GoToPlace extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    TargetPosition target = drivetrain.getPlacementPosition().getPosition();
+    TargetPosition target = Position.getPlacementPosition().getPosition();
     Node targetPosition = new Node(FieldConstants.PlacementPositions.get(target));
     pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap);
     pathfindCommand.schedule();
