@@ -59,8 +59,8 @@ public class PlacementCalculator {
   public static PlacementPosition getNextPlacementPosition(PlacementPosition currentPosition) {
     int i = order.indexOf(new PlacementPosition(currentPosition.getPosition(), currentPosition.getLevel()));
 
-    if (i < order.size()) {
-      return order.get((i + 1) % order.size());
+    if (i < order.size()-1) {
+      return order.get(i + 1);
     }
     return order.get(0);
   }
@@ -74,9 +74,9 @@ public class PlacementCalculator {
   public static PlacementPosition getPreviousPlacementPosition(PlacementPosition currentPosition) {
     int i = order.indexOf(new PlacementPosition(currentPosition.getPosition(), currentPosition.getLevel()));
     System.out.println(i);
-    if (i < 0) {
-      return order.get((order.size() - 1) % order.size());
+    if (i > 0) {
+      return order.get(i-1);
     }
-    return order.get((i - 1) % order.size());
+    return order.get(order.size() - 1);
   }
 }

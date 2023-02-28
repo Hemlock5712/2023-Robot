@@ -24,7 +24,7 @@ public class NextNode extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.print("Placing high");
+    //System.out.print("Placing high");
   }
 
   // Called every time the scheduler runs while the command is scheduled.

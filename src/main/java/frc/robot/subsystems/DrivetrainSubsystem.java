@@ -240,7 +240,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         IntStream.range(0, currentStates.length).forEach(i -> desiredStates[i].angle = currentStates[i].angle);
       }
       // Positive should be counter clockwise.
-      System.out.println(desiredChassisSpeeds.omegaRadiansPerSecond);
+      //System.out.println(desiredChassisSpeeds.omegaRadiansPerSecond);
 
       setModuleStates(desiredStates);
     }
