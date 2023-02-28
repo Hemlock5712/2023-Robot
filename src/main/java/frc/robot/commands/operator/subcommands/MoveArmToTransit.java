@@ -4,16 +4,16 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.FullArmSystem;
 
-public class MoveArmToMid extends CommandBase {
+public class MoveArmToTransit extends CommandBase {
 
     FullArmSystem arm;
 
-    public MoveArmToMid(FullArmSystem armSystem) {
+    public MoveArmToTransit(FullArmSystem armSystem) {
         this.arm = armSystem;
     }
 
     public void execute() {
-        arm.setTargetPosition(Constants.ArmSetpoints.MID_PEG);
+        arm.setTargetPosition(Constants.ArmSetpoints.TRANSIT);
     }
 
     @Override

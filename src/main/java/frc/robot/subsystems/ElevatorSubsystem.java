@@ -107,6 +107,19 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
     return Units.degreesToRadians(angleEncoder.getAbsolutePosition() - Constants.ArmConstants.ARM_ANGLE_ABSOLUTE_OFFSET);
   }
 
+  /**
+   * Set the angle of the arm, with 0 being the horizontal position
+   * @param angle
+   */
+  public void setAngle(double angle) {
+    double y = Math.sin(angle) * Constants.ArmConstants.MOUNT_POINT_DISTANCE_ON_ARM;
+    // Return the y component of the arm position, with the pivot point added.
+    // This should give the absolute position of the arm mounting change
+    double height =  y + Constants.ArmConstants.PIVOT_POINT_HEIGHT;
+
+    setTargetHeight(height);
+  }
+
   public void rawDrive(double percentage) {
     autoPosition = false;
     hasValidSetpoint = false;

@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class TestSubsystem extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase {
 
   // private CANSparkMax lower = new CANSparkMax(17, MotorType.kBrushed);
   // private CANSparkMax upper = new CANSparkMax(16, MotorType.kBrushed);
@@ -26,7 +26,7 @@ public class TestSubsystem extends SubsystemBase {
   private PIDController intakePID = new PIDController(1, 0, 0);
   private SimpleMotorFeedforward intakeFF = new SimpleMotorFeedforward(0.01, 1.18, 0.01);
 
-  public TestSubsystem() {
+  public IntakeSubsystem() {
     intake.setInverted(true);
   }
 

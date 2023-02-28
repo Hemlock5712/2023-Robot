@@ -59,6 +59,8 @@ public class RobotContainer {
   private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
   private final ExtensionSubsystem extensionSubsystem = new ExtensionSubsystem();
+  private final WristSubsystem wristSubsystem = new WristSubsystem();
+  private final FullArmSystem armSystem = new FullArmSystem(elevatorSubsystem, extensionSubsystem, wristSubsystem);
   private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
       poseEstimator::getCurrentPose);
   private final TestSubsystem testSubsystem = new TestSubsystem();
@@ -160,7 +162,7 @@ public class RobotContainer {
 
     controller.start().whileTrue(new PlaceHigh(drivetrainSubsystem));
 
-    controller.b().whileTrue(new MoveArmToMid(elevatorSubsystem, extensionSubsystem));
+    controller.b().whileTrue(new MoveArmToMid(armSystem));
 
     controller.pov(0).whileTrue(new ManualLiftUp(elevatorSubsystem));
     controller.pov(90).whileTrue(new ManualExtensionOut(extensionSubsystem));
