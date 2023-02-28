@@ -14,7 +14,7 @@ public class WristSubsystem extends SubsystemBase {
     // These constants are lower than they should be to prevent the wrist from going too far instantly
     private PIDController wristPID = new PIDController(0.1, 0, 0);
     // These constants are calculated by Reca.lc, might need to be tuned slightly
-    private ArmFeedforward wristFeedforward = new ArmFeedforward(0, 1.83, 0.48, 0.03);
+    private ArmFeedforward wristFeedforward = new ArmFeedforward(0, 2.62, 0.48, 0.07);
 
     private NetworkTableEntry wristTargetAngleEntry = NetworkTableInstance.getDefault().getTable("Wrist").getEntry("targetAngle");
     private NetworkTableEntry wristCurrentAngleEntry = NetworkTableInstance.getDefault().getTable("Wrist").getEntry("currentAngle");
