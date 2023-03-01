@@ -2,20 +2,20 @@ package frc.robot.commands.operator;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ExtensionSubsystem;
 
 public class ManualLiftUp extends CommandBase {
-    ElevatorSubsystem elevator;
-    public ManualLiftUp(ElevatorSubsystem elevatorSubsystem) {
-        this.elevator = elevatorSubsystem;
-    }
+  ElevatorSubsystem elevator;
 
-    public void execute() {
-        elevator.rawDrive(0.5);
-    }
+  public ManualLiftUp(ElevatorSubsystem elevatorSubsystem) {
+    this.elevator = elevatorSubsystem;
+  }
 
-    @Override
-    public void end(boolean interrupted) {
-        elevator.rawDrive(0);
-    }
+  public void execute() {
+    elevator.rawDrive(0.4);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    elevator.rawDrive(0);
+  }
 }

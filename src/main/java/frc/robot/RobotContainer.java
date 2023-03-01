@@ -9,9 +9,6 @@ import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 import java.util.HashMap;
 import java.util.List;
 
-import frc.robot.commands.operator.*;
-import frc.robot.commands.operator.subcommands.MoveArmToMid;
-import frc.robot.subsystems.*;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
@@ -31,10 +28,16 @@ import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.driver.GoToLoad;
 import frc.robot.commands.driver.GoToPlace;
-import frc.robot.commands.operator.NextNode;
+import frc.robot.commands.operator.ManualLiftUp;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ExtensionSubsystem;
+import frc.robot.subsystems.FullArmSystem;
+import frc.robot.subsystems.PoseEstimatorSubsystem;
+import frc.robot.subsystems.WristSubsystem;
 import frc.robot.util.FieldConstants;
 
 /**
@@ -49,7 +52,6 @@ import frc.robot.util.FieldConstants;
 public class RobotContainer {
 
   private final CommandXboxController controller = new CommandXboxController(0);
-  private final CommandXboxController controller2 = new CommandXboxController(1);
   // Set IP to 10.57.12.11
   // Set RoboRio to 10.57.12.2
   private final PhotonCamera photonCamera = new PhotonCamera("photonvision");
@@ -61,9 +63,6 @@ public class RobotContainer {
   private final ExtensionSubsystem extensionSubsystem = new ExtensionSubsystem();
   private final WristSubsystem wristSubsystem = new WristSubsystem();
   private final FullArmSystem armSystem = new FullArmSystem(elevatorSubsystem, extensionSubsystem, wristSubsystem);
-  private final ChaseTagCommand chaseTagCommand = new ChaseTagCommand(photonCamera, drivetrainSubsystem,
-      poseEstimator::getCurrentPose);
-  private final TestSubsystem testSubsystem = new TestSubsystem();
 
   final List<Obstacle> standardObstacles = FieldConstants.standardObstacles;
   final List<Obstacle> cablePath = FieldConstants.cablePath;
@@ -142,7 +141,7 @@ public class RobotContainer {
     // controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition,
     // drivetrainSubsystem));
 
-//    controller.b().whileTrue(chaseTagCommand);
+    // controller.b().whileTrue(chaseTagCommand);
 
     // controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
@@ -151,23 +150,21 @@ public class RobotContainer {
     controller.leftBumper().whileTrue(
         new GoToPlace(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
 
-//    controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
-//    controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
-//    controller.rightTrigger(.5).whileTrue(new OpenClaw(testSubsystem));
+    // controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
+    // controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
+    // controller.rightTrigger(.5).whileTrue(new OpenClaw(testSubsystem));
 
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation,
     // drivetrainSubsystem));
 
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
 
-    controller.start().whileTrue(new PlaceHigh(drivetrainSubsystem));
+    // controller.b().whileTrue(new MoveArmToMid(armSystem));
 
-    controller.b().whileTrue(new MoveArmToMid(armSystem));
-
-    controller.pov(0).whileTrue(new ManualLiftUp(elevatorSubsystem));
-    controller.pov(90).whileTrue(new ManualExtensionOut(extensionSubsystem));
-    controller.pov(180).whileTrue(new ManualLiftDown(elevatorSubsystem));
-    controller.pov(270).whileTrue(new ManualExtensionIn(extensionSubsystem));
+    // controller.pov(0).whileTrue(new ManualLiftUp(elevatorSubsystem));
+    // controller.pov(90).whileTrue(new ManualExtensionOut(extensionSubsystem));
+    // controller.pov(180).whileTrue(new ManualLiftDown(elevatorSubsystem));
+    // controller.pov(270).whileTrue(new ManualExtensionIn(extensionSubsystem));
   }
 
   /**
