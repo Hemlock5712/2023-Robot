@@ -5,14 +5,11 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.util.subsystems.ElevatorSubsystemBase;
 import frc.robot.util.subsystems.ElevatorSubsystemBasePID;
 
 public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
@@ -26,9 +23,10 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
   NetworkTableEntry motorVoltageEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
       .getEntry("currentVoltage");
   NetworkTableEntry motorCurrentEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
-          .getEntry("motorCurrentDraw");
+      .getEntry("motorCurrentDraw");
   NetworkTableEntry tempEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem").getEntry("temperature");
-  NetworkTableEntry targetHeight = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem").getEntry("targetHeight");
+  NetworkTableEntry targetHeight = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
+      .getEntry("targetHeight");
 
   /**
    * Creates a new ElevatorSubsystem.
@@ -69,7 +67,8 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
   @Override
   public void setTargetHeight(double height) {
     hasValidSetpoint = true;
-    this.setpoint = Math.min(Math.max(height, Constants.ArmConstants.MIN_ARM_LENGTH), Constants.ArmConstants.MAX_ARM_LENGTH);
+    this.setpoint = Math.min(Math.max(height, Constants.ArmConstants.MIN_ARM_LENGTH),
+        Constants.ArmConstants.MAX_ARM_LENGTH);
   }
 
   /**
@@ -90,7 +89,7 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
 
   @Override
   public boolean atTarget() {
-    if(hasValidSetpoint) {
+    if (hasValidSetpoint) {
       return Math.abs(getHeight() - setpoint) < Constants.ArmConstants.AT_TARGET_TOLERANCE;
     }
     return true;
@@ -104,18 +103,20 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
    * @return Current angle, based on absolute CANCoder readings
    */
   public double getAngle() {
-    return Units.degreesToRadians(angleEncoder.getAbsolutePosition() - Constants.ArmConstants.ARM_ANGLE_ABSOLUTE_OFFSET);
+    return Units
+        .degreesToRadians(angleEncoder.getAbsolutePosition() - Constants.ArmConstants.ARM_ANGLE_ABSOLUTE_OFFSET);
   }
 
   /**
    * Set the angle of the arm, with 0 being the horizontal position
+   * 
    * @param angle
    */
   public void setAngle(double angle) {
     double y = Math.sin(angle) * Constants.ArmConstants.MOUNT_POINT_DISTANCE_ON_ARM;
     // Return the y component of the arm position, with the pivot point added.
     // This should give the absolute position of the arm mounting change
-    double height =  y + Constants.ArmConstants.PIVOT_POINT_HEIGHT;
+    double height = y + Constants.ArmConstants.PIVOT_POINT_HEIGHT;
 
     setTargetHeight(height);
   }

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 
@@ -26,10 +27,10 @@ public class WristSubsystem extends SubsystemBase {
   private NetworkTableEntry wristVoltageEntry = NetworkTableInstance.getDefault().getTable("Wrist").getEntry("voltage");
   private NetworkTableEntry wristCurrentEntry = NetworkTableInstance.getDefault().getTable("Wrist").getEntry("current");
 
-
   private double setpoint = 0;
 
   public WristSubsystem() {
+    wristEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
   }
 
   public void setTargetAngle(double angle) {
@@ -59,7 +60,7 @@ public class WristSubsystem extends SubsystemBase {
   public void run() {
     double feedforward = wristFeedforward.calculate(setpoint, 0);
     double output = wristPID.calculate(getAngle(), setpoint);
-    setVoltage(-output);
+    setVoltage(output);
     wristCurrentAngleEntry.setDouble(getAngle());
     wristTargetAngleEntry.setDouble(setpoint);
     wristVoltageEntry.setDouble(wristMotor.getAppliedOutput());

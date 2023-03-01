@@ -3,15 +3,17 @@ package frc.robot.commands.operator;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-public class ManualLiftUp extends CommandBase {
+public class ManualLift extends CommandBase {
   ElevatorSubsystem elevator;
+  double percentage;
 
-  public ManualLiftUp(ElevatorSubsystem elevatorSubsystem) {
+  public ManualLift(ElevatorSubsystem elevatorSubsystem, double percentage) {
     this.elevator = elevatorSubsystem;
+    this.percentage = percentage;
   }
 
   public void execute() {
-    elevator.rawDrive(0.4);
+    elevator.rawDrive(percentage);
   }
 
   @Override

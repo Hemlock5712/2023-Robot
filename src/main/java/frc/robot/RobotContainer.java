@@ -30,7 +30,6 @@ import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.driver.GoToLoad;
 import frc.robot.commands.driver.GoToPlace;
-import frc.robot.commands.operator.ManualWrist;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
@@ -163,7 +162,8 @@ public class RobotContainer {
 
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
 
-    // controller.b().whileTrue(new MoveArmToMid(armSystem));
+    // controller.b().whileTrue(new MoveArmTo(armSystem,
+    // Constants.ArmSetpoints.MID_NODE));
 
     // controller.pov(0).whileTrue(new ManualLiftUp(elevatorSubsystem));
     // controller.pov(90).whileTrue(new ManualExtensionOut(extensionSubsystem));

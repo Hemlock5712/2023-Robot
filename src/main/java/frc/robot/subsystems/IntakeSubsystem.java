@@ -11,7 +11,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -62,11 +61,12 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     // double currentSpeed = intake.getSelectedSensorVelocity();
     // double targetVoltage = (intakePID.calculate(currentSpeed, speedSetpoint)
-    //     + intakeFF.calculate(currentSpeed, speedSetpoint, 0.2)) / 12.0;
+    // + intakeFF.calculate(currentSpeed, speedSetpoint, 0.2)) / 12.0;
     // intake.set(ControlMode.PercentOutput,
-    //     targetVoltage);
+    // targetVoltage);
     // intake.set(ControlMode.PercentOutput, 0);
-    // SmartDashboard.putNumber("Intake/TargetVoltage", intake.getMotorOutputPercent());
+    // SmartDashboard.putNumber("Intake/TargetVoltage",
+    // intake.getMotorOutputPercent());
     // SmartDashboard.putNumber("Intake/TargetSpeed", speedSetpoint);
     // speedSetpoint = 0;
     // This method will be called once per scheduler run
