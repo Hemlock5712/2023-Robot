@@ -157,7 +157,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         if (estimatedRobotPose.timestampSeconds != previousPipelineTimestamp
             && estimatedPose.getX() > 0.0 && estimatedPose.getX() <= FieldConstants.FIELD_LENGTH_METERS
             && estimatedPose.getY() > 0.0 && estimatedPose.getY() <= FieldConstants.FIELD_WIDTH_METERS) {
-          if (estimatedRobotPose.targetsUsed.size() > 1 && estimatedPose.getX() < 4) {
+          if (estimatedRobotPose.targetsUsed.size() < 2) {
             for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
               Transform3d bestTarget = target.getBestCameraToTarget();
               double distance = Math.hypot(bestTarget.getX(), bestTarget.getY());

@@ -210,7 +210,7 @@ public final class Constants {
         /**
          * CAN ID of the front elevator motor
          */
-        public static final int ELEVATOR_FRONT_FALCON_ID = 25;
+        public static final int ELEVATOR_FRONT_FALCON_ID = 26;
         /**
          * CAN ID of the back elevator motor
          */
@@ -310,6 +310,7 @@ public final class Constants {
         public static final int MOTOR_ID = 25;
         public static final int TICKS_PER_REVOLUTION = 42;
         public static final double GEAR_RATIO = 49;
+        public static final int ENCODER_ID = 40;
     }
 
     public static class IntakeConstants {
