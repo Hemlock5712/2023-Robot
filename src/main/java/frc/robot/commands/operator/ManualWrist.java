@@ -10,12 +10,12 @@ import frc.robot.subsystems.WristSubsystem;
 public class ManualWrist extends CommandBase {
   /** Creates a new ManualWristUp. */
   WristSubsystem wrist;
-  double voltage;
+  double targetAngle;
 
-  public ManualWrist(WristSubsystem wrist, double voltage) {
+  public ManualWrist(WristSubsystem wrist, double targetAngle) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.wrist = wrist;
-    this.voltage = voltage;
+    this.targetAngle = targetAngle;
   }
 
   // Called when the command is initially scheduled.
@@ -27,7 +27,7 @@ public class ManualWrist extends CommandBase {
   @Override
   public void execute() {
     System.out.println(wrist.getAngle());
-    wrist.setTargetAngle(51);
+    wrist.setTargetAngle(targetAngle);
     wrist.run();
   }
 

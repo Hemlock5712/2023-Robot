@@ -26,10 +26,9 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.auto.PPSwerveFollower;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
-import frc.robot.commands.ReverseIntakeCommand;
-import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.driver.GoToLoad;
 import frc.robot.commands.driver.GoToPlace;
+import frc.robot.commands.operator.ManualWrist;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
@@ -169,10 +168,10 @@ public class RobotContainer {
     // controller.pov(90).whileTrue(new ManualExtensionOut(extensionSubsystem));
     // controller.pov(180).whileTrue(new ManualLiftDown(elevatorSubsystem));
     // controller.pov(270).whileTrue(new ManualExtensionIn(extensionSubsystem));
-    // controller.pov(0).whileTrue(new ManualWrist(wristSubsystem, 3));
+    controller.pov(0).whileTrue(new ManualWrist(wristSubsystem, 51));
     // controller.pov(180).whileTrue(new ManualWrist(wristSubsystem, -3));
-    controller.pov(0).whileTrue(new RunIntakeCommand(intakeSubsystem));
-    controller.pov(180).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
+    // controller.pov(0).whileTrue(new RunIntakeCommand(intakeSubsystem));
+    // controller.pov(180).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
   }
 
   /**

@@ -16,7 +16,7 @@ public class WristSubsystem extends SubsystemBase {
   private CANCoder wristEncoder = new CANCoder(Constants.WristConstants.ENCODER_ID);
   // These constants are lower than they should be to prevent the wrist from going
   // too far instantly
-  private PIDController wristPID = new PIDController(0.005, 0, 0);
+  private PIDController wristPID = new PIDController(0.04, 0, 0);
   // These constants are calculated by Reca.lc, might need to be tuned slightly
   private ArmFeedforward wristFeedforward = new ArmFeedforward(0, 2.62, 0.48, 0.07);
 
@@ -59,7 +59,7 @@ public class WristSubsystem extends SubsystemBase {
 
   public void run() {
     double feedforward = wristFeedforward.calculate(setpoint, 0);
-    double output = wristPID.calculate(getAngle(), setpoint);
+    double output = wristPID.calculate(getAngle(), setpoint) + feedforward;
     setVoltage(output);
     wristCurrentAngleEntry.setDouble(getAngle());
     wristTargetAngleEntry.setDouble(setpoint);
