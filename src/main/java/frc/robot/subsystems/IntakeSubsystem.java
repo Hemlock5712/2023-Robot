@@ -19,7 +19,7 @@ public class IntakeSubsystem extends SubsystemBase {
   // private CANSparkMax upper = new CANSparkMax(16, MotorType.kBrushed);
 
   private TalonFX intake = new TalonFX(33);
-  private Solenoid claw = new Solenoid(PneumaticsModuleType.REVPH, 0);
+  private Solenoid claw = new Solenoid(PneumaticsModuleType.REVPH, 8);
   private double speedSetpoint = 0;
 
   private PIDController intakePID = new PIDController(1, 0, 0);

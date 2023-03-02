@@ -26,9 +26,9 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.auto.PPSwerveFollower;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
-import frc.robot.commands.driver.GoToLoad;
-import frc.robot.commands.driver.GoToPlace;
-import frc.robot.commands.operator.ManualWrist;
+import frc.robot.commands.OpenClaw;
+import frc.robot.commands.ReverseIntakeCommand;
+import frc.robot.commands.RunIntakeCommand;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
@@ -108,7 +108,7 @@ public class RobotContainer {
     configureButtonBindings();
     configureDashboard();
     reseedTimer.start();
-    // pch.enableCompressorAnalog(80, 120);
+    pch.enableCompressorAnalog(80, 120);
   }
 
   private void configureDashboard() {
@@ -147,14 +147,16 @@ public class RobotContainer {
 
     // controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
-    controller.rightBumper().whileTrue(
-        new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
-    controller.leftBumper().whileTrue(
-        new GoToPlace(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2), standardObstacles, standardMap));
+    // controller.rightBumper().whileTrue(
+    // new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
+    // standardObstacles, standardMap));
+    // controller.leftBumper().whileTrue(
+    // new GoToPlace(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
+    // standardObstacles, standardMap));
 
     // controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
     // controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
-    // controller.rightTrigger(.5).whileTrue(new OpenClaw(testSubsystem));
+    controller.rightTrigger(.5).whileTrue(new OpenClaw(intakeSubsystem));
 
     // controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation,
     // drivetrainSubsystem));
@@ -168,10 +170,10 @@ public class RobotContainer {
     // controller.pov(90).whileTrue(new ManualExtensionOut(extensionSubsystem));
     // controller.pov(180).whileTrue(new ManualLiftDown(elevatorSubsystem));
     // controller.pov(270).whileTrue(new ManualExtensionIn(extensionSubsystem));
-    controller.pov(0).whileTrue(new ManualWrist(wristSubsystem, 51));
+    // controller.pov(0).whileTrue(new ManualWrist(wristSubsystem, 0));
     // controller.pov(180).whileTrue(new ManualWrist(wristSubsystem, -3));
-    // controller.pov(0).whileTrue(new RunIntakeCommand(intakeSubsystem));
-    // controller.pov(180).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
+    controller.rightBumper().whileTrue(new RunIntakeCommand(intakeSubsystem));
+    controller.leftBumper().whileTrue(new ReverseIntakeCommand(intakeSubsystem));
   }
 
   /**

@@ -16,9 +16,11 @@ public class WristSubsystem extends SubsystemBase {
   private CANCoder wristEncoder = new CANCoder(Constants.WristConstants.ENCODER_ID);
   // These constants are lower than they should be to prevent the wrist from going
   // too far instantly
-  private PIDController wristPID = new PIDController(0.04, 0, 0);
+  private PIDController wristPID = new PIDController(0.15, 0, 0.002);
   // These constants are calculated by Reca.lc, might need to be tuned slightly
-  private ArmFeedforward wristFeedforward = new ArmFeedforward(0, 2.62, 0.48, 0.07);
+  // private ArmFeedforward wristFeedforward = new ArmFeedforward(0, 2.62, 0.48,
+  // 0.07);
+  private ArmFeedforward wristFeedforward = new ArmFeedforward(0, 1.93, .48, .07);
 
   private NetworkTableEntry wristTargetAngleEntry = NetworkTableInstance.getDefault().getTable("Wrist")
       .getEntry("targetAngle");
@@ -31,6 +33,7 @@ public class WristSubsystem extends SubsystemBase {
 
   public WristSubsystem() {
     wristEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+    wristEncoder.configMagnetOffset(-48);
   }
 
   public void setTargetAngle(double angle) {
@@ -58,8 +61,12 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public void run() {
-    double feedforward = wristFeedforward.calculate(setpoint, 0);
-    double output = wristPID.calculate(getAngle(), setpoint) + feedforward;
+    double feedforward = wristFeedforward.calculate(Math.toRadians(setpoint), 0);
+    // + feedforward
+    double output = wristPID.calculate(getAngle(), setpoint)+feedforward;
+    // System.out.println(feedforward);
+    System.out.println("_________       "+output);
+
     setVoltage(output);
     wristCurrentAngleEntry.setDouble(getAngle());
     wristTargetAngleEntry.setDouble(setpoint);
