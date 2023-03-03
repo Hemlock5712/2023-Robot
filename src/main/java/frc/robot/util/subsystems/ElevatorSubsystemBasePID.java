@@ -29,6 +29,8 @@ public abstract class ElevatorSubsystemBasePID extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // System.out.println("AutoPosition:" + autoPosition);
+    // System.out.println("HasValidSetpoint:" + hasValidSetpoint);
     if (autoPosition) {
       if (hasValidSetpoint) {
         pidController.setSetpoint(setpoint);

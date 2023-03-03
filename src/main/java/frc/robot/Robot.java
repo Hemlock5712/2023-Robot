@@ -106,7 +106,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     checkDriverStationUpdate();
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    // autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {

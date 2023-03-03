@@ -29,6 +29,7 @@ import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.OpenClaw;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
+import frc.robot.commands.operator.MoveArmToSetpoint;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
@@ -73,7 +74,7 @@ public class RobotContainer {
   public VisGraph standardMap = new VisGraph();
   public VisGraph cableMap = new VisGraph();
 
-  private PneumaticHub pch = new PneumaticHub();
+  private PneumaticHub pch = new PneumaticHub(1);
 
   HashMap<String, Command> eventMap = new HashMap<>();
 
@@ -116,10 +117,10 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    // SmartDashboard.putNumber("PCH/Pressure", pch.getPressure(0));
+    SmartDashboard.putNumber("PCH/Pressure", pch.getPressure(0));
     SmartDashboard.putNumber("PCH/MinPressure", Constants.PneumaticsConstants.MIN_PRESSURE);
     SmartDashboard.putNumber("PCH/MaxPressure", Constants.PneumaticsConstants.MAX_PRESSURE);
-    /// SmartDashboard.putBoolean("PCH/IsRunning", pch.getCompressor());
+    SmartDashboard.putBoolean("PCH/IsRunning", pch.getCompressor());
   }
 
   public void disabledPeriodic() {
@@ -171,7 +172,46 @@ public class RobotContainer {
     // controller.pov(180).whileTrue(new ManualLiftDown(elevatorSubsystem));
     // controller.pov(270).whileTrue(new ManualExtensionIn(extensionSubsystem));
     // controller.pov(0).whileTrue(new ManualWrist(wristSubsystem, 0));
-    // controller.pov(180).whileTrue(new ManualWrist(wristSubsystem, -3));
+    // controller.pov(180).whileTrue(new ManualWrist(wristSubsystem, 0));
+    // controller.pov(90).whileTrue(new StartEndCommand(() -> {
+    // elevatorSubsystem.setAngle(Units.degreesToRadians(20));
+    // elevatorSubsystem.enableAutoDrive();
+    // }, () -> {
+    // elevatorSubsystem.rawDrive(0);
+    // }));
+
+    // controller.pov(0).whileTrue(new StartEndCommand(() -> {
+    // elevatorSubsystem.setAngle(Units.inchesToMeters(0));
+    // elevatorSubsystem.enableAutoDrive();
+    // extensionSubsystem.setTargetHeight(Units.inchesToMeters(5));
+    // extensionSubsystem.enableAutoDrive();
+    // // wristSubsystem.setTargetAngle(Units.degreesToRadians(0));
+    // // wristSubsystem.run();
+    // }, () -> {
+    // elevatorSubsystem.rawDrive(0);
+    // extensionSubsystem.rawDrive(0);
+    // }));
+    // controller.pov(270).whileTrue(new StartEndCommand(() -> {
+    // elevatorSubsystem.setAngle(Units.inchesToMeters(20));
+    // elevatorSubsystem.enableAutoDrive();
+    // extensionSubsystem.setTargetHeight(20);
+    // extensionSubsystem.enableAutoDrive();
+    // // wristSubsystem.setTargetAngle(Units.degreesToRadians(-20));
+    // // wristSubsystem.run();
+    // }, () -> {
+    // elevatorSubsystem.rawDrive(0);
+    // extensionSubsystem.rawDrive(0);
+    // }));
+    controller.pov(270).whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+        extensionSubsystem, wristSubsystem,
+        Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
+    controller.pov(0).whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+        extensionSubsystem, wristSubsystem,
+        Constants.ArmSetpoints.HIGH_PEG));
+    controller.pov(180).whileTrue(
+        new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT));
+    controller.pov(90).whileTrue(new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+        Constants.ArmSetpoints.GROUND_CONE_PICKUP));
     controller.rightBumper().whileTrue(new RunIntakeCommand(intakeSubsystem));
     controller.leftBumper().whileTrue(new ReverseIntakeCommand(intakeSubsystem));
   }

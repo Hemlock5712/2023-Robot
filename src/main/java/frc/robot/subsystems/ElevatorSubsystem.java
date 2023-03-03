@@ -3,9 +3,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,6 +27,8 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
   NetworkTableEntry tempEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem").getEntry("temperature");
   NetworkTableEntry targetHeight = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
       .getEntry("targetHeight");
+  private NetworkTableEntry atSetpointEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
+      .getEntry("atSetpoint");
 
   /**
    * Creates a new ElevatorSubsystem.
@@ -35,12 +37,15 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
    * but can easily be replaced with a PID controller
    */
   public ElevatorSubsystem() {
-    super(8, 0, 0, .05, .71, .2, 0.1, Constants.ArmConstants.ELEVATOR_GEARING);
+    super(25, 0, 0, .05, 1, .2, 0.1, Constants.ArmConstants.ELEVATOR_GEARING);
     elevatorMotorBack.follow(elevatorMotorFront);
     elevatorMotorFront.setInverted(true);
     elevatorMotorBack.setInverted(true);
     elevatorMotorBack.setNeutralMode(NeutralMode.Brake);
     elevatorMotorFront.setNeutralMode(NeutralMode.Brake);
+    angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+    angleEncoder.configMagnetOffset(Constants.ArmConstants.ARM_ANGLE_ABSOLUTE_OFFSET);
+    angleEncoder.configSensorDirection(true);
   }
 
   /**
@@ -92,7 +97,7 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
     if (hasValidSetpoint) {
       return Math.abs(getHeight() - setpoint) < Constants.ArmConstants.AT_TARGET_TOLERANCE;
     }
-    return true;
+    return false;
   }
 
   /**
@@ -103,8 +108,7 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
    * @return Current angle, based on absolute CANCoder readings
    */
   public double getAngle() {
-    return Units
-        .degreesToRadians(angleEncoder.getAbsolutePosition() - Constants.ArmConstants.ARM_ANGLE_ABSOLUTE_OFFSET);
+    return Math.toRadians(angleEncoder.getAbsolutePosition());
   }
 
   /**
@@ -146,5 +150,6 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
     targetHeight.setDouble(setpoint);
     SmartDashboard.putNumber("ElevatorSubsystem/PID", pidController.calculate(getHeight()));
     SmartDashboard.putNumber("ElevatorSubsystem/Feedforward", feedforward.calculate(getHeight()));
+    atSetpointEntry.setBoolean(atTarget());
   }
 }

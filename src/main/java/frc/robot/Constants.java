@@ -253,13 +253,13 @@ public final class Constants {
      * <p>
      * Should be set to 0 when the arm is parallel to the ground.
      */
-    public static final double ARM_ANGLE_ABSOLUTE_OFFSET = 62.42;
+    public static final double ARM_ANGLE_ABSOLUTE_OFFSET = Units.radiansToDegrees(-2.67);
     public static final double MAX_ARM_LENGTH = Units.inchesToMeters(40);
     public static final double MIN_ARM_LENGTH = Units.inchesToMeters(10);
     /**
      * Tolerance for when the elevator considers itself to be at the target point
      */
-    public static final double AT_TARGET_TOLERANCE = Units.inchesToMeters(0.5);
+    public static final double AT_TARGET_TOLERANCE = Units.inchesToMeters(2);
   }
 
   public static class ExtensionConstants {
@@ -303,7 +303,10 @@ public final class Constants {
     /**
      * Tolerance for when the extension considers itself to be at the target point
      */
-    public static final double AT_TARGET_TOLERANCE = Units.inchesToMeters(0.5);
+    public static final double AT_TARGET_TOLERANCE = Units.inchesToMeters(2);
+    public static final double MAX_VOLTAGE = 5.0;
+    public static final double MAX_EXTENSION = Units.inchesToMeters(80);
+    public static final double MIN_EXTENSION = .2;
   }
 
   public static class WristConstants {
@@ -324,7 +327,7 @@ public final class Constants {
     /**
      * Put arm on ground to pick up a cone that's lying down
      */
-    public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(-20, 0, 20);
+    public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(Units.radiansToDegrees(-.4), 0.05, 20);
     /**
      * Put arm above ground to pick up a cone that's standing up
      */
@@ -336,7 +339,7 @@ public final class Constants {
     /**
      * Put arm into a safe position for transit across the field
      */
-    public static final ArmSetpoint TRANSIT = new ArmSetpoint(60, Units.inchesToMeters(0), 45);
+    public static final ArmSetpoint TRANSIT = new ArmSetpoint(80, Units.inchesToMeters(0), -60);
     /**
      * Extend the arm out to place cone on the high peg
      */
@@ -360,7 +363,7 @@ public final class Constants {
     /**
      * Put arm out upside down to pick up a cone direct from the single substation
      */
-    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, Units.inchesToMeters(0), 45);
+    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(-8, Units.inchesToMeters(0), 50);
   }
 
 }
