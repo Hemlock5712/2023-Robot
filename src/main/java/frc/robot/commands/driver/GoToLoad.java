@@ -39,7 +39,7 @@ public class GoToLoad extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Node targetPosition = new Node(new Pose2d(12.7, 7.31, Rotation2d.fromDegrees(0)));
+    Node targetPosition = new Node(new Pose2d(14.47, 6.80, Rotation2d.fromDegrees(90)));
     pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap);
     pathfindCommand.schedule();
   }

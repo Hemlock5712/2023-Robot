@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -21,7 +22,7 @@ public class WristSubsystem extends SubsystemBase {
   // These constants are calculated by Reca.lc, might need to be tuned slightly
   // private ArmFeedforward wristFeedforward = new ArmFeedforward(0, 2.62, 0.48,
   // 0.07);
-  private ArmFeedforward wristFeedforward = new ArmFeedforward(0, 1.22, .79, .04);
+  private ArmFeedforward wristFeedforward = new ArmFeedforward(0, .2, .79, .04);
 
   private NetworkTableEntry wristTargetAngleEntry = NetworkTableInstance.getDefault().getTable("Wrist")
       .getEntry("targetAngle");
@@ -39,6 +40,7 @@ public class WristSubsystem extends SubsystemBase {
   public WristSubsystem() {
     wristEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     wristEncoder.configMagnetOffset(-50);
+    wristMotor.setIdleMode(IdleMode.kBrake);
     wristMotor.setSmartCurrentLimit(80);
     // wristMotor.setSmartCurrentLimit(30, 40);
 

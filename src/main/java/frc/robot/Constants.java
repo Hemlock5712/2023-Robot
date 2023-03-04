@@ -327,7 +327,7 @@ public final class Constants {
     /**
      * Put arm on ground to pick up a cone that's lying down
      */
-    public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(Units.radiansToDegrees(-.4), 0.05, 20);
+    public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(Units.radiansToDegrees(-.4) - 2, 0.05, 20);
     /**
      * Put arm above ground to pick up a cone that's standing up
      */
@@ -339,11 +339,11 @@ public final class Constants {
     /**
      * Put arm into a safe position for transit across the field
      */
-    public static final ArmSetpoint TRANSIT = new ArmSetpoint(80, Units.inchesToMeters(0), -60);
+    public static final ArmSetpoint TRANSIT = new ArmSetpoint(80, Units.inchesToMeters(0), -115);
     /**
      * Extend the arm out to place cone on the high peg
      */
-    public static final ArmSetpoint HIGH_PEG = new ArmSetpoint(30, Units.inchesToMeters(40), -60);
+    public static final ArmSetpoint HIGH_PEG = new ArmSetpoint(30, Units.inchesToMeters(35), -60);
     /**
      * Extend the arm out to place cone on the mid peg
      */
@@ -363,7 +363,8 @@ public final class Constants {
     /**
      * Put arm out upside down to pick up a cone direct from the single substation
      */
-    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(-8, Units.inchesToMeters(0), 50);
+    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(-8, Units.inchesToMeters(0),
+     50);
   }
 
 }

@@ -5,20 +5,22 @@
 package frc.robot.commands.operator;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.util.PlacementCalculator;
+import frc.robot.util.Direction;
 import frc.robot.util.PlacementPosition;
+import frc.robot.util.TargetLevel;
+import frc.robot.util.TargetPosition;
 
 public class NextNode extends CommandBase {
   DrivetrainSubsystem drivetrain;
-  Boolean moveRight;
+  Direction direction;
 
   /** Creates a new NextNode. */
-  public NextNode(Boolean moveRight) {
-    this.moveRight = moveRight;
+  public NextNode(Direction direction) {
+    this.direction = direction;
+
   }
 
   // Called when the command is initially scheduled.
@@ -35,21 +37,44 @@ public class NextNode extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Boolean direction = moveRight;
-    PlacementPosition nextPosition;
-    if (Constants.DrivetrainConstants.alliance == Alliance.Red) {
-      direction = !direction;
-    }
-    if (direction == true) {
-      nextPosition = PlacementCalculator.getNextPlacementPosition(Position.getPlacementPosition());
-    } else {
-      nextPosition = PlacementCalculator.getPreviousPlacementPosition(Position.getPlacementPosition());
+    PlacementPosition current = Position.getPlacementPosition();
+   
+  
+    int changeX = 0;
+    int changeY = 0;
+
+
+    switch (direction) {
+      case Right:
+        changeX = 1;
+        break;
+      case Left:
+        changeX = -1;
+        break;
+      case Up:
+        changeY = 1;
+        break;
+      case Down:
+        changeY = -1;
+        break;
+      default:
+        break;
     }
 
-    Position.setPlacementPosition(nextPosition);
-    SmartDashboard.putNumber("NextPosition", nextPosition.getPosition().ordinal());
-    SmartDashboard.putNumber("NextLevel", 2 - nextPosition.getLevel().ordinal());
-  }
+    if(Constants.DrivetrainConstants.alliance == Alliance.Red){
+      changeX *= -1;
+    }
+
+    TargetPosition newTargetPosition = TargetPosition.values()[((current.getPosition().ordinal() + changeX + 9) % 9)];
+
+    TargetLevel newTargetLevel = TargetLevel.values()[(current.getLevel().ordinal()+changeY)%9];
+
+    Position.setPlacementPosition(new PlacementPosition(newTargetPosition, newTargetLevel));
+
+  //   Position.setPlacementPosition(nextPosition);
+  //   SmartDashboard.putNumber("NextPosition", nextPosition.getPosition().ordinal());
+  //   SmartDashboard.putNumber("NextLevel", 2 - nextPosition.getLevel().ordinal());
+    }
 
   // Returns true when the command should end.
   @Override

@@ -136,6 +136,8 @@ public class PPAStar extends CommandBase {
         Constants.DrivetrainConstants.alliance);
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
+    
+    
   }
 
   @Override

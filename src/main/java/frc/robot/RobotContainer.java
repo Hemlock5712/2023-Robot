@@ -29,7 +29,9 @@ import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.OpenClaw;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
+import frc.robot.commands.driver.GoToLoad;
 import frc.robot.commands.operator.MoveArmToSetpoint;
+import frc.robot.commands.operator.NextNode;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
@@ -40,6 +42,7 @@ import frc.robot.subsystems.FullArmSystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.WristSubsystem;
+import frc.robot.util.Direction;
 import frc.robot.util.FieldConstants;
 
 /**
@@ -54,6 +57,8 @@ import frc.robot.util.FieldConstants;
 public class RobotContainer {
 
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController controller2 = new CommandXboxController(1);
+
   // Set IP to 10.57.12.11
   // Set RoboRio to 10.57.12.2
   private final PhotonCamera photonCamera = new PhotonCamera("photonvision");
@@ -140,68 +145,29 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Back button resets the robot pose
-    // controller.back().onTrue(Commands.runOnce(poseEstimator::resetFieldPosition,
-    // drivetrainSubsystem));
-
-    // controller.b().whileTrue(chaseTagCommand);
-
     // controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
-    // controller.rightBumper().whileTrue(
-    // new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
-    // standardObstacles, standardMap));
+    controller.b().whileTrue(
+    new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
+    standardObstacles, standardMap));
     // controller.leftBumper().whileTrue(
     // new GoToPlace(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
     // standardObstacles, standardMap));
 
     // controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
     // controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
+
+    controller2.pov(0).whileTrue(new NextNode(Direction.Up));
+    controller2.pov(90).whileTrue(new NextNode(Direction.Right));
+    controller2.pov(180).whileTrue(new NextNode(Direction.Down));
+    controller2.pov(270).whileTrue(new NextNode(Direction.Left));
+
+
+
+
+
     controller.rightTrigger(.5).whileTrue(new OpenClaw(intakeSubsystem));
 
-    // controller.a().onTrue(Commands.runOnce(poseEstimator::resetHolonomicRotation,
-    // drivetrainSubsystem));
-
-    // controller.a().onTrue(Commands.runOnce(poseEstimator::resetPoseRating));
-
-    // controller.b().whileTrue(new MoveArmTo(armSystem,
-    // Constants.ArmSetpoints.MID_NODE));
-
-    // controller.pov(0).whileTrue(new ManualLiftUp(elevatorSubsystem));
-    // controller.pov(90).whileTrue(new ManualExtensionOut(extensionSubsystem));
-    // controller.pov(180).whileTrue(new ManualLiftDown(elevatorSubsystem));
-    // controller.pov(270).whileTrue(new ManualExtensionIn(extensionSubsystem));
-    // controller.pov(0).whileTrue(new ManualWrist(wristSubsystem, 0));
-    // controller.pov(180).whileTrue(new ManualWrist(wristSubsystem, 0));
-    // controller.pov(90).whileTrue(new StartEndCommand(() -> {
-    // elevatorSubsystem.setAngle(Units.degreesToRadians(20));
-    // elevatorSubsystem.enableAutoDrive();
-    // }, () -> {
-    // elevatorSubsystem.rawDrive(0);
-    // }));
-
-    // controller.pov(0).whileTrue(new StartEndCommand(() -> {
-    // elevatorSubsystem.setAngle(Units.inchesToMeters(0));
-    // elevatorSubsystem.enableAutoDrive();
-    // extensionSubsystem.setTargetHeight(Units.inchesToMeters(5));
-    // extensionSubsystem.enableAutoDrive();
-    // // wristSubsystem.setTargetAngle(Units.degreesToRadians(0));
-    // // wristSubsystem.run();
-    // }, () -> {
-    // elevatorSubsystem.rawDrive(0);
-    // extensionSubsystem.rawDrive(0);
-    // }));
-    // controller.pov(270).whileTrue(new StartEndCommand(() -> {
-    // elevatorSubsystem.setAngle(Units.inchesToMeters(20));
-    // elevatorSubsystem.enableAutoDrive();
-    // extensionSubsystem.setTargetHeight(20);
-    // extensionSubsystem.enableAutoDrive();
-    // // wristSubsystem.setTargetAngle(Units.degreesToRadians(-20));
-    // // wristSubsystem.run();
-    // }, () -> {
-    // elevatorSubsystem.rawDrive(0);
-    // extensionSubsystem.rawDrive(0);
-    // }));
     controller.pov(270).whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));

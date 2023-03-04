@@ -45,7 +45,7 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
     // double distance = (motor.getSelectedSensorPosition() *
     // Constants.ExtensionConstants.SPOOL_CIRCUMFERENCE)
     // / (Constants.ExtensionConstants.EXTENSION_GEARING * 4096);
-    return distance;
+    return distance * 2;
   }
 
   /**
