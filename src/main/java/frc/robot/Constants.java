@@ -345,7 +345,7 @@ public final class Constants {
     /**
      * Put arm into a safe position for transit across the field
      */
-    public static final ArmSetpoint TRANSIT = XYACalulator.Calulator(0, 0, -90);
+    public static final ArmSetpoint TRANSIT = XYACalulator.Calulator(0, 0, 90);
     /**
      * Extend the arm out to place cone on the high peg
      */

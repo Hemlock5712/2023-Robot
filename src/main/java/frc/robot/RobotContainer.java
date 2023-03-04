@@ -9,11 +9,6 @@ import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 import java.util.List;
 import java.util.Map;
 
-<<<<<<< Updated upstream
-import frc.robot.commands.driver.GoToPlaceWithArm;
-import frc.robot.subsystems.*;
-=======
->>>>>>> Stashed changes
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
@@ -33,15 +28,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
+import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.commands.driver.GoToPlaceWithArm;
 import frc.robot.commands.operator.MoveArmToSetpoint;
 import frc.robot.commands.operator.NextNode;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
-<<<<<<< Updated upstream
-=======
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
@@ -50,7 +43,6 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.WristSubsystem;
->>>>>>> Stashed changes
 import frc.robot.util.Direction;
 import frc.robot.util.FieldConstants;
 
@@ -92,15 +84,15 @@ public class RobotContainer {
   private PneumaticHub pch = new PneumaticHub(1);
 
   Map<String, Command> eventMap = Map.of(
-    "extendHigh",
-    new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_PEG),
-    "outtake",
-    new RunIntakeCommand(intakeSubsystem),
-    "transit",
-    new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT),
-    "singleSubstation",
-    new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP)
-  );
+      "extendHigh",
+      new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_PEG),
+      "outtake",
+      new RunIntakeCommand(intakeSubsystem),
+      "transit",
+      new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT),
+      "singleSubstation",
+      new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+          Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
 
   private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new FieldHeadingDriveCommand(
       drivetrainSubsystem,
@@ -170,10 +162,15 @@ public class RobotContainer {
     // new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
     // standardObstacles, standardMap));
 
-    // controller.x().whileTrue(new TestBalance(drivetrainSubsystem, poseEstimator));
-    controller2.leftBumper().whileTrue(
-    new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
-    standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem));
+    // controller.x().whileTrue(new TestBalance(drivetrainSubsystem,
+    // poseEstimator));
+    // controller.leftBumper().whileTrue(
+    //     new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
+    //         standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem, intakeSubsystem));
+
+    // controller.rightBumper().whileTrue(
+    //     new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
+    //         standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem, intakeSubsystem));
 
     // controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
     // controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
@@ -183,33 +180,46 @@ public class RobotContainer {
     controller2.pov(180).whileTrue(new NextNode(Direction.Down));
     controller2.pov(270).whileTrue(new NextNode(Direction.Left));
 
-
-
-
-
-    controller.rightTrigger(.5).whileTrue(
-      new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
+    // controller.rightTrigger(.5).whileTrue(
+    // new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+    // Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
 
     // controller.pov(270).whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
-    //     extensionSubsystem, wristSubsystem,
-    //     Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
-    controller.y().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+    // extensionSubsystem, wristSubsystem,
+    // Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
+    controller2.y().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.HIGH_PEG));
+    controller2.b().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+        extensionSubsystem, wristSubsystem,
+        Constants.ArmSetpoints.MID_PEG));
+    controller2.a().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+        extensionSubsystem, wristSubsystem,
+        Constants.ArmSetpoints.HYBRID_NODE));
+    controller2.x().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+        extensionSubsystem, wristSubsystem,
+        Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
+    controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
+    controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
     controller.x().whileTrue(
         new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT));
-    controller.b().whileTrue(
-        new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.MID_PEG));
-    controller.a().whileTrue(
-        new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HYBRID_NODE));
-    // controller.pov(90).whileTrue(new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-    // //     Constants.ArmSetpoints.GROUND_CONE_PICKUP));
+    // controller.b().whileTrue(
+    // new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+    // Constants.ArmSetpoints.MID_PEG));
+    // controller.a().whileTrue(
+    // new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+    // Constants.ArmSetpoints.HYBRID_NODE));
+    // controller.pov(90).whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+    // extensionSubsystem, wristSubsystem,
+    // // Constants.ArmSetpoints.GROUND_CONE_PICKUP));
     // controller.rightBumper().whileTrue(new RunIntakeCommand(intakeSubsystem));
     // controller.leftBumper().whileTrue(new ReverseIntakeCommand(intakeSubsystem));
   }
 
-  public void startTeleopPosCommand(){
-    new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT).schedule();;
+  public void startTeleopPosCommand() {
+    new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)
+        .schedule();
+    ;
   }
 
   /**
@@ -220,18 +230,21 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-      poseEstimator::getCurrentPose,
-      poseEstimator::setCurrentPose,
-      Constants.DrivetrainConstants.KINEMATICS,
-      Constants.AutoConstants.translationConstants,
-      Constants.AutoConstants.rotationConstants,
-      drivetrainSubsystem::setModuleStates,
-      eventMap,
-      true,
-      drivetrainSubsystem);
-    // return new PPSwerveFollower(drivetrainSubsystem, poseEstimator, "New Path", new PathConstraints(2, 1), false);
-    // return new PPSwerveFollower(drivetrainSubsystem, poseEstimator, "SingleWithAutoBalance", new PathConstraints(2,1), false);
-    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("SingleWithAutoBalance", new PathConstraints(2, 1));
+        poseEstimator::getCurrentPose,
+        poseEstimator::setCurrentPose,
+        Constants.DrivetrainConstants.KINEMATICS,
+        Constants.AutoConstants.translationConstants,
+        Constants.AutoConstants.rotationConstants,
+        drivetrainSubsystem::setModuleStates,
+        eventMap,
+        true,
+        drivetrainSubsystem);
+    // return new PPSwerveFollower(drivetrainSubsystem, poseEstimator, "New Path",
+    // new PathConstraints(2, 1), false);
+    // return new PPSwerveFollower(drivetrainSubsystem, poseEstimator,
+    // "SingleWithAutoBalance", new PathConstraints(2,1), false);
+    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("SingleWithAutoBalance",
+        new PathConstraints(2, 1));
     return autoBuilder.fullAuto(pathGroup);
   }
 

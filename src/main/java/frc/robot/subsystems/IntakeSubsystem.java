@@ -26,7 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private SimpleMotorFeedforward intakeFF = new SimpleMotorFeedforward(0.01, 1.18, 0.01);
 
   public IntakeSubsystem() {
-    intake.setInverted(true);
+    intake.setInverted(false);
   }
 
   public void runIntake() {

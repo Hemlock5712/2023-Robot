@@ -42,7 +42,7 @@ public class GoToPlace extends CommandBase {
   public void initialize() {
     TargetPosition target = Position.getPlacementPosition().getPosition();
     Node targetPosition = new Node(FieldConstants.PlacementPositions.get(target));
-    pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap);
+    pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap, false);
     pathfindCommand.schedule();
   }
 

@@ -32,9 +32,10 @@ public class PPAStar extends CommandBase {
   private Node startPoint;
   private final List<Obstacle> obstacles;
   private VisGraph AStarMap;
+  private boolean singleSubstation;
 
   public PPAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, Node finalPosition,
-      List<Obstacle> obstacles, VisGraph AStarMap) {
+      List<Obstacle> obstacles, VisGraph AStarMap, boolean singleSubstation) {
     this.driveSystem = d;
     this.poseEstimatorSystem = p;
     this.constraints = constraints;
@@ -42,6 +43,7 @@ public class PPAStar extends CommandBase {
     this.finalPosition = finalPosition;
     this.AStarMap = AStarMap;
     this.startPoint = new Node(p);
+    this.singleSubstation = singleSubstation;
     AStarMap.addNode(finalPosition);
     for (int i = 0; i < AStarMap.getNodeSize(); i++) {
       Node endNode = AStarMap.getNode(i);
@@ -93,12 +95,17 @@ public class PPAStar extends CommandBase {
         fullPath.get(1).getY() - startPoint.getY());
 
     ArrayList<PathPoint> fullPathPoints = new ArrayList<PathPoint>();
+
+    Rotation2d finalHol = finalPosition.getHolRot();
+    if(singleSubstation){
+      finalHol = Rotation2d.fromDegrees(0);
+    }
     // Find path between points
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
         fullPathPoints.add(new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
             startPoint.getHolRot(), startingSpeed));
-        addMidPoints(fullPathPoints, fullPath, i, finalPosition.getHolRot());
+        addMidPoints(fullPathPoints, fullPath, i, finalHol, finalHol);
       }
 
       else if (i + 1 == fullPath.size()) {
@@ -112,7 +119,7 @@ public class PPAStar extends CommandBase {
       else {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
-        Rotation2d tempHol = finalPosition.getHolRot();
+        Rotation2d tempHol = finalHol;
         if (fullPath.get(i).getX() <= 5.36 + 0.1) {
           tempHol = Rotation2d.fromDegrees(180);
         }
@@ -121,7 +128,7 @@ public class PPAStar extends CommandBase {
         fullPathPoints.add(new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             heading,
             tempHol));
-        addMidPoints(fullPathPoints, fullPath, i, finalPosition.getHolRot());
+        addMidPoints(fullPathPoints, fullPath, i, finalHol, tempHol);
       }
     }
 
@@ -154,12 +161,11 @@ public class PPAStar extends CommandBase {
     driveSystem.stop();
   }
 
-  public void addMidPoints(ArrayList<PathPoint> fullPathPoints, List<Node> fullPath, int i, Rotation2d midPointHol) {
+  public void addMidPoints(ArrayList<PathPoint> fullPathPoints, List<Node> fullPath, int i, Rotation2d midPointHol, Rotation2d tempHol) {
     double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
     int midpoints = (int) Math.floor(distance / 2);
     // System.out.println(midpoints);
-    Rotation2d tempHol = null;
     Rotation2d heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
     for (int j = 0; j < midpoints; j++) {
