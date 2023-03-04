@@ -150,6 +150,9 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
     targetHeight.setDouble(setpoint);
     SmartDashboard.putNumber("ElevatorSubsystem/PID", pidController.calculate(getHeight()));
     SmartDashboard.putNumber("ElevatorSubsystem/Feedforward", feedforward.calculate(getHeight()));
+    SmartDashboard.putNumber("ElevatorSubsystem/CurrestAngle", angleEncoder.getAbsolutePosition());
     atSetpointEntry.setBoolean(atTarget());
   }
+
+ 
 }

@@ -24,6 +24,8 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
       .getEntry("currentVoltage");
   private NetworkTableEntry atSetpointEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
       .getEntry("atSetpoint");
+  private NetworkTableEntry motorTempEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
+      .getEntry("TempOfMotor");
 
   public ExtensionSubsystem() {
     super(25, 0, 0, .05, .61, .2, 0.1, Constants.ExtensionConstants.EXTENSION_GEARING);
@@ -97,6 +99,7 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
     extensionLengthEntry.setDouble(getHeight());
     targetLengthEntry.setDouble(setpoint);
     motorVoltageEntry.setDouble(motor.getMotorOutputVoltage());
+    motorTempEntry.setDouble(motor.getTemperature());
     SmartDashboard.putData(this);
     atSetpointEntry.setBoolean(atTarget());
   }

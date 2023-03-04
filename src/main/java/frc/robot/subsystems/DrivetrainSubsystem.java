@@ -179,6 +179,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // return Rotation2d.fromDegrees(360.0 - navx.getYaw());
   }
 
+  public double getPitch() {
+    return pigeon.getRoll();
+  }
+
+  public void resetPitch() {
+    pigeon.configMountPosePitch(PIGEON_ID);
+  }
+
   public void setGyroscopeRotation(double angleDeg) {
     pigeon.setYaw(angleDeg);
   }
@@ -240,7 +248,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         IntStream.range(0, currentStates.length).forEach(i -> desiredStates[i].angle = currentStates[i].angle);
       }
       // Positive should be counter clockwise.
-      //System.out.println(desiredChassisSpeeds.omegaRadiansPerSecond);
+      // System.out.println(desiredChassisSpeeds.omegaRadiansPerSecond);
 
       setModuleStates(desiredStates);
     }

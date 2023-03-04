@@ -5,6 +5,7 @@
 package frc.robot.commands.operator;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -71,9 +72,8 @@ public class NextNode extends CommandBase {
 
     Position.setPlacementPosition(new PlacementPosition(newTargetPosition, newTargetLevel));
 
-  //   Position.setPlacementPosition(nextPosition);
-  //   SmartDashboard.putNumber("NextPosition", nextPosition.getPosition().ordinal());
-  //   SmartDashboard.putNumber("NextLevel", 2 - nextPosition.getLevel().ordinal());
+    SmartDashboard.putNumber("NextPosition", newTargetPosition.ordinal());
+    SmartDashboard.putNumber("NextLevel", 2 - newTargetLevel.ordinal());
     }
 
   // Returns true when the command should end.

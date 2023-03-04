@@ -31,7 +31,7 @@ public class WristSubsystem extends SubsystemBase {
   private NetworkTableEntry wristVoltageEntry = NetworkTableInstance.getDefault().getTable("Wrist").getEntry("voltage");
   private NetworkTableEntry wristCurrentEntry = NetworkTableInstance.getDefault().getTable("Wrist").getEntry("current");
   private NetworkTableEntry wristTemperatureEntry = NetworkTableInstance.getDefault().getTable("Wrist")
-      .getEntry("termperature");
+      .getEntry("temperature");
   private NetworkTableEntry atSetpointEntry = NetworkTableInstance.getDefault().getTable("Wrist")
       .getEntry("atSetpoint");
 

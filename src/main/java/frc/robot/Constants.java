@@ -8,6 +8,8 @@ import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 
+import com.pathplanner.lib.auto.PIDConstants;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -20,6 +22,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.swerve.ModuleConfiguration;
 import frc.robot.util.ArmSetpoint;
+import frc.robot.util.XYACalulator;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -188,6 +191,9 @@ public final class Constants {
     public static double Y_kI = 0.0;
     public static double Y_kD = 0.0;
 
+    public static PIDConstants translationConstants = new PIDConstants(X_kP, X_kI, X_kD);
+    public static PIDConstants rotationConstants = new PIDConstants(THETA_kP, THETA_kI, THETA_kD);
+
     public static PIDController translationController = new PIDController(Constants.AutoConstants.X_kP,
         Constants.AutoConstants.X_kI, Constants.AutoConstants.X_kD);
     public static PIDController strafeController = new PIDController(Constants.AutoConstants.Y_kP,
@@ -253,7 +259,7 @@ public final class Constants {
      * <p>
      * Should be set to 0 when the arm is parallel to the ground.
      */
-    public static final double ARM_ANGLE_ABSOLUTE_OFFSET = Units.radiansToDegrees(-2.67);
+    public static final double ARM_ANGLE_ABSOLUTE_OFFSET = -155.4785;
     public static final double MAX_ARM_LENGTH = Units.inchesToMeters(40);
     public static final double MIN_ARM_LENGTH = Units.inchesToMeters(10);
     /**
@@ -339,32 +345,23 @@ public final class Constants {
     /**
      * Put arm into a safe position for transit across the field
      */
-    public static final ArmSetpoint TRANSIT = new ArmSetpoint(80, Units.inchesToMeters(0), -115);
+    public static final ArmSetpoint TRANSIT = XYACalulator.Calulator(0, 0, -90);
     /**
      * Extend the arm out to place cone on the high peg
      */
-    public static final ArmSetpoint HIGH_PEG = new ArmSetpoint(30, Units.inchesToMeters(35), -60);
+    public static final ArmSetpoint HIGH_PEG = XYACalulator.Calulator(18, 34, -20);
     /**
      * Extend the arm out to place cone on the mid peg
      */
-    public static final ArmSetpoint MID_PEG = new ArmSetpoint(30, Units.inchesToMeters(25), -60);
+    public static final ArmSetpoint MID_PEG = XYACalulator.Calulator(-1, 17, -20);
     /**
      * Extend the arm out to place on the hybrid node
      */
-    public static final ArmSetpoint HYBRID_NODE = new ArmSetpoint(-5, Units.inchesToMeters(10), -60);
-    /**
-     * Extend the arm out to place cube on the high node
-     */
-    public static final ArmSetpoint HIGH_NODE = new ArmSetpoint(30, Units.inchesToMeters(35), -10);
-    /**
-     * Extend the arm out to place cube on the mid node
-     */
-    public static final ArmSetpoint MID_NODE = new ArmSetpoint(30, Units.inchesToMeters(20), -10);
+    public static final ArmSetpoint HYBRID_NODE = XYACalulator.Calulator(0, 0, -45);
     /**
      * Put arm out upside down to pick up a cone direct from the single substation
      */
-    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(-8, Units.inchesToMeters(0),
-     50);
+    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = XYACalulator.Calulator(0, 0, 34);
   }
 
 }
