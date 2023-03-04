@@ -9,6 +9,7 @@ import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 import java.util.List;
 import java.util.Map;
 
+import frc.robot.commands.driver.GoToPlaceWithArm;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathConstraints;
@@ -162,8 +163,8 @@ public class RobotContainer {
 
     // controller.x().whileTrue(new TestBalance(drivetrainSubsystem, poseEstimator));
     controller2.leftBumper().whileTrue(
-    new GoToPlace(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
-    standardObstacles, standardMap));
+    new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
+    standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem));
 
     // controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
     // controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
