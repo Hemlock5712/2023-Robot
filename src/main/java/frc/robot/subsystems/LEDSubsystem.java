@@ -7,7 +7,7 @@ import frc.robot.util.GamePiece;
 
 public class LEDSubsystem extends SubsystemBase {
 
-    private AddressableLED led = new AddressableLED(0);
+    private AddressableLED led = new AddressableLED(9);
     private AddressableLEDBuffer buffer = new AddressableLEDBuffer(120);
 
     private GamePiece gamePiece = GamePiece.NONE;

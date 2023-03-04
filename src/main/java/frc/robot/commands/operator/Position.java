@@ -5,7 +5,7 @@ import frc.robot.util.TargetLevel;
 import frc.robot.util.TargetPosition;
 
 public class Position {
-  private static PlacementPosition position = new PlacementPosition(TargetPosition.Position1, TargetLevel.Top);
+  private static PlacementPosition position = new PlacementPosition(TargetPosition.Position9, TargetLevel.Top);
 
   public static PlacementPosition getPlacementPosition() {
     return position;

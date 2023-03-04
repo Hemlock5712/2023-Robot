@@ -69,8 +69,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   public DrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-    SmartDashboard.putNumber("NextPosition", 0);
-    SmartDashboard.putNumber("NextLevel", 0);
     pigeon.configMountPoseRoll(0);
     pigeon.configMountPoseYaw(0);
 

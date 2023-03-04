@@ -62,13 +62,13 @@ public class NextNode extends CommandBase {
         break;
     }
 
-    if(Constants.DrivetrainConstants.alliance == Alliance.Red){
+    if(Constants.DrivetrainConstants.alliance == Alliance.Blue){
       changeX *= -1;
     }
 
     TargetPosition newTargetPosition = TargetPosition.values()[((current.getPosition().ordinal() + changeX + 9) % 9)];
 
-    TargetLevel newTargetLevel = TargetLevel.values()[(current.getLevel().ordinal()+changeY)%9];
+    TargetLevel newTargetLevel = TargetLevel.values()[(current.getLevel().ordinal()+changeY+3)%3];
 
     Position.setPlacementPosition(new PlacementPosition(newTargetPosition, newTargetLevel));
 
