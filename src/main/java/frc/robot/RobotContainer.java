@@ -177,7 +177,8 @@ public class RobotContainer {
 
 
 
-    // controller.rightTrigger(.5).whileTrue(new OpenClaw(intakeSubsystem));
+    controller.rightTrigger(.5).whileTrue(
+      new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
 
     // controller.pov(270).whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
     //     extensionSubsystem, wristSubsystem,
