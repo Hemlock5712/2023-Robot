@@ -74,10 +74,7 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
 
   @Override
   public boolean atTarget() {
-    if (hasValidSetpoint) {
-      return Math.abs(getHeight() - setpoint) < Constants.ExtensionConstants.AT_TARGET_TOLERANCE;
-    }
-    return false;
+    return Math.abs(getHeight() - setpoint) < Constants.ExtensionConstants.AT_TARGET_TOLERANCE;
   }
 
   public void rawDrive(double percentage) {

@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commands.PPAStar;
 import frc.robot.commands.operator.Position;
@@ -41,7 +42,8 @@ public class GoToPlace extends CommandBase {
   @Override
   public void initialize() {
     TargetPosition target = Position.getPlacementPosition().getPosition();
-    Node targetPosition = new Node(FieldConstants.PlacementPositions.get(target));
+    Pose2d posePosition = FieldConstants.PlacementPositions.get(target);
+    Node targetPosition = new Node(posePosition);
     pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap, false);
     pathfindCommand.schedule();
   }

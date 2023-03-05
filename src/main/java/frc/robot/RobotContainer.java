@@ -30,8 +30,11 @@ import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
+import frc.robot.commands.driver.GoToLoadWithArm;
+import frc.robot.commands.driver.GoToPlaceWithArm;
 import frc.robot.commands.operator.MoveArmToSetpoint;
 import frc.robot.commands.operator.NextNode;
+import frc.robot.commands.operator.RetractIn;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
@@ -164,13 +167,13 @@ public class RobotContainer {
 
     // controller.x().whileTrue(new TestBalance(drivetrainSubsystem,
     // poseEstimator));
-    // controller.leftBumper().whileTrue(
-    //     new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
-    //         standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem, intakeSubsystem));
+    controller.leftBumper().whileTrue(
+        new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
+            standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem));
 
-    // controller.rightBumper().whileTrue(
-    //     new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
-    //         standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem, intakeSubsystem));
+    controller.rightBumper().whileTrue(
+        new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
+            standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem, intakeSubsystem));
 
     // controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
     // controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
@@ -202,7 +205,7 @@ public class RobotContainer {
     controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
     controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
     controller.x().whileTrue(
-        new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT));
+        new RetractIn(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT));
     // controller.b().whileTrue(
     // new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
     // Constants.ArmSetpoints.MID_PEG));
