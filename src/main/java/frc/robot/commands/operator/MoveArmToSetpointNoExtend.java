@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.operator.subcommands.MoveElevatorAngle;
 import frc.robot.commands.operator.subcommands.MoveElevatorExtension;
+import frc.robot.commands.operator.subcommands.MoveWristAngle;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.WristSubsystem;
@@ -20,12 +21,12 @@ import frc.robot.util.ArmSetpoint;
 public class MoveArmToSetpointNoExtend extends SequentialCommandGroup {
   /** Creates a new MoveArmToSetpointNoExtend. */
   public MoveArmToSetpointNoExtend(ElevatorSubsystem elevator, ExtensionSubsystem extension, WristSubsystem wrist,
-                                   ArmSetpoint setpoint) {
+      ArmSetpoint setpoint) {
 
     addCommands(
         new ParallelCommandGroup(
             new MoveElevatorAngle(elevator, Units.degreesToRadians(setpoint.getAngle())),
-            new ManualWrist(wrist, setpoint.getWristAngle()),
+            new MoveWristAngle(wrist, setpoint.getWristAngle()),
             new MoveElevatorExtension(extension, 0)));
   }
 }

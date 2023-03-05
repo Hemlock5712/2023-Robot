@@ -27,13 +27,6 @@ public class Node {
     this.neighbors = new ArrayList<>();
   }
 
-  public Node(PoseEstimatorSubsystem p) {
-    this.x = p.getCurrentPose().getX();
-    this.y = p.getCurrentPose().getY();
-    this.holonomicRotation = p.getCurrentPose().getRotation();
-    this.neighbors = new ArrayList<>();
-  }
-
   public Node(Translation2d coordinates, Rotation2d holonomicRotation) {
     this.x = coordinates.getX();
     this.y = coordinates.getY();

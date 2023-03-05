@@ -42,7 +42,6 @@ public class PPAStar extends CommandBase {
     this.obstacles = obstacles;
     this.finalPosition = finalPosition;
     this.AStarMap = AStarMap;
-    this.startPoint = new Node(p);
     this.singleSubstation = singleSubstation;
     AStarMap.addNode(finalPosition);
     for (int i = 0; i < AStarMap.getNodeSize(); i++) {
@@ -58,7 +57,7 @@ public class PPAStar extends CommandBase {
   public void initialize() {
     VisGraph tempGraph = AStarMap;
     if (Constants.DrivetrainConstants.alliance == Alliance.Blue) {
-      startPoint = new Node(poseEstimatorSystem);
+      startPoint = new Node(poseEstimatorSystem.getCurrentPose());
     } else {
       Pose2d flippedY = new Pose2d(poseEstimatorSystem.getCurrentPose().getX(),
           FieldConstants.FIELD_WIDTH_METERS - poseEstimatorSystem.getCurrentPose().getY(),
@@ -69,16 +68,11 @@ public class PPAStar extends CommandBase {
     List<Node> fullPath = new ArrayList<Node>();
 
     tempGraph.addNode(startPoint);
-    if (tempGraph.addEdge(new Edge(startPoint, finalPosition), obstacles)) {
-      fullPath.add(0, startPoint);
-      fullPath.add(1, finalPosition);
-    } else {
-      for (int i = 0; i < tempGraph.getNodeSize(); i++) {
-        Node endNode = tempGraph.getNode(i);
-        tempGraph.addEdge(new Edge(startPoint, endNode), obstacles);
-      }
-      fullPath = tempGraph.findPath(startPoint, finalPosition);
+    for (int i = 0; i < tempGraph.getNodeSize(); i++) {
+      Node endNode = tempGraph.getNode(i);
+      tempGraph.addEdge(new Edge(startPoint, endNode), obstacles);
     }
+    fullPath = tempGraph.findPath(startPoint, finalPosition);
 
     if (fullPath == null) {
       return;
@@ -105,7 +99,7 @@ public class PPAStar extends CommandBase {
       if (i == 0) {
         fullPathPoints.add(new PathPoint(new Translation2d(startPoint.getX(), startPoint.getY()), heading,
             startPoint.getHolRot(), startingSpeed));
-        addMidPoints(fullPathPoints, fullPath, i, finalHol, finalHol);
+        addMidPoints(fullPathPoints, fullPath, i, finalHol);
       }
 
       else if (i + 1 == fullPath.size()) {
@@ -128,7 +122,7 @@ public class PPAStar extends CommandBase {
         fullPathPoints.add(new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             heading,
             tempHol));
-        addMidPoints(fullPathPoints, fullPath, i, finalHol, tempHol);
+        addMidPoints(fullPathPoints, fullPath, i, finalHol);
       }
     }
 
@@ -161,13 +155,16 @@ public class PPAStar extends CommandBase {
     driveSystem.stop();
   }
 
-  public void addMidPoints(ArrayList<PathPoint> fullPathPoints, List<Node> fullPath, int i, Rotation2d midPointHol, Rotation2d tempHol) {
+  public void addMidPoints(ArrayList<PathPoint> fullPathPoints, List<Node> fullPath, int i, Rotation2d midPointHol) {
     double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+    
     int midpoints = (int) Math.floor(distance / 2);
-    // System.out.println(midpoints);
+
     Rotation2d heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
+
+    Rotation2d tempHol = null;
     for (int j = 0; j < midpoints; j++) {
       if (j % 2 == 0) {
         tempHol = null;

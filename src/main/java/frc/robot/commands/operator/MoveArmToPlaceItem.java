@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.operator.subcommands.MoveElevatorAngle;
 import frc.robot.commands.operator.subcommands.MoveElevatorExtension;
+import frc.robot.commands.operator.subcommands.MoveWristAngle;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.WristSubsystem;
@@ -68,7 +69,7 @@ public class MoveArmToPlaceItem extends CommandBase {
     }
 
     elevatorCommand = new MoveElevatorAngle(elevator, Units.degreesToRadians(setpoint.getAngle()));
-    wristCommand = new ManualWrist(wrist, setpoint.getWristAngle());
+    wristCommand = new MoveWristAngle(wrist, setpoint.getWristAngle());
     extensionCommand = new MoveElevatorExtension(extension, extend ? setpoint.getLength() : 0);
 
     elevatorCommand.schedule();
