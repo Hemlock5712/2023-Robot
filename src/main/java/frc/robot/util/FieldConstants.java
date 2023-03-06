@@ -180,24 +180,24 @@ public final class FieldConstants {
   public static List<Obstacle> standardObstacles = List.of(
       // Charging Station
       new Obstacle(new double[] {
-          2.48,
-          5.36,
-          5.36,
-          2.48
+          2.40,
+          5.40,
+          5.40,
+          2.40
       }, new double[] {
-          4.42,
-          4.42,
-          1.07,
-          1.07
+          4.50,
+          4.50,
+          1.00,
+          1.00
       }),
       new Obstacle(new double[] {
-          3.84,
-          3.84,
+          3.8,
+          3.8,
           1.26
       }, new double[] {
-          6.23,
-          4.80,
-          5.52
+          5.5,
+          5.0,
+          5.25
       }));
 
   // Forces robot to go over cable. In case of defense.

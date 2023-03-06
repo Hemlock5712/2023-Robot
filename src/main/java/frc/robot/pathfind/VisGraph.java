@@ -69,6 +69,13 @@ public class VisGraph {
     return true;
   }
 
+  // Overide edges (WARNING DOESN'T CHECK FOR OBSTACLES)
+  public void addEdge(Edge edge) {
+    this.edges.add(edge);
+    edge.start.addNeighbor(edge.end);
+    edge.end.addNeighbor(edge.start);
+  }
+
   public boolean containsEdge(Edge edge) {
     return this.edges.contains(edge);
   }

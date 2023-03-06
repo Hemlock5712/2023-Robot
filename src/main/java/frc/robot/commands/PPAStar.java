@@ -75,7 +75,14 @@ public class PPAStar extends CommandBase {
     fullPath = tempGraph.findPath(startPoint, finalPosition);
 
     if (fullPath == null) {
-      return;
+      double dist1 = Math.hypot(startPoint.getX() - (5.40 + 0.1), startPoint.getY() - (4.75));
+      double dist2 = Math.hypot(startPoint.getX() - (5.40 + 0.1), startPoint.getY() - (0.75));
+      if (dist1 < dist2) {
+        tempGraph.addEdge(new Edge(startPoint, new Node(5.40 + 0.1, 4.75)));
+      } else {
+        tempGraph.addEdge(new Edge(startPoint, new Node(5.40 + 0.1, 0.75)));
+      }
+      fullPath = tempGraph.findPath(startPoint, finalPosition);
     }
 
     // Gets speed of robot
@@ -91,7 +98,7 @@ public class PPAStar extends CommandBase {
     ArrayList<PathPoint> fullPathPoints = new ArrayList<PathPoint>();
 
     Rotation2d finalHol = finalPosition.getHolRot();
-    if(singleSubstation){
+    if (singleSubstation) {
       finalHol = Rotation2d.fromDegrees(0);
     }
     // Find path between points
@@ -113,8 +120,8 @@ public class PPAStar extends CommandBase {
       else {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
-        Rotation2d tempHol = finalHol;
-        if (fullPath.get(i).getX() <= 5.36 + 0.1) {
+        Rotation2d tempHol = Rotation2d.fromDegrees(45);
+        if (fullPath.get(i).getX() <= 5.40 + 0.1) {
           tempHol = Rotation2d.fromDegrees(180);
         }
         heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
@@ -137,8 +144,7 @@ public class PPAStar extends CommandBase {
         Constants.DrivetrainConstants.alliance);
     pathDrivingCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, trajectory);
     pathDrivingCommand.schedule();
-    
-    
+
   }
 
   @Override
@@ -158,7 +164,7 @@ public class PPAStar extends CommandBase {
   public void addMidPoints(ArrayList<PathPoint> fullPathPoints, List<Node> fullPath, int i, Rotation2d midPointHol) {
     double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
-    
+
     int midpoints = (int) Math.floor(distance / 2);
 
     Rotation2d heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
