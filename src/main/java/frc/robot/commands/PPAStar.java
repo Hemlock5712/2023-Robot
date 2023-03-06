@@ -77,10 +77,18 @@ public class PPAStar extends CommandBase {
     if (fullPath == null) {
       double dist1 = Math.hypot(startPoint.getX() - (2.40 - 0.1), startPoint.getY() - (4.75));
       double dist2 = Math.hypot(startPoint.getX() - (2.40 - 0.1), startPoint.getY() - (0.75));
-      if (dist1 < dist2) {
-        tempGraph.addEdge(new Edge(startPoint, new Node(2.40 - 0.1, 4.75)));
+      if (startPoint.getX() > 5) {
+        if (dist1 < dist2) {
+          tempGraph.addEdge(new Edge(startPoint, new Node(5.40 + 0.1, 4.75)));
+        } else {
+          tempGraph.addEdge(new Edge(startPoint, new Node(5.40 + 0.1, 0.75)));
+        }
       } else {
-        tempGraph.addEdge(new Edge(startPoint, new Node(2.40 - 0.1, 0.75)));
+        if (dist1 < dist2) {
+          tempGraph.addEdge(new Edge(startPoint, new Node(2.40 - 0.1, 4.75)));
+        } else {
+          tempGraph.addEdge(new Edge(startPoint, new Node(2.40 - 0.1, 0.75)));
+        }
       }
       fullPath = tempGraph.findPath(startPoint, finalPosition);
     }
