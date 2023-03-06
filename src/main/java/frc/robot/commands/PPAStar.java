@@ -128,7 +128,7 @@ public class PPAStar extends CommandBase {
       else {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
-        Rotation2d tempHol = Rotation2d.fromDegrees(45);
+        Rotation2d tempHol = Rotation2d.fromDegrees(180 + 45);
         if (fullPath.get(i).getX() <= 5.40 + 0.1) {
           tempHol = Rotation2d.fromDegrees(180);
         }
