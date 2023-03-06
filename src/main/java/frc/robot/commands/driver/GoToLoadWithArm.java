@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.commands.operator.MoveArmToSetpoint;
+import frc.robot.commands.operator.MoveToSetpoint;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -24,8 +24,9 @@ public class GoToLoadWithArm extends SequentialCommandGroup {
       List<Obstacle> obstacles, VisGraph AStarMap, ExtensionSubsystem extension, ElevatorSubsystem elevator,
       WristSubsystem wrist, IntakeSubsystem intake) {
     addCommands(new ParallelDeadlineGroup(
-          new GoToLoad(drivetrain, poseEstimator, constraints, obstacles, AStarMap),
-          new MoveArmToSetpoint(elevator, extension, wrist, Constants.ArmSetpoints.TRANSIT)), 
-        new MoveArmToSetpoint(elevator, extension, wrist, Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP).alongWith(new RunIntakeCommand(intake)));
+        new GoToLoad(drivetrain, poseEstimator, constraints, obstacles, AStarMap),
+        new MoveToSetpoint(elevator, extension, wrist, Constants.ArmSetpoints.TRANSIT)),
+        new MoveToSetpoint(elevator, extension, wrist, Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP)
+            .alongWith(new RunIntakeCommand(intake)));
   }
 }

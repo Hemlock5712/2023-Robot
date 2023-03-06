@@ -9,8 +9,6 @@ import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 import java.util.List;
 import java.util.Map;
 
-import org.photonvision.PhotonCamera;
-
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -22,17 +20,18 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.commands.FieldHeadingDriveCommand;
 import frc.robot.commands.FieldOrientedDriveCommand;
+import frc.robot.commands.OpenClaw;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.driver.GoToLoadWithArm;
 import frc.robot.commands.driver.GoToPlaceWithArm;
-import frc.robot.commands.operator.MoveArmToSetpoint;
+import frc.robot.commands.operator.MoveToSetpoint;
 import frc.robot.commands.operator.NextNode;
 import frc.robot.commands.operator.RetractIn;
 import frc.robot.pathfind.MapCreator;
@@ -41,13 +40,11 @@ import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
-import frc.robot.subsystems.FullArmSystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.WristSubsystem;
-import frc.robot.util.Direction;
 import frc.robot.util.FieldConstants;
+import frc.robot.util.enums.Direction;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -65,17 +62,16 @@ public class RobotContainer {
 
   // Set IP to 10.57.12.11
   // Set RoboRio to 10.57.12.2
-  private final PhotonCamera photonCamera = new PhotonCamera("photonvision");
 
   private final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
 
-  private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(photonCamera, drivetrainSubsystem);
+  private final PoseEstimatorSubsystem poseEstimator = new PoseEstimatorSubsystem(
+      drivetrainSubsystem::getGyroscopeRotation, drivetrainSubsystem::getModulePositions);
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
   private final ExtensionSubsystem extensionSubsystem = new ExtensionSubsystem();
   private final WristSubsystem wristSubsystem = new WristSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final LEDSubsystem ledSubsystem = new LEDSubsystem();
-  private final FullArmSystem armSystem = new FullArmSystem(elevatorSubsystem, extensionSubsystem, wristSubsystem);
+  // private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
   final List<Obstacle> standardObstacles = FieldConstants.standardObstacles;
   final List<Obstacle> cablePath = FieldConstants.cablePath;
@@ -88,22 +84,25 @@ public class RobotContainer {
 
   Map<String, Command> eventMap = Map.of(
       "extendHigh",
-      new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_PEG),
+      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_PEG),
       "outtake",
       new RunIntakeCommand(intakeSubsystem),
       "transit",
-      new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT),
+      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT),
       "singleSubstation",
-      new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
           Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
 
-  private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new FieldHeadingDriveCommand(
-      drivetrainSubsystem,
-      () -> poseEstimator.getCurrentPose().getRotation(),
-      () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-      () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-      () -> -controller.getRightY(),
-      () -> -controller.getRightX());
+  // private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new
+  // FieldHeadingDriveCommand(
+  // drivetrainSubsystem,
+  // () -> poseEstimator.getCurrentPose().getRotation(),
+  // () -> -modifyAxis(controller.getLeftY()) *
+  // DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
+  // () -> -modifyAxis(controller.getLeftX()) *
+  // DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
+  // () -> -controller.getRightY(),
+  // () -> -controller.getRightX());
 
   private final FieldOrientedDriveCommand fieldOrientedDriveCommand = new FieldOrientedDriveCommand(
       drivetrainSubsystem,
@@ -132,6 +131,9 @@ public class RobotContainer {
   }
 
   private void configureDashboard() {
+    /**** Vision tab ****/
+    final var visionTab = Shuffleboard.getTab("Vision");
+    poseEstimator.addDashboardWidgets(visionTab);
 
   }
 
@@ -190,22 +192,31 @@ public class RobotContainer {
     // controller.pov(270).whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
     // extensionSubsystem, wristSubsystem,
     // Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
-    controller2.y().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+    controller2.y().whileTrue(new MoveToSetpoint(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.HIGH_PEG));
-    controller2.b().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+    controller2.b().whileTrue(new MoveToSetpoint(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.MID_PEG));
     controller2.a().whileTrue(new RetractIn(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.HYBRID_NODE));
-    controller2.x().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+    controller2.x().whileTrue(new RetractIn(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
     controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
     controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
-    controller.x().whileTrue(
-        new RetractIn(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT));
+    // controller.y().whileTrue(
+    // new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+    // Constants.ArmSetpoints.GROUND_CUBE_PICKUP)
+    // .alongWith(new RunIntakeCommand(intakeSubsystem).alongWith(new
+    // OpenClaw(intakeSubsystem))));
+
+    controller.y().whileTrue(
+        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+            Constants.ArmSetpoints.GROUND_CUBE_PICKUP)
+            .alongWith(new RunIntakeCommand(intakeSubsystem).alongWith(new OpenClaw(intakeSubsystem))));
+
     // controller.b().whileTrue(
     // new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
     // Constants.ArmSetpoints.MID_PEG));
@@ -220,7 +231,7 @@ public class RobotContainer {
   }
 
   public void startTeleopPosCommand() {
-    new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)
+    new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)
         .schedule();
     ;
   }

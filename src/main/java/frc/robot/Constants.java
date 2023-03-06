@@ -175,6 +175,9 @@ public final class Constants {
         new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(6.5615), Units.inchesToMeters(-30.0)),
         new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(45)));
     public static final Transform3d ROBOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
+
+    /** Minimum target ambiguity. Targets with higher ambiguity will be discarded */
+    public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
   }
 
   public static class AutoConstants {
@@ -333,11 +336,11 @@ public final class Constants {
     /**
      * Put arm on ground to pick up a cone that's lying down
      */
-    public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(Units.radiansToDegrees(-.4) - 2, 0.05, 20);
+    public static final ArmSetpoint GROUND_CUBE_PICKUP = new ArmSetpoint(-10, 0, -45);
     /**
      * Put arm above ground to pick up a cone that's standing up
      */
-    public static final ArmSetpoint ABOVE_CONE_PICKUP = new ArmSetpoint(-10, Units.inchesToMeters(10), -30);
+    public static final ArmSetpoint ABOVE_CONE_PICKUP = new ArmSetpoint(0, 0, -45);
     /**
      * Put arm down onto the cone that's standing up to pick it up
      */

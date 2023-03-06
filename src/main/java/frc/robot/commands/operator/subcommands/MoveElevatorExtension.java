@@ -24,7 +24,7 @@ public class MoveElevatorExtension extends CommandBase {
   public void initialize() {
     extension.enableAutoDrive();
     extension.setTargetHeight(distance);
-    //System.out.println("Setting distance: " + distance);
+    // System.out.println("Setting distance: " + distance);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

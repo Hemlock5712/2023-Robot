@@ -1,36 +1,37 @@
 package frc.robot.subsystems;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide;
+import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonTrackedTarget;
+import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.util.FieldConstants;
 
 public class PoseEstimatorSubsystem extends SubsystemBase {
+
+  // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
+  // you trust your various sensors. Smaller numbers will cause the filter to
+  // "trust" the estimate from that particular component more than the others.
+  // This in turn means the particualr component will have a stronger influence
+  // on the final pose estimate.
 
   // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much
   // you trust your various sensors. Smaller numbers will cause the filter to
@@ -44,7 +45,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
    * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then
    * meters.
    */
-  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, 0.1);
+  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
 
   /**
    * Standard deviations of the vision measurements. Increase these numbers to
@@ -52,46 +53,42 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
    * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and
    * radians.
    */
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, 0.9);
+  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(1.5, 1.5, 1.5);
 
-  private final DrivetrainSubsystem drivetrainSubsystem;
+  private final Supplier<Rotation2d> rotationSupplier;
+  private final Supplier<SwerveModulePosition[]> modulePositionSupplier;
   private final SwerveDrivePoseEstimator poseEstimator;
   private final Field2d field2d = new Field2d();
-  private final PhotonPoseEstimator photonPoseEstimator;
+  private final PhotonRunnable photonEstimator = new PhotonRunnable();
+  private final Notifier photonNotifier = new Notifier(photonEstimator);
 
-  private double previousPipelineTimestamp = 0;
-  private OriginPosition originPosition = OriginPosition.kBlueAllianceWallRightSide;
+  private OriginPosition originPosition = kBlueAllianceWallRightSide;
 
   private final ArrayList<Double> xValues = new ArrayList<Double>();
   private final ArrayList<Double> yValues = new ArrayList<Double>();
 
-  public PoseEstimatorSubsystem(PhotonCamera photonCamera, DrivetrainSubsystem drivetrainSubsystem) {
-    this.drivetrainSubsystem = drivetrainSubsystem;
-    PhotonPoseEstimator photonPoseEstimator;
-    try {
-      var layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
-      layout.setOrigin(originPosition);
-      photonPoseEstimator = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP, photonCamera,
-          Constants.VisionConstants.ROBOT_TO_CAMERA);
-      photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    } catch (IOException e) {
-      DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
-      photonPoseEstimator = null;
-    }
-    this.photonPoseEstimator = photonPoseEstimator;
-
-    ShuffleboardTab tab = Shuffleboard.getTab("Vision");
+  public PoseEstimatorSubsystem(Supplier<Rotation2d> rotationSupplier,
+      Supplier<SwerveModulePosition[]> modulePositionSupplier) {
+    this.rotationSupplier = rotationSupplier;
+    this.modulePositionSupplier = modulePositionSupplier;
 
     poseEstimator = new SwerveDrivePoseEstimator(
         DrivetrainConstants.KINEMATICS,
-        drivetrainSubsystem.getGyroscopeRotation(),
-        drivetrainSubsystem.getModulePositions(),
+        rotationSupplier.get(),
+        modulePositionSupplier.get(),
         new Pose2d(),
         stateStdDevs,
         visionMeasurementStdDevs);
 
-    tab.addString("Pose", this::getFomattedPose).withPosition(0, 0).withSize(2, 0);
-    tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
+    // Start PhotonVision thread
+    photonNotifier.setName("PhotonRunnable");
+    photonNotifier.startPeriodic(0.02);
+    
+  }
+
+  public void addDashboardWidgets(ShuffleboardTab tab) {
+    tab.add("Field", field2d).withPosition(0, 0).withSize(6, 4);
+    tab.addString("Pose", this::getFomattedPose).withPosition(6, 2).withSize(2, 1);
   }
 
   /**
@@ -100,82 +97,48 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
    * @param alliance alliance
    */
   public void setAlliance(Alliance alliance) {
-    var fieldTags = photonPoseEstimator.getFieldTags();
     boolean allianceChanged = false;
     switch (alliance) {
       case Blue:
-        fieldTags.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-        allianceChanged = (originPosition == OriginPosition.kRedAllianceWallRightSide);
-        originPosition = OriginPosition.kBlueAllianceWallRightSide;
+        allianceChanged = (originPosition == kRedAllianceWallRightSide);
+        originPosition = kBlueAllianceWallRightSide;
         break;
       case Red:
-        fieldTags.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-        allianceChanged = (originPosition == OriginPosition.kBlueAllianceWallRightSide);
-        originPosition = OriginPosition.kRedAllianceWallRightSide;
+        allianceChanged = (originPosition == kBlueAllianceWallRightSide);
+        originPosition = kRedAllianceWallRightSide;
         break;
       default:
         // No valid alliance data. Nothing we can do about it
     }
+
     if (allianceChanged) {
       // The alliance changed, which changes the coordinate system.
-      // Since a tag may have been seen and the tags are all relative to the
-      // coordinate system, the estimated pose
+      // Since a tag was seen, and the tags are all relative to the coordinate system,
+      // the estimated pose
       // needs to be transformed to the new coordinate system.
-      var newPose = flipAlliance(poseEstimator.getEstimatedPosition());
-      setCurrentPose(newPose);
+      var newPose = flipAlliance(getCurrentPose());
+      poseEstimator.resetPosition(rotationSupplier.get(), modulePositionSupplier.get(), newPose);
     }
   }
 
   @Override
   public void periodic() {
     // Update pose estimator with drivetrain sensors
-    poseEstimator.update(
-        drivetrainSubsystem.getGyroscopeRotation(),
-        drivetrainSubsystem.getModulePositions());
+    poseEstimator.update(rotationSupplier.get(), modulePositionSupplier.get());
 
-    // Conversion so robot appears where it actually is on field instead of always
-    // on blue.
-    // xValues.add(getCurrentPose().getX());
-    // yValues.add(getCurrentPose().getY());
-    // double xAverage = xValues.stream().mapToDouble(a ->
-    // a).average().getAsDouble();
-    // double yAverage = yValues.stream().mapToDouble(a ->
-    // a).average().getAsDouble();
-    // double summation = 0.0;
-    // for (int i = 0; i < xValues.size(); i++) {
-    // summation += (Math.pow(xValues.get(i) - xAverage, 2) +
-    // Math.pow(yValues.get(i) - yAverage, 2));
-    // }
-    // double RMS = Math.sqrt((1.0 / (double) xValues.size() * summation));
-    // System.out.println("RMS: " + RMS);
-
-    if (photonPoseEstimator != null) {
-      // Update pose estimator with the best visible target
-      photonPoseEstimator.update().ifPresent(estimatedRobotPose -> {
-        var estimatedPose = estimatedRobotPose.estimatedPose;
-        // Make sure we have a new measurement, and that it's on the field
-        if (estimatedRobotPose.timestampSeconds != previousPipelineTimestamp
-            && estimatedPose.getX() > 0.0 && estimatedPose.getX() <= FieldConstants.FIELD_LENGTH_METERS
-            && estimatedPose.getY() > 0.0 && estimatedPose.getY() <= FieldConstants.FIELD_WIDTH_METERS) {
-          if (estimatedRobotPose.targetsUsed.size() < 2) {
-            for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
-              Transform3d bestTarget = target.getBestCameraToTarget();
-              double distance = Math.hypot(bestTarget.getX(), bestTarget.getY());
-              if (distance < 4) {
-                previousPipelineTimestamp = estimatedRobotPose.timestampSeconds;
-                poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), estimatedRobotPose.timestampSeconds);
-              }
-            }
-          } else {
-            previousPipelineTimestamp = estimatedRobotPose.timestampSeconds;
-            poseEstimator.addVisionMeasurement(estimatedPose.toPose2d(), estimatedRobotPose.timestampSeconds);
-          }
-        }
-      });
+    var visionPose = photonEstimator.grabLatestEstimatedPose();
+    if (visionPose != null) {
+      // New pose from vision
+      var pose2d = visionPose.estimatedPose.toPose2d();
+      if (originPosition == kRedAllianceWallRightSide) {
+        pose2d = flipAlliance(pose2d);
+      }
+      poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);
     }
 
-    Pose2d dashboardPose = getCurrentPose();
-    if (originPosition == OriginPosition.kRedAllianceWallRightSide) {
+    // Set the pose on the dashboard
+    var dashboardPose = poseEstimator.getEstimatedPosition();
+    if (originPosition == kRedAllianceWallRightSide) {
       // Flip the pose when red, since the dashboard field photo cannot be rotated
       dashboardPose = flipAlliance(dashboardPose);
     }
@@ -184,7 +147,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   private String getFomattedPose() {
     var pose = getCurrentPose();
-    return String.format("(%.2f, %.2f) %.2f degrees",
+    return String.format("(%.3f, %.3f) %.2f degrees",
         pose.getX(),
         pose.getY(),
         pose.getRotation().getDegrees());
@@ -202,10 +165,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
    * @param newPose new pose
    */
   public void setCurrentPose(Pose2d newPose) {
-    poseEstimator.resetPosition(
-        drivetrainSubsystem.getGyroscopeRotation(),
-        drivetrainSubsystem.getModulePositions(),
-        newPose);
+    poseEstimator.resetPosition(rotationSupplier.get(), modulePositionSupplier.get(), newPose);
   }
 
   /**
@@ -234,17 +194,6 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   public void addTrajectory(PathPlannerTrajectory traj) {
     field2d.getObject("Trajectory").setTrajectory(traj);
-  }
-
-  /**
-   * Resets the holonomic rotation of the robot (gyro last year)
-   * This would be used if Apriltags are not getting accurate pose estimation
-   */
-  public void resetHolonomicRotation() {
-    poseEstimator.resetPosition(
-        Rotation2d.fromDegrees(0),
-        drivetrainSubsystem.getModulePositions(),
-        getCurrentPose());
   }
 
   public void resetPoseRating() {

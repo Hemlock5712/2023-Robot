@@ -18,9 +18,9 @@ import frc.robot.util.ArmSetpoint;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class MoveArmToSetpoint extends SequentialCommandGroup {
+public class MoveToSetpoint extends SequentialCommandGroup {
   /** Creates a new MoveArmToSetpoint. */
-  public MoveArmToSetpoint(ElevatorSubsystem elevator, ExtensionSubsystem extension, WristSubsystem wrist,
+  public MoveToSetpoint(ElevatorSubsystem elevator, ExtensionSubsystem extension, WristSubsystem wrist,
       ArmSetpoint setpoint) {
 
     addCommands(

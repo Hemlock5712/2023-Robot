@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.pathfind.Obstacle;
+import frc.robot.util.enums.TargetPosition;
 
 public final class FieldConstants {
 
@@ -198,6 +199,29 @@ public final class FieldConstants {
           5.5,
           5.0,
           5.25
+      }));
+
+  public static List<Obstacle> shortObstacles = List.of(
+      // Charging Station
+      new Obstacle(new double[] {
+          2.90,
+          4.90,
+          4.90,
+          2.90
+      }, new double[] {
+          4.00,
+          4.00,
+          1.50,
+          1.50
+      }),
+      new Obstacle(new double[] {
+          3.3,
+          3.3,
+          1.26
+      }, new double[] {
+          5.26,
+          5.25,
+          5.255
       }));
 
   // Forces robot to go over cable. In case of defense.

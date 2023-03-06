@@ -13,23 +13,14 @@ import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 
-
-
-public class TestBalance extends CommandBase {
+public class AutoBalance extends CommandBase {
   /** Creates a new TestBalance. */
-
-
-
-
 
   private final DrivetrainSubsystem driveSystem;
   private final PoseEstimatorSubsystem poseEstimatorSystem;
   private final ProfiledPIDController xController = Constants.TeleopDriveConstants.xController;
   private final ProfiledPIDController yController = Constants.TeleopDriveConstants.yController;
   private final ProfiledPIDController omegaController = Constants.TeleopDriveConstants.omegaController;
-
-
-
 
   // This notates how many meters per second the robot should overshoot
   // the velocity for every meter away the robot is from the center of the
@@ -58,8 +49,6 @@ public class TestBalance extends CommandBase {
   private static double speedLimitHigh = 1.5;
   private static double speedLimitLow = 0.0;
 
-
-
   // This code is only for testing! Remove for production!
   // --------------------------------------------------------------------------
 
@@ -83,8 +72,7 @@ public class TestBalance extends CommandBase {
   // specified amount of radians from 0 radians.
   private boolean useDisableOnPitch = true;
 
-   // --------------------------------------------------------------------------
-
+  // --------------------------------------------------------------------------
 
   double targetX = 3.94;
 
@@ -92,21 +80,19 @@ public class TestBalance extends CommandBase {
   // double minTargetXRed = 4.03;
   // double maxTargetXRed = 6.47;
 
+  public AutoBalance(DrivetrainSubsystem d, PoseEstimatorSubsystem p) {
+    this.driveSystem = d;
+    this.poseEstimatorSystem = p;
 
-    public TestBalance(DrivetrainSubsystem d, PoseEstimatorSubsystem p) {
-      this.driveSystem = d;
-      this.poseEstimatorSystem = p;
-  
-      this.xController.setTolerance(0.2);
-      
-      this.yController.setTolerance(0.2);
-  
-      omegaController.setTolerance(Units.degreesToRadians(3));
-      omegaController.enableContinuousInput(-Math.PI, Math.PI);
-  
-      addRequirements(driveSystem, poseEstimatorSystem);
-    }
+    this.xController.setTolerance(0.2);
 
+    this.yController.setTolerance(0.2);
+
+    omegaController.setTolerance(Units.degreesToRadians(3));
+    omegaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    addRequirements(driveSystem, poseEstimatorSystem);
+  }
 
   private double getDistanceFromX() {
     return poseEstimatorSystem.getCurrentPose().getX() - targetX;
@@ -114,56 +100,59 @@ public class TestBalance extends CommandBase {
 
   private double getVelocity() {
     double pitch = Units.degreesToRadians(driveSystem.getPitch());
-    //SmartDashboard.putNumber("gyroPitch", pitch);
+    // SmartDashboard.putNumber("gyroPitch", pitch);
     double distanceFromCenter = getDistanceFromX();
     double velocity = 0.0;
-    if (
-        (useDisableOnPitch && ((-pitchRangeDisable < pitch) && (pitchRangeDisable > pitch))) ||
-        (useDisableOnPos && ((-posRangeDisable < distanceFromCenter) && (posRangeDisable > distanceFromCenter)))
-      ) {
+    if ((useDisableOnPitch && ((-pitchRangeDisable < pitch) && (pitchRangeDisable > pitch))) ||
+        (useDisableOnPos && ((-posRangeDisable < distanceFromCenter) && (posRangeDisable > distanceFromCenter)))) {
 
-        velocity = 0.0;
+      velocity = 0.0;
 
+    } else {
+      // Calculating how much the robot accelerates downward based upon gravity and
+      // the angle of the platform.
+      double velocityOfGravity = 9.81 * Math.sin(pitch) * (useGravity ? 1.0 : 0.0); // Ternary operator is for testing!
+                                                                                    // DON'T use in production!
+      double velocityOfDistance = -velocityPerMeter * distanceFromCenter;
+      double velocityAdded;
+      // Checking if useDisableConstantOnPitch or useDisableConstantOnPos are in use
+      // and if so
+      // we will set the velocity added to zero otherwise set it to our velocity
+      // constant.
+      if ((useDisableConstantOnPitch && ((-pitchRangeConstantDisable < pitch) && (pitchRangeConstantDisable > pitch)))
+          ||
+          (useDisableConstantOnPos
+              && ((-posRangeConstantDisable < distanceFromCenter) && (posRangeConstantDisable > distanceFromCenter)))) {
+        velocityAdded = 0;
       } else {
-        // Calculating how much the robot accelerates downward based upon gravity and the angle of the platform.
-        double velocityOfGravity = 9.81 * Math.sin(pitch) * (useGravity ? 1.0 : 0.0); //Ternary operator is for testing! DON'T use in production!
-        double velocityOfDistance = -velocityPerMeter * distanceFromCenter;
-        double velocityAdded;
-        // Checking if useDisableConstantOnPitch or useDisableConstantOnPos are in use and if so
-        // we will set the velocity added to zero otherwise set it to our velocity constant.
-        if (
-          (useDisableConstantOnPitch && ((-pitchRangeConstantDisable < pitch) && (pitchRangeConstantDisable > pitch))) ||
-          (useDisableConstantOnPos && ((-posRangeConstantDisable < distanceFromCenter) && (posRangeConstantDisable > distanceFromCenter)))
-          ) {
-            velocityAdded = 0;
-          } else {
-            velocityAdded = constantAddedVelocity;
-          }
-        velocity = 1 * (velocityOfGravity + velocityOfDistance + velocityAdded);
+        velocityAdded = constantAddedVelocity;
       }
+      velocity = 1 * (velocityOfGravity + velocityOfDistance + velocityAdded);
+    }
 
-      if (velocity > speedLimitHigh) {
-        velocity = speedLimitHigh;
-      } else if (velocity < -speedLimitHigh) {
-        velocity = -speedLimitHigh;
-      }
-      
-      if (velocity < speedLimitLow && velocity > 0) {
-        velocity = 0;
-      } else if (velocity > -speedLimitLow && velocity < 0) {
-        velocity = 0;
-      }
+    if (velocity > speedLimitHigh) {
+      velocity = speedLimitHigh;
+    } else if (velocity < -speedLimitHigh) {
+      velocity = -speedLimitHigh;
+    }
 
-      return velocity;
+    if (velocity < speedLimitLow && velocity > 0) {
+      velocity = 0;
+    } else if (velocity > -speedLimitLow && velocity < 0) {
+      velocity = 0;
+    }
+
+    return velocity;
   }
 
   private void selfBalancing() {
-    driveSystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(getVelocity(), 0.0, 0.0, poseEstimatorSystem.getCurrentPose().getRotation()));
+    driveSystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(getVelocity(), 0.0, 0.0,
+        poseEstimatorSystem.getCurrentPose().getRotation()));
   }
-  
+
   @Override
   public void initialize() {
-    //driveSystem.resetPitch();
+    // driveSystem.resetPitch();
   }
 
   @Override
@@ -171,10 +160,9 @@ public class TestBalance extends CommandBase {
     selfBalancing();
   }
 
-
   @Override
-  public void end(boolean interrupted) {}
-
+  public void end(boolean interrupted) {
+  }
 
   @Override
   public boolean isFinished() {

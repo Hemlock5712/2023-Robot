@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.util.Direction;
 import frc.robot.util.PlacementPosition;
-import frc.robot.util.TargetLevel;
-import frc.robot.util.TargetPosition;
+import frc.robot.util.enums.Direction;
+import frc.robot.util.enums.TargetLevel;
+import frc.robot.util.enums.TargetPosition;
 
 public class NextNode extends CommandBase {
   DrivetrainSubsystem drivetrain;

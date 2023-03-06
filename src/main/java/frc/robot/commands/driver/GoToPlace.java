@@ -18,7 +18,7 @@ import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.util.FieldConstants;
-import frc.robot.util.TargetPosition;
+import frc.robot.util.enums.TargetPosition;
 
 public class GoToPlace extends CommandBase {
   DrivetrainSubsystem drivetrain;
@@ -44,7 +44,8 @@ public class GoToPlace extends CommandBase {
     TargetPosition target = Position.getPlacementPosition().getPosition();
     Pose2d posePosition = FieldConstants.PlacementPositions.get(target);
     Node targetPosition = new Node(posePosition);
-    pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap, false);
+    pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap,
+        false);
     pathfindCommand.schedule();
   }
 

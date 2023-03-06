@@ -35,7 +35,6 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
   /**
    * Calculate the position pf the extension based on the motor encoder
    *
-   * TODO: Use string potentiometer to get extension length
    * 
    * @return extension length in meters
    */

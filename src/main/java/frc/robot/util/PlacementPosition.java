@@ -1,5 +1,8 @@
 package frc.robot.util;
 
+import frc.robot.util.enums.TargetLevel;
+import frc.robot.util.enums.TargetPosition;
+
 public class PlacementPosition {
 
   private TargetPosition position;

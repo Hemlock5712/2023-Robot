@@ -23,6 +23,7 @@ import static frc.robot.Constants.DrivetrainConstants.FRONT_RIGHT_MODULE_STEER_O
 import static frc.robot.Constants.DrivetrainConstants.PIGEON_ID;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
@@ -39,17 +40,15 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
@@ -60,10 +59,10 @@ import frc.robot.swerve.SwerveSteerController;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
-  private final static WPI_Pigeon2 pigeon = new WPI_Pigeon2(PIGEON_ID);
-  // private final AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX
-  // connected over MXP
+  private final WPI_Pigeon2 pigeon = new WPI_Pigeon2(PIGEON_ID);
   private final SwerveModule[] swerveModules;
+
+  private static final NetworkTable moduleStatesTable = NetworkTableInstance.getDefault().getTable("SwerveStates");
 
   private ChassisSpeeds desiredChassisSpeeds;
 
@@ -71,6 +70,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
     pigeon.configMountPoseRoll(0);
     pigeon.configMountPoseYaw(0);
+    pigeon.configMountPosePitch(0);
 
     ShuffleboardLayout frontLeftLayout = null;
     ShuffleboardLayout frontRightLayout = null;
@@ -78,19 +78,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
     ShuffleboardLayout backRightLayout = null;
 
     if (DrivetrainConstants.ADD_TO_DASHBOARD) {
-      frontLeftLayout = tab.getLayout("Front Left Module", BuiltInLayouts.kList)
+      frontLeftLayout = tab.getLayout("Front Left Module", BuiltInLayouts.kGrid)
+          .withProperties(Map.of("Number of columns", 1, "Number of rows", 6))
           .withSize(2, 4)
           .withPosition(0, 0);
 
-      frontRightLayout = tab.getLayout("Front Right Module", BuiltInLayouts.kList)
+      frontRightLayout = tab.getLayout("Front Right Module", BuiltInLayouts.kGrid)
+          .withProperties(Map.of("Number of columns", 1, "Number of rows", 6))
           .withSize(2, 4)
           .withPosition(2, 0);
 
-      backLeftLayout = tab.getLayout("Back Left Module", BuiltInLayouts.kList)
+      backLeftLayout = tab.getLayout("Back Left Module", BuiltInLayouts.kGrid)
+          .withProperties(Map.of("Number of columns", 1, "Number of rows", 6))
           .withSize(2, 4)
           .withPosition(4, 0);
 
-      backRightLayout = tab.getLayout("Back Right Module", BuiltInLayouts.kList)
+      backRightLayout = tab.getLayout("Back Right Module", BuiltInLayouts.kGrid)
+          .withProperties(Map.of("Number of columns", 1, "Number of rows", 6))
           .withSize(2, 4)
           .withPosition(6, 0);
     }
@@ -125,25 +129,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_RIGHT_MODULE_STEER_ENCODER,
             BACK_RIGHT_MODULE_STEER_OFFSET) };
 
-    /*
-     * By pausing init for a second before setting module offsets, we avoid a bug
-     * with inverting motors.
-     * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
-     */
-    // Timer.delay(1.0);
-    // reseedSteerMotorOffsets();
-
-    // Put the motors in brake mode when enabled, coast mode when disabled
-    new Trigger(RobotState::isEnabled).onTrue(new StartEndCommand(() -> {
-      for (SwerveModule swerveModule : swerveModules) {
-        swerveModule.setNeutralMode(NeutralMode.Brake);
-      }
-    }, () -> {
-      for (SwerveModule swerveModule : swerveModules) {
-        swerveModule.setNeutralMode(NeutralMode.Brake);
-      }
-      drive(new ChassisSpeeds());
-    }));
+    // Put all the modules into brake mode
+    for (SwerveModule swerveModule : swerveModules) {
+      swerveModule.setNeutralMode(NeutralMode.Brake);
+    }
   }
 
   /**
@@ -172,30 +161,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   public Rotation2d getGyroscopeRotation() {
     return pigeon.getRotation2d();
-    // We have to invert the angle of the NavX so that rotating the robot
-    // counter-clockwise makes the angle increase.
-    // return Rotation2d.fromDegrees(360.0 - navx.getYaw());
   }
 
-  public double getPitch() {
-    return pigeon.getRoll();
-  }
-
-  public void resetPitch() {
-    pigeon.configMountPosePitch(PIGEON_ID);
-  }
-
-  public void setGyroscopeRotation(double angleDeg) {
-    pigeon.setYaw(angleDeg);
-  }
-
-  public double getGyroscopeHeading() {
-    return pigeon.getYaw();
-
-  }
-
-  public void resetGyro() {
-    setGyroscopeRotation(0);
+  /**
+   * Gets the raw gyro data.
+   * 
+   * @return x[0], y[1], and z[2] data in degrees per second
+   */
+  public double[] getGyroVelocityXYZ() {
+    double[] xyz = new double[3];
+    pigeon.getRawGyro(xyz);
+    return xyz;
   }
 
   /**
@@ -205,6 +181,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
    */
   public void drive(ChassisSpeeds chassisSpeeds) {
     desiredChassisSpeeds = chassisSpeeds;
+  }
+
+  /**
+   * Set the wheels to an X pattern to plant the robot.
+   */
+  public void setWheelsToX() {
+    desiredChassisSpeeds = null;
+    setModuleStates(new SwerveModuleState[] {
+        // front left
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)),
+        // front right
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)),
+        // back left
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(135.0)),
+        // back right
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(-135.0))
+    });
   }
 
   /**
@@ -223,38 +216,28 @@ public class DrivetrainSubsystem extends SubsystemBase {
     return DrivetrainConstants.KINEMATICS.toChassisSpeeds(getModuleStates());
   }
 
-  private double[] swerveModulesToNTValues(SwerveModule[] states) {
-    return new double[] {
-        states[0].getSteerAngle().getRadians(), states[0].getDriveVelocity(),
-        states[1].getSteerAngle().getRadians(), states[1].getDriveVelocity(),
-        states[2].getSteerAngle().getRadians(), states[2].getDriveVelocity(),
-        states[3].getSteerAngle().getRadians(), states[3].getDriveVelocity()
-    };
-  }
-
   @Override
   public void periodic() {
-
     // Set the swerve module states
     if (desiredChassisSpeeds != null) {
       var desiredStates = DrivetrainConstants.KINEMATICS.toSwerveModuleStates(desiredChassisSpeeds);
-      if (desiredChassisSpeeds.vxMetersPerSecond == 0.0 && desiredChassisSpeeds.vyMetersPerSecond == 0.0
-          && desiredChassisSpeeds.omegaRadiansPerSecond == 0.0) {
-        var currentStates = getModuleStates();
-        // Keep the wheels at their current angle when stopped, don't snap back to
-        // straight
-        IntStream.range(0, currentStates.length).forEach(i -> desiredStates[i].angle = currentStates[i].angle);
-      }
-      // Positive should be counter clockwise.
-      // System.out.println(desiredChassisSpeeds.omegaRadiansPerSecond);
-
+      SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND);
       setModuleStates(desiredStates);
     }
-    SmartDashboard.putNumberArray("Drivetrain/SwerveStates", swerveModulesToNTValues(swerveModules));
+    // Module states for Advantage Scope
+    if (DrivetrainConstants.ADD_TO_DASHBOARD) {
+      double[] moduleStateArray = new double[swerveModules.length * 2];
+      for (int i = 0; i < swerveModules.length; i++) {
+        var module = swerveModules[i];
+        moduleStateArray[i * 2] = module.getSteerAngle().getDegrees();
+        moduleStateArray[(i * 2) + 1] = module.getDriveVelocity();
+      }
+      moduleStatesTable.getEntry("Measured").setDoubleArray(moduleStateArray);
+      moduleStatesTable.getEntry("Rotation").setDouble(getGyroscopeRotation().getDegrees());
+    }
     // Always reset desiredChassisSpeeds to null to prevent latching to the last
     // state (aka motor safety)!!
     desiredChassisSpeeds = null;
-
   }
 
   /**
@@ -285,8 +268,21 @@ public class DrivetrainSubsystem extends SubsystemBase {
    *               backLeft, backRight
    */
   public void setModuleStates(SwerveModuleState[] states) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND);
-    IntStream.range(0, swerveModules.length).forEach(i -> swerveModules[i].setDesiredState(states[i]));
+    double[] moduleSetpointArray = new double[states.length * 2];
+    IntStream.range(0, swerveModules.length).forEach(i -> {
+      var swerveModule = swerveModules[i];
+      var desiredState = SwerveModuleState.optimize(states[i], swerveModule.getSteerAngle());
+      swerveModule.setDesiredState(desiredState);
+
+      // Module setpoints for Advantage Scope
+      if (DrivetrainConstants.ADD_TO_DASHBOARD) {
+        moduleSetpointArray[i * 2] = desiredState.angle.getDegrees();
+        moduleSetpointArray[(i * 2) + 1] = desiredState.speedMetersPerSecond;
+      }
+    });
+    if (DrivetrainConstants.ADD_TO_DASHBOARD) {
+      moduleStatesTable.getEntry("Setpoints").setDoubleArray(moduleSetpointArray);
+    }
   }
 
   /**
@@ -333,4 +329,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         d::setModuleStates,
         false);
   }
+
+  public double getPitch() {
+    return pigeon.getPitch();
+  }
+
 }

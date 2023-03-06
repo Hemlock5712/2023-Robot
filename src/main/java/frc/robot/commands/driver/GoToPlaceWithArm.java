@@ -7,7 +7,7 @@ import com.pathplanner.lib.PathConstraints;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.commands.operator.MoveArmToSetpoint;
+import frc.robot.commands.operator.MoveToSetpoint;
 import frc.robot.commands.operator.Position;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
@@ -18,7 +18,7 @@ import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.util.ArmSetpoint;
 import frc.robot.util.PlacementPosition;
-import frc.robot.util.TargetLevel;
+import frc.robot.util.enums.TargetLevel;
 
 public class GoToPlaceWithArm extends SequentialCommandGroup {
 
@@ -48,7 +48,7 @@ public class GoToPlaceWithArm extends SequentialCommandGroup {
 
         addCommands(new ParallelDeadlineGroup(
             new GoToPlace(drivetrain, poseEstimator, constraints, obstacles, AStarMap),
-            new MoveArmToSetpoint(elevator, extension, wrist, new ArmSetpoint(tempAngle, 0, tempWrist))),
-            new MoveArmToSetpoint(elevator, extension, wrist, setpoint));
+            new MoveToSetpoint(elevator, extension, wrist, new ArmSetpoint(tempAngle, 0, tempWrist))),
+            new MoveToSetpoint(elevator, extension, wrist, setpoint));
   }
 }

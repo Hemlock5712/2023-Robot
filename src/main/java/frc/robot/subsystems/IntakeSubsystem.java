@@ -7,8 +7,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,33 +18,29 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private TalonFX intake = new TalonFX(33);
   private Solenoid claw = new Solenoid(PneumaticsModuleType.REVPH, 8);
-  private double speedSetpoint = 0;
+  // private double speedSetpoint = 0;
 
-  private PIDController intakePID = new PIDController(1, 0, 0);
-  private SimpleMotorFeedforward intakeFF = new SimpleMotorFeedforward(0.01, 1.18, 0.01);
+  // private PIDController intakePID = new PIDController(1, 0, 0);
+  // private SimpleMotorFeedforward intakeFF = new SimpleMotorFeedforward(0.01,
+  // 1.18, 0.01);
 
   public IntakeSubsystem() {
     intake.setInverted(false);
   }
 
   public void runIntake() {
-    if (claw.get()) {
-      intake.set(ControlMode.PercentOutput, -0.1);
-      speedSetpoint = 15;
-    } else {
       intake.set(ControlMode.PercentOutput, -1);
-      speedSetpoint = 1500;
-    }
+      // speedSetpoint = 1500;
   }
 
   public void reverseIntake() {
-    speedSetpoint = -800;
+    // speedSetpoint = -800;
     intake.set(ControlMode.PercentOutput, .8);
   }
 
   public void stopIntake() {
     intake.set(ControlMode.PercentOutput, 0);
-    speedSetpoint = 0;
+    // speedSetpoint = 0;
   }
 
   public void openIntake() {
