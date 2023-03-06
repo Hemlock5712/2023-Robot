@@ -196,7 +196,7 @@ public class RobotContainer {
     controller2.b().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.MID_PEG));
-    controller2.a().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
+    controller2.a().whileTrue(new RetractIn(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.HYBRID_NODE));
     controller2.x().whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
