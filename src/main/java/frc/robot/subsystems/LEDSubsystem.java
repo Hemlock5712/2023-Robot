@@ -2,61 +2,57 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.enums.GamePiece;
 
 public class LEDSubsystem extends SubsystemBase {
 
-    private AddressableLED led = new AddressableLED(9);
-    private AddressableLEDBuffer buffer = new AddressableLEDBuffer(120);
+    private Spark blinkin = new Spark(0);
 
     private GamePiece gamePiece = GamePiece.NONE;
 
-    private int firstPixelHue = 0;
+    private double currentColor = BlinkinPatterns.END_TO_END;
 
     /**
      * Creates a new LEDSubsystem.
      */
     public LEDSubsystem() {
-        led.setLength(buffer.getLength());
+
     }
 
     public void setGamePiece(GamePiece gamePiece) {
         this.gamePiece = gamePiece;
-        if(gamePiece != GamePiece.NONE) {
-            for (int i = 0; i < buffer.getLength(); i++) {
-                if (gamePiece == GamePiece.CONE) {
-                    buffer.setRGB(i, 255, 255, 0);
-                } else if (gamePiece == GamePiece.CUBE) {
-                    buffer.setRGB(i, 150, 0, 235);
-                }
+        if (gamePiece != GamePiece.NONE) {
+            if (gamePiece == GamePiece.CONE) {
+                currentColor = BlinkinPatterns.GOLD;
+            } else if (gamePiece == GamePiece.CUBE) {
+                currentColor = BlinkinPatterns.PURPLE;
             }
         }
     }
 
     public void idleAnimation() {
-        if(gamePiece == GamePiece.NONE) {
-            for (var i = 0; i < buffer.getLength(); i++) {
-                // Calculate the hue - hue is easier for rainbows because the color
-                // shape is a circle so only one value needs to precess
-                final var hue = (firstPixelHue + (i * 180 / buffer.getLength())) % 180;
-                // Set the value
-                buffer.setHSV(i, hue, 255, 128);
-            }
-            firstPixelHue += 3;
-            // Check bounds
-            firstPixelHue %= 180;
-        }
+        currentColor = BlinkinPatterns.END_TO_END;
     }
 
-    public void setLEDColor(int index, int red, int green, int blue) {
-        buffer.setRGB(index, red, green, blue);
+    public void setLEDColor(double color) {
+        currentColor = color;
     }
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
-        idleAnimation();
-        led.setData(buffer);
+        blinkin.set(currentColor);
     }
+}
+
+class BlinkinPatterns {
+    public static final double RAINBOW_RAINBOW_PALETTE = -0.99;
+    public static final double RAINBOW_CONFETTI_PALETTE = -0.87;
+    public static final double TWINKLE_RAINBOW = -0.55;
+    public static final double GOLD = 0.67;
+    public static final double YELLOW = 0.69;
+    public static final double PURPLE = 0.91;
+    public static final double RED = 0.73;
+    public static final double END_TO_END = 0.37;
 }

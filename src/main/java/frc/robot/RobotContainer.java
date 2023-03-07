@@ -37,12 +37,7 @@ import frc.robot.commands.operator.RetractIn;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ExtensionSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PoseEstimatorSubsystem;
-import frc.robot.subsystems.WristSubsystem;
+import frc.robot.subsystems.*;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.enums.Direction;
 
@@ -71,7 +66,7 @@ public class RobotContainer {
   private final ExtensionSubsystem extensionSubsystem = new ExtensionSubsystem();
   private final WristSubsystem wristSubsystem = new WristSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  // private final LEDSubsystem ledSubsystem = new LEDSubsystem();
+  private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
   final List<Obstacle> standardObstacles = FieldConstants.standardObstacles;
   final List<Obstacle> cablePath = FieldConstants.cablePath;
