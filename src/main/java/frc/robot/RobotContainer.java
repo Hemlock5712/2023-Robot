@@ -246,7 +246,8 @@ public class RobotContainer {
     // controller.rightBumper().whileTrue(new RunIntakeCommand(intakeSubsystem));
     // controller.leftBumper().whileTrue(new ReverseIntakeCommand(intakeSubsystem));
     controller.a().whileTrue(
-        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT));
+        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(45, 0, 45)).andThen(
+        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)));
     // controller.a().whileTrue(new AutoBalance(drivetrainSubsystem,
     // poseEstimator));
   }
