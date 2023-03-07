@@ -6,7 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.util.GamePiecePicker;
+import frc.robot.util.PiecePicker;
 
 public class ReverseIntakeCommand extends CommandBase {
   IntakeSubsystem intakeSubsystem;
@@ -26,7 +26,7 @@ public class ReverseIntakeCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (GamePiecePicker.getPiecePicker()) {
+    if (PiecePicker.getPiecePicker()) {
       intakeSubsystem.reverseIntake();
       intakeSubsystem.openIntake();
     } else {

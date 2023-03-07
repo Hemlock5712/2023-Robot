@@ -47,7 +47,7 @@ import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.util.ArmSetpoint;
 import frc.robot.util.FieldConstants;
-import frc.robot.util.GamePiecePicker;
+import frc.robot.util.PiecePicker;
 import frc.robot.util.enums.Direction;
 import frc.robot.util.enums.GamePiece;
 
@@ -176,12 +176,12 @@ public class RobotContainer {
     // poseEstimator));
 
     controller2.leftBumper().onTrue(new InstantCommand(() -> {
-      GamePiecePicker.toggle(true);
+      PiecePicker.toggle(true);
       ledSubsystem.setGamePiece(GamePiece.CUBE);
     }));
 
     controller2.rightBumper().onTrue(new InstantCommand(() -> {
-      GamePiecePicker.toggle(false);
+      PiecePicker.toggle(false);
       ledSubsystem.setGamePiece(GamePiece.CONE);
     }));
 
