@@ -6,6 +6,7 @@ package frc.robot;
 
 import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.FieldOrientedDriveCommand;
@@ -31,15 +33,20 @@ import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.driver.GoToLoadWithArm;
 import frc.robot.commands.driver.GoToPlaceWithArm;
+import frc.robot.commands.operator.HighPlace;
+import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
 import frc.robot.commands.operator.NextNode;
 import frc.robot.commands.operator.RetractIn;
+import frc.robot.commands.operator.SingleSubstation;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.*;
 import frc.robot.util.FieldConstants;
+import frc.robot.util.gamePiecePicker;
 import frc.robot.util.enums.Direction;
+import frc.robot.util.enums.GamePiece;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -164,6 +171,15 @@ public class RobotContainer {
 
     // controller.x().whileTrue(new TestBalance(drivetrainSubsystem,
     // poseEstimator));
+
+    controller2.leftBumper().onTrue(new InstantCommand(() -> {
+      gamePiecePicker.toggle(true);
+    ledSubsystem.setGamePiece(GamePiece.CUBE);}));
+
+    controller2.rightBumper().onTrue(new InstantCommand(() -> {
+      gamePiecePicker.toggle(false);
+    ledSubsystem.setGamePiece(GamePiece.CONE);}));
+
     controller.leftBumper().whileTrue(
         new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
             standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem));
@@ -187,18 +203,14 @@ public class RobotContainer {
     // controller.pov(270).whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
     // extensionSubsystem, wristSubsystem,
     // Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
-    controller2.y().whileTrue(new MoveToSetpoint(elevatorSubsystem,
-        extensionSubsystem, wristSubsystem,
-        Constants.ArmSetpoints.HIGH_PEG));
-    controller2.b().whileTrue(new MoveToSetpoint(elevatorSubsystem,
-        extensionSubsystem, wristSubsystem,
-        Constants.ArmSetpoints.MID_PEG));
+    controller2.y().whileTrue(new HighPlace(elevatorSubsystem,
+        extensionSubsystem, wristSubsystem));
+    controller2.b().whileTrue(new MidPlace(elevatorSubsystem,
+        extensionSubsystem, wristSubsystem));
     controller2.a().whileTrue(new RetractIn(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.HYBRID_NODE));
-    controller2.x().whileTrue(new RetractIn(elevatorSubsystem,
-        extensionSubsystem, wristSubsystem,
-        Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
+    controller2.x().whileTrue(new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem));
     controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
     controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
     // controller.y().whileTrue(

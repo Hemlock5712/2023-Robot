@@ -358,6 +358,14 @@ public final class Constants {
      */
     public static final ArmSetpoint MID_PEG = XYACalulator.Calulator(-1, 17, -20);
     /**
+     * Extend the arm out to place cone on the high peg
+     */
+    public static final ArmSetpoint HIGH_CUBE = XYACalulator.Calulator(18, 24, -20);
+    /**
+     * Extend the arm out to place cone on the mid peg
+     */
+    public static final ArmSetpoint MID_CUBE = XYACalulator.Calulator(-1, 10, -20);
+    /**
      * Extend the arm out to place on the hybrid node
      */
     public static final ArmSetpoint HYBRID_NODE = XYACalulator.Calulator(0, 0, -45);

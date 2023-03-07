@@ -6,6 +6,7 @@ package frc.robot.commands.operator.subcommands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ExtensionSubsystem;
+import frc.robot.util.gamePiecePicker;
 
 public class MoveElevatorExtension extends CommandBase {
   ExtensionSubsystem extension;
