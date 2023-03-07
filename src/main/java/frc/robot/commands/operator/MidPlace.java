@@ -10,7 +10,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.WristSubsystem;
-import frc.robot.util.gamePiecePicker;
+import frc.robot.util.GamePiecePicker;
 
 public class MidPlace extends CommandBase {
   ElevatorSubsystem elevator;
@@ -28,7 +28,7 @@ public class MidPlace extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if(gamePiecePicker.getPiecePicker()){
+    if(GamePiecePicker.getPiecePicker()){
       this.command = new MoveToSetpoint(elevator, extension, wrist,Constants.ArmSetpoints.MID_CUBE);
     }
     else{

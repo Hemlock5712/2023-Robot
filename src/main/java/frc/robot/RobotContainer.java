@@ -34,7 +34,6 @@ import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
 import frc.robot.commands.operator.NextNode;
-import frc.robot.commands.operator.RetractIn;
 import frc.robot.commands.operator.SingleSubstation;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
@@ -46,8 +45,9 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.WristSubsystem;
+import frc.robot.util.ArmSetpoint;
 import frc.robot.util.FieldConstants;
-import frc.robot.util.gamePiecePicker;
+import frc.robot.util.GamePiecePicker;
 import frc.robot.util.enums.Direction;
 import frc.robot.util.enums.GamePiece;
 
@@ -176,12 +176,12 @@ public class RobotContainer {
     // poseEstimator));
 
     controller2.leftBumper().onTrue(new InstantCommand(() -> {
-      gamePiecePicker.toggle(true);
+      GamePiecePicker.toggle(true);
       ledSubsystem.setGamePiece(GamePiece.CUBE);
     }));
 
     controller2.rightBumper().onTrue(new InstantCommand(() -> {
-      gamePiecePicker.toggle(false);
+      GamePiecePicker.toggle(false);
       ledSubsystem.setGamePiece(GamePiece.CONE);
     }));
 
@@ -216,7 +216,7 @@ public class RobotContainer {
         extensionSubsystem, wristSubsystem));
     controller2.b().whileTrue(new MidPlace(elevatorSubsystem,
         extensionSubsystem, wristSubsystem));
-    controller2.a().whileTrue(new RetractIn(elevatorSubsystem,
+    controller2.a().whileTrue(new MoveToSetpoint(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.HYBRID_NODE));
     controller2.x()
@@ -246,15 +246,22 @@ public class RobotContainer {
     // controller.rightBumper().whileTrue(new RunIntakeCommand(intakeSubsystem));
     // controller.leftBumper().whileTrue(new ReverseIntakeCommand(intakeSubsystem));
     controller.a().whileTrue(
-        new RetractIn(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT));
+        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT));
     // controller.a().whileTrue(new AutoBalance(drivetrainSubsystem,
     // poseEstimator));
   }
 
   public void startTeleopPosCommand() {
-    new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)
+    double currentAngle = elevatorSubsystem.getAngle();
+    double currentExtension = extensionSubsystem.getHeight();
+    double wristAngle = wristSubsystem.getAngle();
+    new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+        new ArmSetpoint(Math.toDegrees(currentAngle), currentExtension, wristAngle))
         .schedule();
-    ;
+
+    // elevatorSubsystem.setMotorVoltage(0);
+    // extensionSubsystem.setMotorVoltage(0);
+    // wristSubsystem.setVoltage(0);
   }
 
   /**

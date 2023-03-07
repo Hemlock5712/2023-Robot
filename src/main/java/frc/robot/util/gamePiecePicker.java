@@ -5,7 +5,7 @@
 package frc.robot.util;
 
 /** Add your docs here. */
-public class gamePiecePicker {
+public class GamePiecePicker {
   static boolean gamePiecePicked = true;
 
   public static void toggle(boolean i){

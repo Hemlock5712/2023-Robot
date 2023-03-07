@@ -29,8 +29,8 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void runIntake() {
-      intake.set(ControlMode.PercentOutput, -1);
-      // speedSetpoint = 1500;
+    intake.set(ControlMode.PercentOutput, -1);
+    // speedSetpoint = 1500;
   }
 
   public void reverseIntake() {
