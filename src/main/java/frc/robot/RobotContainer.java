@@ -6,7 +6,6 @@ package frc.robot;
 
 import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +30,6 @@ import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.OpenClaw;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.commands.driver.GoToLoadWithArm;
-import frc.robot.commands.driver.GoToPlaceWithArm;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
@@ -42,7 +39,13 @@ import frc.robot.commands.operator.SingleSubstation;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ExtensionSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.PoseEstimatorSubsystem;
+import frc.robot.subsystems.WristSubsystem;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.gamePiecePicker;
 import frc.robot.util.enums.Direction;
@@ -174,19 +177,25 @@ public class RobotContainer {
 
     controller2.leftBumper().onTrue(new InstantCommand(() -> {
       gamePiecePicker.toggle(true);
-    ledSubsystem.setGamePiece(GamePiece.CUBE);}));
+      ledSubsystem.setGamePiece(GamePiece.CUBE);
+    }));
 
     controller2.rightBumper().onTrue(new InstantCommand(() -> {
       gamePiecePicker.toggle(false);
-    ledSubsystem.setGamePiece(GamePiece.CONE);}));
+      ledSubsystem.setGamePiece(GamePiece.CONE);
+    }));
 
-    controller.leftBumper().whileTrue(
-        new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
-            standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem));
+    // controller.leftBumper().whileTrue(
+    // new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new
+    // PathConstraints(2, 2),
+    // standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem,
+    // wristSubsystem));
 
-    controller.rightBumper().whileTrue(
-        new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
-            standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem, intakeSubsystem));
+    // controller.rightBumper().whileTrue(
+    // new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new
+    // PathConstraints(2, 2),
+    // standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem,
+    // wristSubsystem, intakeSubsystem));
 
     // controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
     // controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
@@ -210,7 +219,8 @@ public class RobotContainer {
     controller2.a().whileTrue(new RetractIn(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.HYBRID_NODE));
-    controller2.x().whileTrue(new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem));
+    controller2.x()
+        .whileTrue(new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem));
     controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
     controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
     // controller.y().whileTrue(
@@ -235,6 +245,10 @@ public class RobotContainer {
     // // Constants.ArmSetpoints.GROUND_CONE_PICKUP));
     // controller.rightBumper().whileTrue(new RunIntakeCommand(intakeSubsystem));
     // controller.leftBumper().whileTrue(new ReverseIntakeCommand(intakeSubsystem));
+    controller.a().whileTrue(
+        new RetractIn(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT));
+    // controller.a().whileTrue(new AutoBalance(drivetrainSubsystem,
+    // poseEstimator));
   }
 
   public void startTeleopPosCommand() {

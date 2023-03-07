@@ -360,7 +360,7 @@ public final class Constants {
     /**
      * Extend the arm out to place cone on the high peg
      */
-    public static final ArmSetpoint HIGH_CUBE = XYACalulator.Calulator(18, 24, -20);
+    public static final ArmSetpoint HIGH_CUBE = XYACalulator.Calulator(18, 28, -20);
     /**
      * Extend the arm out to place cone on the mid peg
      */

@@ -27,28 +27,28 @@ public class GoToPlaceWithArm extends SequentialCommandGroup {
       List<Obstacle> obstacles, VisGraph AStarMap, ExtensionSubsystem extension, ElevatorSubsystem elevator,
       WristSubsystem wrist) {
 
-        PlacementPosition temp = Position.getPlacementPosition();
-        TargetLevel level = temp.getLevel();
-        ArmSetpoint setpoint = Constants.ArmSetpoints.HYBRID_NODE;
+    PlacementPosition temp = Position.getPlacementPosition();
+    TargetLevel level = temp.getLevel();
+    ArmSetpoint setpoint = Constants.ArmSetpoints.HYBRID_NODE;
 
-        switch(level) {
-          case Top:
-            setpoint = Constants.ArmSetpoints.HIGH_PEG;
-            break;
-          case Mid:
-            setpoint = Constants.ArmSetpoints.MID_PEG;
-            break;
-          case Low:
-            setpoint = Constants.ArmSetpoints.HYBRID_NODE;
-            break;
-        }
-        double tempAngle = setpoint.getAngle();
-        double tempWrist = setpoint.getWristAngle();
-        System.out.println("---------------------------SETPOINT:"+setpoint.getLength());
+    switch (level) {
+      case Top:
+        setpoint = Constants.ArmSetpoints.HIGH_PEG;
+        break;
+      case Mid:
+        setpoint = Constants.ArmSetpoints.MID_PEG;
+        break;
+      case Low:
+        setpoint = Constants.ArmSetpoints.HYBRID_NODE;
+        break;
+    }
+    double tempAngle = setpoint.getAngle();
+    double tempWrist = setpoint.getWristAngle();
+    // System.out.println("---------------------------SETPOINT:"+setpoint.getLength());
 
-        addCommands(new ParallelDeadlineGroup(
-            new GoToPlace(drivetrain, poseEstimator, constraints, obstacles, AStarMap),
-            new MoveToSetpoint(elevator, extension, wrist, new ArmSetpoint(tempAngle, 0, tempWrist))),
-            new MoveToSetpoint(elevator, extension, wrist, setpoint));
+    addCommands(new ParallelDeadlineGroup(
+        new GoToPlace(drivetrain, poseEstimator, constraints, obstacles, AStarMap),
+        new MoveToSetpoint(elevator, extension, wrist, new ArmSetpoint(tempAngle, 0, tempWrist))),
+        new MoveToSetpoint(elevator, extension, wrist, setpoint));
   }
 }

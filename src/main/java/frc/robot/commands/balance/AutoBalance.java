@@ -46,7 +46,7 @@ public class AutoBalance extends CommandBase {
   private static double pitchRangeDisable = 0.0;
 
   // Limit how fast the robot can go at any time in meters per second
-  private static double speedLimitHigh = 1.5;
+  private static double speedLimitHigh = 2;
   private static double speedLimitLow = 0.0;
 
   // This code is only for testing! Remove for production!
