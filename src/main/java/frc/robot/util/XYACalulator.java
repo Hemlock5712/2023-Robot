@@ -10,10 +10,10 @@ import edu.wpi.first.math.util.Units;
 /** Add your docs here. */
 public class XYACalulator {
 
-  public static ArmSetpoint Calulator(double x,double y ,double angle){
-    double ratio = 37.45/41;
+  public static ArmSetpoint Calulator(double x, double y, double angle) {
+    double ratio = 37.45 / 41;
     double dis = Math.hypot(Units.inchesToMeters(x), Units.inchesToMeters(y));
-    double angleElvator = new Rotation2d(Units.inchesToMeters(x+33.5), Units.inchesToMeters(y)).getDegrees();
-    return new ArmSetpoint(angleElvator, dis*ratio, angle-angleElvator);
+    double angleElvator = new Rotation2d(Units.inchesToMeters(x + 33.5), Units.inchesToMeters(y)).getDegrees();
+    return new ArmSetpoint(angleElvator, dis * ratio, angle - angleElvator);
   }
 }

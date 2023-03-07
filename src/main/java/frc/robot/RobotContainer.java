@@ -27,13 +27,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.commands.FieldOrientedDriveCommand;
-import frc.robot.commands.OpenClaw;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
-import frc.robot.commands.operator.NextNode;
 import frc.robot.commands.operator.SingleSubstation;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.Obstacle;
@@ -48,7 +46,6 @@ import frc.robot.subsystems.WristSubsystem;
 import frc.robot.util.ArmSetpoint;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.PiecePicker;
-import frc.robot.util.enums.Direction;
 import frc.robot.util.enums.GamePiece;
 
 /**
@@ -166,14 +163,21 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // controller.start().toggleOnTrue(fieldHeadingDriveCommand);
 
-    // controller.b().whileTrue(
-    // new GoToLoad(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 2),
-    // standardObstacles, standardMap));
+    controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
+    controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
 
-    // controller.x().whileTrue(new TestBalance(drivetrainSubsystem,
-    // poseEstimator));
+    controller.a().whileTrue(
+        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45)).andThen(
+            new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)));
+
+    controller.y().whileTrue(new InstantCommand(() -> {
+      PiecePicker.toggle(true);
+      ledSubsystem.setGamePiece(GamePiece.CUBE);
+    }).andThen(
+        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+            Constants.ArmSetpoints.GROUND_CUBE_PICKUP).alongWith(
+                new RunIntakeCommand(intakeSubsystem))));
 
     controller2.leftBumper().onTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
@@ -185,33 +189,14 @@ public class RobotContainer {
       ledSubsystem.setGamePiece(GamePiece.CONE);
     }));
 
-    // controller.leftBumper().whileTrue(
-    // new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new
-    // PathConstraints(2, 2),
-    // standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem,
-    // wristSubsystem));
+    // controller2.pov(0).whileTrue(new NextNode(Direction.Up));
+    // controller2.pov(90).whileTrue(new NextNode(Direction.Right));
+    // controller2.pov(180).whileTrue(new NextNode(Direction.Down));
+    // controller2.pov(270).whileTrue(new NextNode(Direction.Left));
+    controller2.leftTrigger(0.5).whileTrue(
+        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45)).andThen(
+            new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)));
 
-    // controller.rightBumper().whileTrue(
-    // new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new
-    // PathConstraints(2, 2),
-    // standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem,
-    // wristSubsystem, intakeSubsystem));
-
-    // controller.rightBumper().whileTrue(new RunIntakeCommand(testSubsystem));
-    // controller.leftBumper().whileTrue(new ReverseIntakeCommand(testSubsystem));
-
-    controller2.pov(0).whileTrue(new NextNode(Direction.Up));
-    controller2.pov(90).whileTrue(new NextNode(Direction.Right));
-    controller2.pov(180).whileTrue(new NextNode(Direction.Down));
-    controller2.pov(270).whileTrue(new NextNode(Direction.Left));
-
-    // controller.rightTrigger(.5).whileTrue(
-    // new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-    // Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
-
-    // controller.pov(270).whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
-    // extensionSubsystem, wristSubsystem,
-    // Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP));
     controller2.y().whileTrue(new HighPlace(elevatorSubsystem,
         extensionSubsystem, wristSubsystem));
     controller2.b().whileTrue(new MidPlace(elevatorSubsystem,
@@ -221,35 +206,7 @@ public class RobotContainer {
         Constants.ArmSetpoints.HYBRID_NODE));
     controller2.x()
         .whileTrue(new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem));
-    controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
-    controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
-    // controller.y().whileTrue(
-    // new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-    // Constants.ArmSetpoints.GROUND_CUBE_PICKUP)
-    // .alongWith(new RunIntakeCommand(intakeSubsystem).alongWith(new
-    // OpenClaw(intakeSubsystem))));
 
-    controller.y().whileTrue(
-        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-            Constants.ArmSetpoints.GROUND_CUBE_PICKUP)
-            .alongWith(new RunIntakeCommand(intakeSubsystem).alongWith(new OpenClaw(intakeSubsystem))));
-
-    // controller.b().whileTrue(
-    // new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-    // Constants.ArmSetpoints.MID_PEG));
-    // controller.a().whileTrue(
-    // new MoveArmToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-    // Constants.ArmSetpoints.HYBRID_NODE));
-    // controller.pov(90).whileTrue(new MoveArmToSetpoint(elevatorSubsystem,
-    // extensionSubsystem, wristSubsystem,
-    // // Constants.ArmSetpoints.GROUND_CONE_PICKUP));
-    // controller.rightBumper().whileTrue(new RunIntakeCommand(intakeSubsystem));
-    // controller.leftBumper().whileTrue(new ReverseIntakeCommand(intakeSubsystem));
-    controller.a().whileTrue(
-        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(45, 0, 45)).andThen(
-        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)));
-    // controller.a().whileTrue(new AutoBalance(drivetrainSubsystem,
-    // poseEstimator));
   }
 
   public void startTeleopPosCommand() {

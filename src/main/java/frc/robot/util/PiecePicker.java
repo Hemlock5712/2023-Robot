@@ -8,8 +8,8 @@ package frc.robot.util;
 public class PiecePicker {
   static boolean gamePiecePicked = true;
 
-  public static void toggle(boolean i) {
-    if (i) {
+  public static void toggle(boolean isCube) {
+    if (isCube) {
       gamePiecePicked = true;
     } else {
       gamePiecePicked = false;
