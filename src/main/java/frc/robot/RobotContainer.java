@@ -30,7 +30,7 @@ import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.HoldIntakeCommand;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.commands.balance.DriveToPoint;
+import frc.robot.commands.balance.AutoBalance;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
@@ -92,12 +92,14 @@ public class RobotContainer {
       }).andThen(
           new ReverseIntakeCommand(intakeSubsystem).withTimeout(0.5)),
       "extendIn",
-      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45)).andThen(
-          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)),
-      // "autoBalance",
-      // new AutoBalance(drivetrainSubsystem, poseEstimator)
+      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
+          .withTimeout(0.5).andThen(
+              new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)
+                  .withTimeout(0.5)),
       "autoBalance",
-      new DriveToPoint(drivetrainSubsystem, poseEstimator, 3.9, 2.75, 180));
+      new AutoBalance(drivetrainSubsystem, poseEstimator));
+  // "autoBalance",
+  // new DriveToPoint(drivetrainSubsystem, poseEstimator, 3.9, 2.75, 180));
 
   // private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new
   // FieldHeadingDriveCommand(
@@ -239,10 +241,8 @@ public class RobotContainer {
     List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("SingleWithAutoBalance",
         new PathConstraints(2, 1));
 
-    poseEstimator.setCurrentPose(pathGroup.get(0).getInitialHolonomicPose());
-
     SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-        poseEstimator::getCurrentPose,
+        poseEstimator::getCurrentPosePP,
         poseEstimator::setCurrentPose,
         Constants.DrivetrainConstants.KINEMATICS,
         Constants.AutoConstants.translationConstants,
@@ -251,12 +251,16 @@ public class RobotContainer {
         eventMap,
         true,
         drivetrainSubsystem);
-    // return new PPSwerveFollower(drivetrainSubsystem, poseEstimator, "New Path",
+    // return new PPSwerveFollower(drivetrainSubsystem, poseEstimator, "New
+    // Path",
     // new PathConstraints(2, 1), false);
     // return new PPSwerveFollower(drivetrainSubsystem, poseEstimator,
     // "SingleWithAutoBalance", new PathConstraints(2,1), false);
 
     return autoBuilder.fullAuto(pathGroup);
+    // return new AutonomousCenterBalance(drivetrainSubsystem, poseEstimator,
+    // elevatorSubsystem, extensionSubsystem,
+    // wristSubsystem, intakeSubsystem);
   }
 
   private static double modifyAxis(double value) {

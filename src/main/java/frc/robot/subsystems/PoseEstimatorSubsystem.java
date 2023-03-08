@@ -83,7 +83,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     // Start PhotonVision thread
     photonNotifier.setName("PhotonRunnable");
     photonNotifier.startPeriodic(0.02);
-    
+
   }
 
   public void addDashboardWidgets(ShuffleboardTab tab) {
@@ -155,6 +155,10 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   public Pose2d getCurrentPose() {
     return poseEstimator.getEstimatedPosition();
+  }
+
+  public Pose2d getCurrentPosePP() {
+    return flipAlliance(poseEstimator.getEstimatedPosition());
   }
 
   /**
