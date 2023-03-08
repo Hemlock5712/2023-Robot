@@ -6,13 +6,9 @@ package frc.robot;
 
 import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 
-import java.util.List;
 import java.util.Map;
 
 import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -26,11 +22,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.auto.PPAutoBuilder;
 import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.HoldIntakeCommand;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.commands.balance.AutoBalance;
+import frc.robot.commands.balance.DriveToPoint;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
@@ -96,10 +93,10 @@ public class RobotContainer {
           .withTimeout(0.5).andThen(
               new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)
                   .withTimeout(0.5)),
+      // "autoBalance",
+      // new AutoBalance(drivetrainSubsystem, poseEstimator));
       "autoBalance",
-      new AutoBalance(drivetrainSubsystem, poseEstimator));
-  // "autoBalance",
-  // new DriveToPoint(drivetrainSubsystem, poseEstimator, 3.9, 2.75, 180));
+      new DriveToPoint(drivetrainSubsystem, poseEstimator, 3.9, 2.75, 180));
 
   // private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new
   // FieldHeadingDriveCommand(
@@ -244,26 +241,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("SingleWithAutoBalance",
-        new PathConstraints(2, 1));
 
-    SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-        poseEstimator::getCurrentPosePP,
-        poseEstimator::setCurrentPose,
-        Constants.DrivetrainConstants.KINEMATICS,
-        Constants.AutoConstants.translationConstants,
-        Constants.AutoConstants.rotationConstants,
-        drivetrainSubsystem::setModuleStates,
-        eventMap,
-        true,
-        drivetrainSubsystem);
-    // return new PPSwerveFollower(drivetrainSubsystem, poseEstimator, "New
-    // Path",
-    // new PathConstraints(2, 1), false);
-    // return new PPSwerveFollower(drivetrainSubsystem, poseEstimator,
-    // "SingleWithAutoBalance", new PathConstraints(2,1), false);
-
-    return autoBuilder.fullAuto(pathGroup);
+    return new PPAutoBuilder(drivetrainSubsystem, poseEstimator, "SingleWithAutoBalance",
+        new PathConstraints(2, 1),
+        true, eventMap);
     // return new AutonomousCenterBalance(drivetrainSubsystem, poseEstimator,
     // elevatorSubsystem, extensionSubsystem,
     // wristSubsystem, intakeSubsystem);

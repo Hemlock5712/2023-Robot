@@ -17,6 +17,7 @@ public class HighPlace extends CommandBase {
   ExtensionSubsystem extension;
   WristSubsystem wrist;
   Command command;
+
   /** Creates a new HighPlace. */
   public HighPlace(ElevatorSubsystem elevator, ExtensionSubsystem extension, WristSubsystem wrist) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -28,15 +29,13 @@ public class HighPlace extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if(PiecePicker.getPiecePicker()){
-      this.command = new MoveToSetpoint(elevator, extension, wrist,Constants.ArmSetpoints.HIGH_CUBE);
-    }
-    else{
-      this.command = new MoveToSetpoint(elevator, extension, wrist,Constants.ArmSetpoints.HIGH_PEG);
+    if (PiecePicker.getPiecePicker()) {
+      this.command = new MoveToSetpoint(elevator, extension, wrist, Constants.ArmSetpoints.HIGH_CUBE);
+    } else {
+      this.command = new MoveToSetpoint(elevator, extension, wrist, Constants.ArmSetpoints.HIGH_PEG);
     }
     this.command.schedule();
   }
-
 
   // Called once the command ends or is interrupted.
   @Override

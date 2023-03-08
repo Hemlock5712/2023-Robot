@@ -3,13 +3,14 @@ package frc.robot.commands.balance;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
+import frc.robot.util.FieldConstants;
 
 public class DriveToPoint extends CommandBase {
-
 
   private final DrivetrainSubsystem driveSystem;
   private final PoseEstimatorSubsystem poseEstimatorSystem;
@@ -17,8 +18,7 @@ public class DriveToPoint extends CommandBase {
   private final ProfiledPIDController yController = Constants.TeleopDriveConstants.yController;
   private final ProfiledPIDController omegaController = Constants.TeleopDriveConstants.omegaController;
 
-
-  private final double x, y, thetaDegree;
+  private double x, y, thetaDegree;
 
   public DriveToPoint(DrivetrainSubsystem d, PoseEstimatorSubsystem p, double x, double y, double thetaDegree) {
     this.driveSystem = d;
@@ -26,11 +26,13 @@ public class DriveToPoint extends CommandBase {
 
     this.x = x;
     this.y = y;
+    if (Constants.DrivetrainConstants.alliance == Alliance.Red) {
+      this.y = FieldConstants.FIELD_WIDTH_METERS - y;
+    }
     this.thetaDegree = thetaDegree;
 
-
     this.xController.setTolerance(0.2);
-    
+
     this.yController.setTolerance(0.2);
 
     omegaController.setTolerance(Units.degreesToRadians(3));
@@ -49,41 +51,40 @@ public class DriveToPoint extends CommandBase {
 
   @Override
   public void execute() {
-        // Drive
-        xController.setGoal(x);
-        yController.setGoal(y);
-        omegaController.setGoal(Math.toRadians(thetaDegree));
-    
-      var robotPose = poseEstimatorSystem.getCurrentPose();
+    // Drive
+    xController.setGoal(x);
+    yController.setGoal(y);
+    omegaController.setGoal(Math.toRadians(thetaDegree));
 
-      // Drive to the target
-      var xSpeed =  xController.calculate(robotPose.getX());
-      if ( xController.atGoal()) {
-        xSpeed = 0;
-      }
+    var robotPose = poseEstimatorSystem.getCurrentPose();
 
-      var ySpeed =  yController.calculate(robotPose.getY());
-      if ( yController.atGoal()) {
-        ySpeed = 0;
-      }
-
-      var omegaSpeed =  omegaController.calculate(robotPose.getRotation().getRadians());
-      if ( omegaController.atGoal()) {
-        omegaSpeed = 0;
-      }
-
-      driveSystem.drive(
-        ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omegaSpeed, robotPose.getRotation()));
+    // Drive to the target
+    var xSpeed = xController.calculate(robotPose.getX());
+    if (xController.atGoal()) {
+      xSpeed = 0;
     }
 
-  @Override
-  public void end(boolean interrupted) {
-    //driveSystem.stop();
+    var ySpeed = yController.calculate(robotPose.getY());
+    if (yController.atGoal()) {
+      ySpeed = 0;
+    }
+
+    var omegaSpeed = omegaController.calculate(robotPose.getRotation().getRadians());
+    if (omegaController.atGoal()) {
+      omegaSpeed = 0;
+    }
+
+    driveSystem.drive(
+        ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, omegaSpeed, robotPose.getRotation()));
   }
 
   @Override
-  public boolean isFinished()
-  {
+  public void end(boolean interrupted) {
+    // driveSystem.stop();
+  }
+
+  @Override
+  public boolean isFinished() {
     return false;
   }
 }
