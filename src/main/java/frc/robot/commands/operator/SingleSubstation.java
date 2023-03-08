@@ -7,7 +7,6 @@ package frc.robot.commands.operator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.commands.RunIntakeCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -33,9 +32,9 @@ public class SingleSubstation extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-  this.command = new MoveToSetpoint(elevator,
-      extension, wrist,
-      Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP).alongWith(new RunIntakeCommand(intake));
+    this.command = new MoveToSetpoint(elevator,
+        extension, wrist,
+        Constants.ArmSetpoints.SINGLE_SUBSTATION_PICKUP);
 
     this.command.schedule();
   }

@@ -175,11 +175,13 @@ public class RobotContainer {
     controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
     controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
 
-    controller.a().whileTrue(
-        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45)).andThen(
-            new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)));
+    controller.leftBumper().whileTrue(
+        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
+            .withTimeout(0.5).andThen(
+                new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+                    Constants.ArmSetpoints.TRANSIT)));
 
-    controller.y().whileTrue(new InstantCommand(() -> {
+    controller.rightBumper().whileTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
       ledSubsystem.setGamePiece(GamePiece.CUBE);
     }).andThen(
@@ -201,9 +203,11 @@ public class RobotContainer {
     // controller2.pov(90).whileTrue(new NextNode(Direction.Right));
     // controller2.pov(180).whileTrue(new NextNode(Direction.Down));
     // controller2.pov(270).whileTrue(new NextNode(Direction.Left));
-    controller2.leftTrigger(0.5).whileTrue(
-        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45)).andThen(
-            new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)));
+    // controller2.leftTrigger(0.5).whileTrue(
+    // new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new
+    // ArmSetpoint(30, 0, 45)).andThen(
+    // new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+    // Constants.ArmSetpoints.TRANSIT)));
 
     controller2.y().whileTrue(new HighPlace(elevatorSubsystem,
         extensionSubsystem, wristSubsystem));
@@ -212,8 +216,10 @@ public class RobotContainer {
     controller2.a().whileTrue(new MoveToSetpoint(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.HYBRID_NODE));
+
     controller2.x()
         .whileTrue(new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem));
+
     controller2.back().and(controller2.start()).whileTrue(new MoveToSetpoint(elevatorSubsystem, extensionSubsystem,
         wristSubsystem, Constants.ArmSetpoints.STARTING_CONFIG));
   }
