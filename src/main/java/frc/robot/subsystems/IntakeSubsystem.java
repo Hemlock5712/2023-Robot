@@ -34,11 +34,11 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void holdCone() {
-    intake.set(ControlMode.PercentOutput, -.5);
+    intake.set(ControlMode.PercentOutput, -.2);
   }
 
   public void holdCube() {
-    intake.set(ControlMode.PercentOutput, -.2);
+    intake.set(ControlMode.PercentOutput, -.1);
   }
 
   public void reverseIntake() {
