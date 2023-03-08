@@ -33,6 +33,14 @@ public class IntakeSubsystem extends SubsystemBase {
     // speedSetpoint = 1500;
   }
 
+  public void holdCone() {
+    intake.set(ControlMode.PercentOutput, -.5);
+  }
+
+  public void holdCube() {
+    intake.set(ControlMode.PercentOutput, -.2);
+  }
+
   public void reverseIntake() {
     // speedSetpoint = -800;
     intake.set(ControlMode.PercentOutput, .8);

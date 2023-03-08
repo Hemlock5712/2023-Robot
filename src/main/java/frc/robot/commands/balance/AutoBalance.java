@@ -74,7 +74,7 @@ public class AutoBalance extends CommandBase {
 
   // --------------------------------------------------------------------------
 
-  double targetX = 3.94;
+  double targetX = 3.9;
 
   // Only need blue side - Don't need side specifics.
   // double minTargetXRed = 4.03;

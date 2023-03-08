@@ -372,7 +372,7 @@ public final class Constants {
     /**
      * Put arm out upside down to pick up a cone direct from the single substation
      */
-    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = XYACalulator.Calulator(0, 0, 34);
+    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = XYACalulator.Calulator(0, 2, 34);
   }
 
 }

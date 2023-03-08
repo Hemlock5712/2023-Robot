@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.9100838201676407,
-        "y": 2.721192109050885
+        "x": 2.060884694220194,
+        "y": 2.7246666300130458
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9100838201676416,
-        "y": 2.721192109050885
+        "x": 2.405351738392285,
+        "y": 2.7246666300130458
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -19,7 +19,7 @@
         "names": [
           "extendHigh",
           "outtake",
-          "transit"
+          "extendIn"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -28,15 +28,15 @@
     },
     {
       "anchorPoint": {
-        "x": 5.764118194903057,
-        "y": 2.6873253746507504
+        "x": 2.4,
+        "y": 2.72
       },
       "prevControl": {
-        "x": 4.416222165777665,
-        "y": 2.694098721530778
+        "x": 1.6663960971158915,
+        "y": 2.72
       },
       "nextControl": null,
-      "holonomicAngle": 179.39049342332476,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -45,19 +45,11 @@
         "names": [
           "autoBalance"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "markers": [
-    {
-      "position": 0.13090909090908348,
-      "names": [
-        "event",
-        "singleSubstation"
-      ]
-    }
-  ]
+  "markers": []
 }
