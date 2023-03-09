@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +20,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private TalonFX intake = new TalonFX(33);
   private Solenoid claw = new Solenoid(PneumaticsModuleType.REVPH, 8);
+  private NetworkTableEntry motorTempEntry = NetworkTableInstance.getDefault().getTable("Intake")
+      .getEntry("temperature");
   // private double speedSetpoint = 0;
 
   // private PIDController intakePID = new PIDController(1, 0, 0);
@@ -72,5 +76,6 @@ public class IntakeSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("Intake/TargetSpeed", speedSetpoint);
     // speedSetpoint = 0;
     // This method will be called once per scheduler run
+    motorTempEntry.setDouble(intake.getTemperature());
   }
 }

@@ -146,8 +146,7 @@
         "names": [
           "extendMid",
           "outtake",
-          "extendIn",
-          "doNothing"
+          "extendIn"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

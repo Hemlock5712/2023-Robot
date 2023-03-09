@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
@@ -68,7 +69,7 @@ public class PPAutoBuilder extends CommandBase {
         eventMap,
         false,
         driveSystem);
-    controllerCommand = autoBuilder.fullAuto(alliancePath);
+    controllerCommand = autoBuilder.fullAuto(alliancePath).alongWith(new WaitCommand(15));
     controllerCommand.schedule();
   }
 

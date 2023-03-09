@@ -116,9 +116,7 @@ public class RobotContainer {
       new InstantCommand(() -> {
         PiecePicker.toggle(true);
         ledSubsystem.setGamePiece(GamePiece.CUBE);
-      }),
-      "doNothing",
-      new WaitCommand(15));
+      }));
 
   // private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new
   // FieldHeadingDriveCommand(
