@@ -7,16 +7,17 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4601350270316216,
-        "y": 2.7291405472490657
+        "x": 2.298478618309551,
+        "y": 2.681594544683752
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
-      "velOverride": null,
+      "velOverride": 1.0,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
+          "cube",
           "extendHigh",
           "outtake",
           "extendIn"
@@ -28,12 +29,12 @@
     },
     {
       "anchorPoint": {
-        "x": 3.3730182762856638,
-        "y": 2.7576681487882544
+        "x": 3.8674967029649374,
+        "y": 2.719631346736003
       },
       "prevControl": {
-        "x": 3.0021594562762086,
-        "y": 2.7196313467360023
+        "x": 3.6202574896253004,
+        "y": 2.719631346736003
       },
       "nextControl": null,
       "holonomicAngle": 180.0,

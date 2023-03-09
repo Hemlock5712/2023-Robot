@@ -48,6 +48,7 @@ public class PPAutoBuilder extends CommandBase {
       end(false);
       return;
     }
+
     var alliancePath = PathPlannerTrajectory.transformTrajectoryForAlliance(
         path,
         Constants.DrivetrainConstants.alliance);
@@ -58,7 +59,7 @@ public class PPAutoBuilder extends CommandBase {
     // controllerCommand = DrivetrainSubsystem.followTrajectory(driveSystem,
     // poseEstimatorSystem, alliancePath);
     SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-        poseEstimatorSystem::getCurrentPosePP,
+        poseEstimatorSystem::getCurrentPose,
         poseEstimatorSystem::setCurrentPose,
         Constants.DrivetrainConstants.KINEMATICS,
         Constants.AutoConstants.translationConstants,
@@ -68,7 +69,7 @@ public class PPAutoBuilder extends CommandBase {
         false,
         driveSystem);
     controllerCommand = autoBuilder.fullAuto(alliancePath);
-    controllerCommand.initialize();
+    controllerCommand.schedule();
   }
 
   @Override

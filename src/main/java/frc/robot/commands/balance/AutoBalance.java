@@ -54,7 +54,7 @@ public class AutoBalance extends CommandBase {
 
   // Set to true if you want the force of gravity to impact the velocity of the
   // robot when going up the Charging Station.
-  private boolean useGravity = false;
+  private boolean useGravity = true;
 
   // Set true you don't want constantAddedVelocity to be added within a certain
   // specified amount of meters from the center of the Charging Station.
@@ -111,8 +111,8 @@ public class AutoBalance extends CommandBase {
     } else {
       // Calculating how much the robot accelerates downward based upon gravity and
       // the angle of the platform.
-      double velocityOfGravity = 9.81 * Math.sin(pitch) * (useGravity ? 1.0 : 0.0); // Ternary operator is for testing!
-                                                                                    // DON'T use in production!
+      double velocityOfGravity = 9.81 * Math.sin(pitch) * (useGravity ? 0.50 : 0.0); // Ternary operator is for testing!
+                                                                                     // DON'T use in production!
       double velocityOfDistance = -velocityPerMeter * distanceFromCenter;
       double velocityAdded;
       // Checking if useDisableConstantOnPitch or useDisableConstantOnPos are in use

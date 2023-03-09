@@ -17,9 +17,11 @@ import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.auto.PPAutoBuilder;
@@ -27,7 +29,7 @@ import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.HoldIntakeCommand;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.commands.balance.DriveToPoint;
+import frc.robot.commands.balance.AutoBalance;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
@@ -79,15 +81,18 @@ public class RobotContainer {
 
   private PneumaticHub pch = new PneumaticHub(1);
 
+  private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
+
   Map<String, Command> eventMap = Map.of(
       "extendHigh",
-      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_CUBE),
+      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_CUBE)
+          .alongWith(new RunIntakeCommand(intakeSubsystem))
+          .withTimeout(1.5),
+      "extendMid",
+      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.MID_CUBE)
+          .withTimeout(1),
       "outtake",
-      new InstantCommand(() -> {
-        PiecePicker.toggle(true);
-        ledSubsystem.setGamePiece(GamePiece.CUBE);
-      }).andThen(
-          new ReverseIntakeCommand(intakeSubsystem).withTimeout(0.5)),
+      new WaitCommand(0.5).deadlineWith(new ReverseIntakeCommand(intakeSubsystem)),
       "extendIn",
       new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
           .withTimeout(0.5).andThen(
@@ -96,7 +101,24 @@ public class RobotContainer {
       // "autoBalance",
       // new AutoBalance(drivetrainSubsystem, poseEstimator));
       "autoBalance",
-      new DriveToPoint(drivetrainSubsystem, poseEstimator, 3.9, 2.75, 180));
+      new AutoBalance(drivetrainSubsystem, poseEstimator),
+      "goToIntakeMode",
+      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+          Constants.ArmSetpoints.GROUND_CUBE_PICKUP),
+      "startIntake",
+      new WaitCommand(1.5).deadlineWith(new RunIntakeCommand(intakeSubsystem)),
+      "cone",
+      new InstantCommand(() -> {
+        PiecePicker.toggle(false);
+        ledSubsystem.setGamePiece(GamePiece.CONE);
+      }),
+      "cube",
+      new InstantCommand(() -> {
+        PiecePicker.toggle(true);
+        ledSubsystem.setGamePiece(GamePiece.CUBE);
+      }),
+      "doNothing",
+      new WaitCommand(15));
 
   // private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new
   // FieldHeadingDriveCommand(
@@ -129,6 +151,13 @@ public class RobotContainer {
     // map.createGraph(cableMap, cablePath);
 
     intakeSubsystem.setDefaultCommand(new HoldIntakeCommand(intakeSubsystem));
+
+    autoChooser.addOption("Center With Balance",
+        makeAutoBuilderCommand("SingleWithAutoBalance", new PathConstraints(2, 1)));
+    autoChooser.setDefaultOption("Barrier Side 2 Cube",
+        makeAutoBuilderCommand("Center2GamePiece", new PathConstraints(2.5, 2)));
+
+    SmartDashboard.putData(autoChooser);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -242,12 +271,16 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
 
-    return new PPAutoBuilder(drivetrainSubsystem, poseEstimator, "SingleWithAutoBalance",
-        new PathConstraints(2, 1),
-        true, eventMap);
+    return autoChooser.getSelected();
     // return new AutonomousCenterBalance(drivetrainSubsystem, poseEstimator,
     // elevatorSubsystem, extensionSubsystem,
     // wristSubsystem, intakeSubsystem);
+  }
+
+  private Command makeAutoBuilderCommand(String pathName, PathConstraints constraints) {
+    return new PPAutoBuilder(drivetrainSubsystem, poseEstimator, pathName,
+        constraints,
+        true, eventMap);
   }
 
   private static double modifyAxis(double value) {
