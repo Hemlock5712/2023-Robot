@@ -49,6 +49,9 @@ public class AutoBalance extends CommandBase {
   private static double speedLimitHigh = 2;
   private static double speedLimitLow = 0.0;
 
+  // This is a multiplier that applies to the velocity before the speed limit
+  private static double multiplier = 1;
+
   // This code is only for testing! Remove for production!
   // --------------------------------------------------------------------------
 
@@ -74,8 +77,11 @@ public class AutoBalance extends CommandBase {
 
   // --------------------------------------------------------------------------
 
+  // The x coordinate that you are targeting
+  // This should correspond to the center of the Charging Station
   double targetX = 3.9;
 
+  // This can probabaly be deleted
   // Only need blue side - Don't need side specifics.
   // double minTargetXRed = 4.03;
   // double maxTargetXRed = 6.47;
@@ -127,7 +133,7 @@ public class AutoBalance extends CommandBase {
       } else {
         velocityAdded = constantAddedVelocity;
       }
-      velocity = 1 * (velocityOfGravity + velocityOfDistance + velocityAdded);
+      velocity = multiplier * (velocityOfGravity + velocityOfDistance + velocityAdded);
     }
 
     if (velocity > speedLimitHigh) {
