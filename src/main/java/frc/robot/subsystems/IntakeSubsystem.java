@@ -50,6 +50,11 @@ public class IntakeSubsystem extends SubsystemBase {
     intake.set(ControlMode.PercentOutput, .8);
   }
 
+  public void reverseIntakeCone() {
+    // speedSetpoint = -800;
+    intake.set(ControlMode.PercentOutput, .6);
+  }
+
   public void stopIntake() {
     intake.set(ControlMode.PercentOutput, 0);
     // speedSetpoint = 0;

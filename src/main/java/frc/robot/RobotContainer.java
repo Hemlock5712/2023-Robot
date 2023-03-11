@@ -9,6 +9,8 @@ import static frc.robot.Constants.TeleopDriveConstants.DEADBAND;
 import java.util.Map;
 
 import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -20,11 +22,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.auto.PPAutoBuilder;
 import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.HoldIntakeCommand;
 import frc.robot.commands.ReverseIntakeCommand;
@@ -151,9 +154,13 @@ public class RobotContainer {
     intakeSubsystem.setDefaultCommand(new HoldIntakeCommand(intakeSubsystem));
 
     autoChooser.addOption("Center With Balance",
-        makeAutoBuilderCommand("SingleWithAutoBalance", new PathConstraints(2, 1)));
+        makeAutoBuilderCommand("SingleWithAutoBalance", new PathConstraints(1.5, 1)));
     autoChooser.setDefaultOption("Barrier Side 2 Cube",
         makeAutoBuilderCommand("Center2GamePiece", new PathConstraints(2.5, 2)));
+    autoChooser.addOption("Barrier Place 1 Pickup 1 Balance", makeAutoBuilderCommand("pickupBalance", new PathConstraints(2.5, 2)));
+    autoChooser.addOption("Wall Side 2 Cube", makeAutoBuilderCommand("Wall2GamePiece", new PathConstraints(2.5, 2)));
+    
+    autoChooser.addOption("Do Nothing", Commands.none());
 
     SmartDashboard.putData(autoChooser);
 
@@ -199,7 +206,7 @@ public class RobotContainer {
     controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
     controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
 
-    controller.leftBumper().whileTrue(
+    controller2.leftTrigger(0.5).whileTrue(
         new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
             .withTimeout(0.5).andThen(
                 new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
@@ -275,10 +282,27 @@ public class RobotContainer {
     // wristSubsystem, intakeSubsystem);
   }
 
-  private Command makeAutoBuilderCommand(String pathName, PathConstraints constraints) {
-    return new PPAutoBuilder(drivetrainSubsystem, poseEstimator, pathName,
-        constraints,
-        true, eventMap);
+  private CommandBase makeAutoBuilderCommand(String pathName, PathConstraints constraints) {
+    // return new PPAutoBuilder(drivetrainSubsystem, poseEstimator, pathName,
+    //     constraints,
+    //     true, eventMap);
+    var path = PathPlanner.loadPath(pathName, constraints);
+    
+    poseEstimator.addTrajectory(path);
+    // controllerCommand = DrivetrainSubsystem.followTrajectory(driveSystem,
+    // poseEstimatorSystem, alliancePath);
+    SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+        poseEstimator::getCurrentPose,
+        poseEstimator::setCurrentPose,
+        Constants.DrivetrainConstants.KINEMATICS,
+        Constants.AutoConstants.translationConstants,
+        Constants.AutoConstants.rotationConstants,
+        drivetrainSubsystem::setModuleStates,
+        eventMap,
+        true,
+        drivetrainSubsystem);
+    return autoBuilder.fullAuto(path);
+
   }
 
   private static double modifyAxis(double value) {

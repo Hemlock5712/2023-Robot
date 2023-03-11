@@ -41,6 +41,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -63,10 +64,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final SwerveModule[] swerveModules;
 
   private static final NetworkTable moduleStatesTable = NetworkTableInstance.getDefault().getTable("SwerveStates");
+  NetworkTableEntry angleEntry = NetworkTableInstance.getDefault().getTable("DrivetrainSubsystem").getEntry("angle");
 
   private ChassisSpeeds desiredChassisSpeeds;
 
   public DrivetrainSubsystem() {
+
+
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
     pigeon.configMountPoseRoll(0);
     pigeon.configMountPoseYaw(0);
@@ -238,6 +242,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Always reset desiredChassisSpeeds to null to prevent latching to the last
     // state (aka motor safety)!!
     desiredChassisSpeeds = null;
+    angleEntry.setNumber(getRoll());
   }
 
   /**
@@ -330,8 +335,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         false);
   }
 
-  public double getPitch() {
-    return pigeon.getPitch();
+  public double getRoll() {
+    return pigeon.getRoll()+2;
   }
 
 }

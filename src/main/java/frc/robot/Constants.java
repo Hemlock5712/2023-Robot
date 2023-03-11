@@ -336,7 +336,7 @@ public final class Constants {
     /**
      * Put arm on ground to pick up a cone that's lying down
      */
-    public static final ArmSetpoint GROUND_CUBE_PICKUP = new ArmSetpoint(-10, 0, -45);
+    public static final ArmSetpoint GROUND_CUBE_PICKUP = new ArmSetpoint(-12, 0, -40);
     /**
      * Put arm above ground to pick up a cone that's standing up
      */
@@ -348,7 +348,8 @@ public final class Constants {
     /**
      * Put arm into a safe position for transit across the field
      */
-    public static final ArmSetpoint TRANSIT = XYACalulator.Calulator(0, 0, 90);
+    // public static final ArmSetpoint TRANSIT = XYACalulator.Calulator(0, 0, 90);
+    public static final ArmSetpoint TRANSIT = new ArmSetpoint(0, -0.06, 90);
     /**
      * Extend the arm out to place cone on the high peg
      */
@@ -372,7 +373,8 @@ public final class Constants {
     /**
      * Put arm out upside down to pick up a cone direct from the single substation
      */
-    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = XYACalulator.Calulator(0, 2, 34);
+    // public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = XYACalulator.Calulator(-.2, 2, 34);
+    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, -.06, 34);
     public static final ArmSetpoint STARTING_CONFIG = new ArmSetpoint(71, 0, -106);
   }
 

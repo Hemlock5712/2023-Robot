@@ -30,7 +30,7 @@ public class ReverseIntakeCommand extends CommandBase {
       intakeSubsystem.reverseIntake();
       intakeSubsystem.openIntake();
     } else {
-      intakeSubsystem.reverseIntake();
+      intakeSubsystem.reverseIntakeCone();
       intakeSubsystem.closeIntake();
     }
   }

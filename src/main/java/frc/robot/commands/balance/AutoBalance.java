@@ -7,6 +7,7 @@ package frc.robot.commands.balance;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -25,7 +26,7 @@ public class AutoBalance extends CommandBase {
   // This notates how many meters per second the robot should overshoot
   // the velocity for every meter away the robot is from the center of the
   // Charge Station. If you do want this to impact the velocity set this to zero.
-  private static double velocityPerMeter = 2;
+  private static double velocityPerMeter = 0;
 
   private static double constantAddedVelocity = 0.0;
 
@@ -43,10 +44,10 @@ public class AutoBalance extends CommandBase {
 
   // The range in radians from the 0 radians when all velocity will stop
   // being added.
-  private static double pitchRangeDisable = 0.0;
+  private static double pitchRangeDisable = Units.degreesToRadians(3);
 
   // Limit how fast the robot can go at any time in meters per second
-  private static double speedLimitHigh = 2;
+  private static double speedLimitHigh = .25;
   private static double speedLimitLow = 0.0;
 
   // This code is only for testing! Remove for production!
@@ -74,11 +75,16 @@ public class AutoBalance extends CommandBase {
 
   // --------------------------------------------------------------------------
 
-  double targetX = 3.9;
+  double targetX = 3.83;
 
   // Only need blue side - Don't need side specifics.
   // double minTargetXRed = 4.03;
   // double maxTargetXRed = 6.47;
+
+
+
+  double initSpeed = 1;
+  double pastVelocitySign = 0;
 
   public AutoBalance(DrivetrainSubsystem d, PoseEstimatorSubsystem p) {
     this.driveSystem = d;
@@ -99,7 +105,7 @@ public class AutoBalance extends CommandBase {
   }
 
   private double getVelocity() {
-    double pitch = Units.degreesToRadians(driveSystem.getPitch());
+    double pitch = Units.degreesToRadians(driveSystem.getRoll());
     // SmartDashboard.putNumber("gyroPitch", pitch);
     double distanceFromCenter = getDistanceFromX();
     double velocity = 0.0;
@@ -111,7 +117,7 @@ public class AutoBalance extends CommandBase {
     } else {
       // Calculating how much the robot accelerates downward based upon gravity and
       // the angle of the platform.
-      double velocityOfGravity = 9.81 * Math.sin(pitch) * (useGravity ? 0.50 : 0.0); // Ternary operator is for testing!
+      double velocityOfGravity = 9.81 * Math.sin(pitch) * (useGravity ? 1 : 0.0); // Ternary operator is for testing!
                                                                                      // DON'T use in production!
       double velocityOfDistance = -velocityPerMeter * distanceFromCenter;
       double velocityAdded;
@@ -141,8 +147,24 @@ public class AutoBalance extends CommandBase {
     } else if (velocity > -speedLimitLow && velocity < 0) {
       velocity = 0;
     }
+    double tempSpeed = initSpeed;
 
-    return velocity;
+    if(pastVelocitySign != 0 && pastVelocitySign != (velocity > 0 ? 1 : -1)) {
+        initSpeed /= 2;
+    }
+    // if(Math.abs(velocity*tempSpeed)<.05){
+    //   velocity = 0;
+    // }
+
+
+
+    double tempVelocity = velocity*tempSpeed;
+    SmartDashboard.putNumber("Velocity", tempVelocity);
+
+    pastVelocitySign = (velocity > 0 ? 1 : -1);
+    
+    return tempVelocity;
+    
   }
 
   private void selfBalancing() {
@@ -152,6 +174,7 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public void initialize() {
+    
     // driveSystem.resetPitch();
   }
 
