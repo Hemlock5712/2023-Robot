@@ -147,7 +147,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       poseEstimator.addVisionMeasurement(pose2d, rightCameraPose.timestampSeconds);
     }
 
-    var leftCameraPose = rightEstimator.grabLatestEstimatedPose();
+    var leftCameraPose = leftEstimator.grabLatestEstimatedPose();
     if (leftCameraPose != null) {
       // New pose from vision
       var pose2d = leftCameraPose.estimatedPose.toPose2d();
