@@ -33,6 +33,7 @@ import frc.robot.commands.HoldIntakeCommand;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.balance.AutoBalance;
+import frc.robot.commands.balance.Balance;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
@@ -105,6 +106,8 @@ public class RobotContainer {
       // new AutoBalance(drivetrainSubsystem, poseEstimator));
       "autoBalance",
       new AutoBalance(drivetrainSubsystem, poseEstimator),
+      "newAutoBalance",
+      new Balance(drivetrainSubsystem, poseEstimator),
       "goToIntakeMode",
       new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
           Constants.ArmSetpoints.GROUND_CUBE_PICKUP),
@@ -229,6 +232,8 @@ public class RobotContainer {
       PiecePicker.toggle(false);
       ledSubsystem.setGamePiece(GamePiece.CONE);
     }));
+
+    controller.back().whileTrue(new Balance(drivetrainSubsystem, poseEstimator));
 
     // controller2.pov(0).whileTrue(new NextNode(Direction.Up));
     // controller2.pov(90).whileTrue(new NextNode(Direction.Right));

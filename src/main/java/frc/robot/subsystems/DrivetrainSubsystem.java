@@ -40,6 +40,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -67,6 +68,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
   NetworkTableEntry angleEntry = NetworkTableInstance.getDefault().getTable("DrivetrainSubsystem").getEntry("angle");
 
   private ChassisSpeeds desiredChassisSpeeds;
+
+  private double xyzDPS[] = new double[3];
+
 
   public DrivetrainSubsystem() {
 
@@ -137,6 +141,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     for (SwerveModule swerveModule : swerveModules) {
       swerveModule.setNeutralMode(NeutralMode.Brake);
     }
+
+    pigeon.zeroGyroBiasNow();
   }
 
   /**
@@ -338,5 +344,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public double getRoll() {
     return pigeon.getRoll()+2;
   }
+
+  public double getPitch() {
+    return pigeon.getPitch();
+  }
+
+  public double getPitchDPS() {
+    double[] xyz = getGyroVelocityXYZ();
+    return Units.degreesToRadians(-xyz[0]);
+  }
+
+  public double getRollDPS() {
+    double[] xyz = getGyroVelocityXYZ();
+    return Units.degreesToRadians(xyz[1]);
+  }
+
 
 }
