@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.util.FieldConstants;
 
@@ -61,8 +62,10 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   private final Supplier<SwerveModulePosition[]> modulePositionSupplier;
   private final SwerveDrivePoseEstimator poseEstimator;
   private final Field2d field2d = new Field2d();
-  private final PhotonRunnable rightEstimator = new PhotonRunnable(new PhotonCamera("photonvision"));
-  private final PhotonRunnable leftEstimator = new PhotonRunnable(new PhotonCamera("leftCamera"));
+  private final PhotonRunnable rightEstimator = new PhotonRunnable(new PhotonCamera("photonvision"),
+      Constants.VisionConstants.RIGHT_CAMERA_TO_ROBOT);
+  private final PhotonRunnable leftEstimator = new PhotonRunnable(new PhotonCamera("leftCamera"),
+      Constants.VisionConstants.LEFT_CAMERA_TO_ROBOT);
 
   private final Notifier rightNotifier = new Notifier(rightEstimator);
   private final Notifier leftNotifier = new Notifier(leftEstimator);

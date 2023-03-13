@@ -166,15 +166,19 @@ public final class Constants {
      * Physical location of the camera on the robot, relative to the center of the
      * robot.
      */
-    public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(
-        // Left Camera
-        // new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(-6.5615),
-        // Units.inchesToMeters(-30.0)),
-        // new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(-45)));
-        // Right Camera
+    public static final Transform3d RIGHT_CAMERA_TO_ROBOT = new Transform3d(
         new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(6.5615), Units.inchesToMeters(-30.0)),
         new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(45)));
-    public static final Transform3d ROBOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
+    public static final Transform3d ROBOT_TO_RIGHT_CAMERA = RIGHT_CAMERA_TO_ROBOT.inverse();
+
+    /**
+     * Physical location of the camera on the robot, relative to the center of the
+     * robot.
+     */
+    public static final Transform3d LEFT_CAMERA_TO_ROBOT = new Transform3d(
+        new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(-6.5615), Units.inchesToMeters(-30.0)),
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(-45)));
+    public static final Transform3d LEFT_TO_RIGHT_CAMERA = RIGHT_CAMERA_TO_ROBOT.inverse();
 
     /** Minimum target ambiguity. Targets with higher ambiguity will be discarded */
     public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
@@ -373,7 +377,8 @@ public final class Constants {
     /**
      * Put arm out upside down to pick up a cone direct from the single substation
      */
-    // public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = XYACalulator.Calulator(-.2, 2, 34);
+    // public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP =
+    // XYACalulator.Calulator(-.2, 2, 34);
     public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, -.06, 34);
     public static final ArmSetpoint STARTING_CONFIG = new ArmSetpoint(71, 0, -106);
   }

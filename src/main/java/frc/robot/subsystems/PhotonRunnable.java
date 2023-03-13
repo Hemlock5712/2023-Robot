@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.VisionConstants.APRILTAG_AMBIGUITY_THRESHOLD;
-import static frc.robot.Constants.VisionConstants.ROBOT_TO_CAMERA;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,7 +26,7 @@ public class PhotonRunnable implements Runnable {
   private final PhotonCamera photonCamera;
   private final AtomicReference<EstimatedRobotPose> atomicEstimatedRobotPose = new AtomicReference<EstimatedRobotPose>();
 
-  public PhotonRunnable(PhotonCamera cameraName) {
+  public PhotonRunnable(PhotonCamera cameraName, Transform3d robotToCamera) {
     this.photonCamera = cameraName;
     PhotonPoseEstimator photonPoseEstimator = null;
     try {
@@ -36,7 +35,7 @@ public class PhotonRunnable implements Runnable {
       layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
       if (photonCamera != null) {
         photonPoseEstimator = new PhotonPoseEstimator(
-            layout, PoseStrategy.MULTI_TAG_PNP, photonCamera, ROBOT_TO_CAMERA);
+            layout, PoseStrategy.MULTI_TAG_PNP, photonCamera, robotToCamera);
         photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       }
     } catch (IOException e) {
