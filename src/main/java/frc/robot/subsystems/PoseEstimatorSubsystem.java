@@ -6,6 +6,8 @@ import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kRedAlli
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
+import org.photonvision.PhotonCamera;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -59,9 +61,11 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   private final Supplier<SwerveModulePosition[]> modulePositionSupplier;
   private final SwerveDrivePoseEstimator poseEstimator;
   private final Field2d field2d = new Field2d();
-  private final PhotonRunnable photonEstimator = new PhotonRunnable();
-  private final Notifier photonNotifier = new Notifier(photonEstimator);
+  private final PhotonRunnable rightEstimator = new PhotonRunnable(new PhotonCamera("photonvision"));
+  private final PhotonRunnable leftEstimator = new PhotonRunnable(new PhotonCamera("leftCamera"));
 
+  private final Notifier rightNotifier = new Notifier(rightEstimator);
+  private final Notifier leftNotifier = new Notifier(leftEstimator);
   private OriginPosition originPosition = kBlueAllianceWallRightSide;
 
   private final ArrayList<Double> xValues = new ArrayList<Double>();
@@ -81,8 +85,12 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         visionMeasurementStdDevs);
 
     // Start PhotonVision thread
-    photonNotifier.setName("PhotonRunnable");
-    photonNotifier.startPeriodic(0.02);
+    rightNotifier.setName("rightRunnable");
+    rightNotifier.startPeriodic(0.02);
+
+    // Start PhotonVision thread
+    leftNotifier.setName("leftRunnable");
+    leftNotifier.startPeriodic(0.02);
 
   }
 
@@ -126,14 +134,24 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     // Update pose estimator with drivetrain sensors
     poseEstimator.update(rotationSupplier.get(), modulePositionSupplier.get());
 
-    var visionPose = photonEstimator.grabLatestEstimatedPose();
-    if (visionPose != null) {
+    var rightCameraPose = rightEstimator.grabLatestEstimatedPose();
+    if (rightCameraPose != null) {
       // New pose from vision
-      var pose2d = visionPose.estimatedPose.toPose2d();
+      var pose2d = rightCameraPose.estimatedPose.toPose2d();
       if (originPosition == kRedAllianceWallRightSide) {
         pose2d = flipAlliance(pose2d);
       }
-      poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);
+      poseEstimator.addVisionMeasurement(pose2d, rightCameraPose.timestampSeconds);
+    }
+
+    var leftCameraPose = rightEstimator.grabLatestEstimatedPose();
+    if (leftCameraPose != null) {
+      // New pose from vision
+      var pose2d = leftCameraPose.estimatedPose.toPose2d();
+      if (originPosition == kRedAllianceWallRightSide) {
+        pose2d = flipAlliance(pose2d);
+      }
+      poseEstimator.addVisionMeasurement(pose2d, leftCameraPose.timestampSeconds);
     }
 
     // Set the pose on the dashboard
