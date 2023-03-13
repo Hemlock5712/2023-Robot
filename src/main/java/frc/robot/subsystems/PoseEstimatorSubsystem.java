@@ -140,27 +140,20 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     // Update pose estimator with drivetrain sensors
     poseEstimator.update(rotationSupplier.get(), modulePositionSupplier.get());
 
-    var rightCameraPose = rightEstimator.grabLatestEstimatedPose();
-    if (rightCameraPose != null) {
-      // New pose from vision
-      var pose2d = rightCameraPose.estimatedPose.toPose2d();
-      if (originPosition == kRedAllianceWallRightSide) {
-        pose2d = flipAlliance(pose2d);
-      }
-      poseEstimator.addVisionMeasurement(pose2d, rightCameraPose.timestampSeconds,
-          confidenceCalculator(rightCameraPose));
-    }
+    estimatorChecker(rightEstimator);
+    estimatorChecker(leftEstimator);
 
-    var leftCameraPose = leftEstimator.grabLatestEstimatedPose();
-    if (leftCameraPose != null) {
-      // New pose from vision
-      var pose2d = leftCameraPose.estimatedPose.toPose2d();
-      if (originPosition == kRedAllianceWallRightSide) {
-        pose2d = flipAlliance(pose2d);
-      }
-      confidenceCalculator(leftCameraPose);
-      poseEstimator.addVisionMeasurement(pose2d, leftCameraPose.timestampSeconds, confidenceCalculator(leftCameraPose));
-    }
+    // var leftCameraPose = leftEstimator.grabLatestEstimatedPose();
+    // if (leftCameraPose != null) {
+    // // New pose from vision
+    // var pose2d = leftCameraPose.estimatedPose.toPose2d();
+    // if (originPosition == kRedAllianceWallRightSide) {
+    // pose2d = flipAlliance(pose2d);
+    // }
+    // confidenceCalculator(leftCameraPose);
+    // poseEstimator.addVisionMeasurement(pose2d, leftCameraPose.timestampSeconds,
+    // confidenceCalculator(leftCameraPose));
+    // }
 
     // Set the pose on the dashboard
     var dashboardPose = poseEstimator.getEstimatedPosition();
@@ -257,5 +250,18 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
                 + ((estimation.targetsUsed.size() - 1) * Constants.VisionConstants.TAG_PRESENCE_WEIGHT)));
 
     return Constants.VisionConstants.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
+  }
+
+  public void estimatorChecker(PhotonRunnable estamator) {
+    var cameraPose = estamator.grabLatestEstimatedPose();
+    if (cameraPose != null) {
+      // New pose from vision
+      var pose2d = cameraPose.estimatedPose.toPose2d();
+      if (originPosition == kRedAllianceWallRightSide) {
+        pose2d = flipAlliance(pose2d);
+      }
+      poseEstimator.addVisionMeasurement(pose2d, cameraPose.timestampSeconds,
+          confidenceCalculator(cameraPose));
+    }
   }
 }
