@@ -69,11 +69,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private ChassisSpeeds desiredChassisSpeeds;
 
-  private double xyzDPS[] = new double[3];
-
-
   public DrivetrainSubsystem() {
-
 
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
     pigeon.configMountPoseRoll(0);
@@ -342,7 +338,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public double getRoll() {
-    return pigeon.getRoll()+2;
+    return pigeon.getRoll() + 2;
   }
 
   public double getPitch() {
@@ -358,6 +354,5 @@ public class DrivetrainSubsystem extends SubsystemBase {
     double[] xyz = getGyroVelocityXYZ();
     return Units.degreesToRadians(xyz[1]);
   }
-
 
 }

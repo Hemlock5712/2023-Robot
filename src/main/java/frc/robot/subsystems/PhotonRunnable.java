@@ -24,20 +24,29 @@ import frc.robot.util.FieldConstants;
 public class PhotonRunnable implements Runnable {
 
   private final PhotonPoseEstimator photonPoseEstimator;
-  private final PhotonCamera photonCamera;
+  private final PhotonCamera rightCamera;
+  private final PhotonCamera leftCamera;
   private final AtomicReference<EstimatedRobotPose> atomicEstimatedRobotPose = new AtomicReference<EstimatedRobotPose>();
+  private int rightScore = 0;
+  private int leftScore = 0;
 
   public PhotonRunnable() {
-    this.photonCamera = new PhotonCamera("photonvision");
-    ;
+    this.rightCamera = new PhotonCamera("photonvision");
+    this.leftCamera = new PhotonCamera("leftCamera");
     PhotonPoseEstimator photonPoseEstimator = null;
     try {
       var layout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
       // PV estimates will always be blue, they'll get flipped by robot thread
       layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-      if (photonCamera != null) {
+      if (rightCamera != null) {
         photonPoseEstimator = new PhotonPoseEstimator(
-            layout, PoseStrategy.MULTI_TAG_PNP, photonCamera, ROBOT_TO_CAMERA);
+            layout, PoseStrategy.MULTI_TAG_PNP, rightCamera, ROBOT_TO_CAMERA);
+        photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      }
+      if (leftCamera != null) {
+        photonPoseEstimator = new PhotonPoseEstimator(
+            layout, PoseStrategy.MULTI_TAG_PNP, leftCamera, ROBOT_TO_CAMERA);
+        photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       }
     } catch (IOException e) {
       DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
@@ -49,30 +58,89 @@ public class PhotonRunnable implements Runnable {
   @Override
   public void run() {
     // Get AprilTag data
-    if (photonPoseEstimator != null && photonCamera != null) {
-      var photonResults = photonCamera.getLatestResult();
-      if (photonResults.hasTargets()
-          && (photonResults.targets.size() > 1
-              || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD)) {
-        photonPoseEstimator.update(photonResults).ifPresent(estimatedRobotPose -> {
+    if (photonPoseEstimator != null && rightCamera != null) {
+      var rightResults = rightCamera.getLatestResult();
+      var leftResults = leftCamera.getLatestResult();
+      rightScore = 0;
+      leftScore = 0;
+      if (rightResults.hasTargets()
+          && (rightResults.targets.size() > 1
+              || rightResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD)) {
+        photonPoseEstimator.update(rightResults).ifPresent(estimatedRobotPose -> {
           var estimatedPose = estimatedRobotPose.estimatedPose;
           // Make sure the measurement is on the field
           if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= FieldConstants.FIELD_LENGTH_METERS
               && estimatedPose.getY() > 0.0 && estimatedPose.getY() <= FieldConstants.FIELD_WIDTH_METERS) {
-            if (photonResults.targets.size() < 2) {
+            if (rightResults.targets.size() < 2) {
               for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
                 Transform3d bestTarget = target.getBestCameraToTarget();
                 double distance = Math.hypot(bestTarget.getX(), bestTarget.getY());
                 if (distance < 4) {
-                  atomicEstimatedRobotPose.set(estimatedRobotPose);
+                  rightScore = 1;
                 }
               }
             } else {
-              atomicEstimatedRobotPose.set(estimatedRobotPose);
+              rightScore = 2;
             }
           }
         });
       }
+
+      if (leftResults.hasTargets()
+          && (leftResults.targets.size() > 1
+              || leftResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD)) {
+        photonPoseEstimator.update(leftResults).ifPresent(estimatedRobotPose -> {
+          var estimatedPose = estimatedRobotPose.estimatedPose;
+          // Make sure the measurement is on the field
+          if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= FieldConstants.FIELD_LENGTH_METERS
+              && estimatedPose.getY() > 0.0 && estimatedPose.getY() <= FieldConstants.FIELD_WIDTH_METERS) {
+            if (leftResults.targets.size() < 2) {
+              for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
+                Transform3d bestTarget = target.getBestCameraToTarget();
+                double distance = Math.hypot(bestTarget.getX(), bestTarget.getY());
+                if (distance < 4) {
+                  leftScore = 1;
+                }
+              }
+            } else {
+              leftScore = 2;
+            }
+          }
+        });
+      }
+      if (leftScore > 0 || rightScore > 0) {
+        if (leftScore > rightScore) {
+          atomicEstimatedRobotPose.set(photonPoseEstimator.update(leftResults).get());
+        } else {
+          atomicEstimatedRobotPose.set(photonPoseEstimator.update(rightResults).get());
+        }
+      }
+
+      // if (rightResults.hasTargets()
+      // && (rightResults.targets.size() > 1
+      // || rightResults.targets.get(0).getPoseAmbiguity() <
+      // APRILTAG_AMBIGUITY_THRESHOLD)) {
+      // photonPoseEstimator.update(rightResults).ifPresent(estimatedRobotPose -> {
+      // var estimatedPose = estimatedRobotPose.estimatedPose;
+      // // Make sure the measurement is on the field
+      // if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <=
+      // FieldConstants.FIELD_LENGTH_METERS
+      // && estimatedPose.getY() > 0.0 && estimatedPose.getY() <=
+      // FieldConstants.FIELD_WIDTH_METERS) {
+      // if (rightResults.targets.size() < 2) {
+      // for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
+      // Transform3d bestTarget = target.getBestCameraToTarget();
+      // double distance = Math.hypot(bestTarget.getX(), bestTarget.getY());
+      // if (distance < 4) {
+      // atomicEstimatedRobotPose.set(estimatedRobotPose);
+      // }
+      // }
+      // } else {
+      // atomicEstimatedRobotPose.set(estimatedRobotPose);
+      // }
+      // }
+      // });
+      // }
     }
   }
 
