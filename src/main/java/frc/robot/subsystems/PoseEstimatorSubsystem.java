@@ -6,11 +6,13 @@ import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kRedAlli
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -144,7 +147,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       if (originPosition == kRedAllianceWallRightSide) {
         pose2d = flipAlliance(pose2d);
       }
-      poseEstimator.addVisionMeasurement(pose2d, rightCameraPose.timestampSeconds);
+      poseEstimator.addVisionMeasurement(pose2d, rightCameraPose.timestampSeconds,
+          confidenceCalculator(rightCameraPose));
     }
 
     var leftCameraPose = leftEstimator.grabLatestEstimatedPose();
@@ -154,7 +158,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       if (originPosition == kRedAllianceWallRightSide) {
         pose2d = flipAlliance(pose2d);
       }
-      poseEstimator.addVisionMeasurement(pose2d, leftCameraPose.timestampSeconds);
+      confidenceCalculator(leftCameraPose);
+      poseEstimator.addVisionMeasurement(pose2d, leftCameraPose.timestampSeconds, confidenceCalculator(leftCameraPose));
     }
 
     // Set the pose on the dashboard
@@ -226,4 +231,31 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     yValues.clear();
   }
 
+  private Matrix<N3, N1> confidenceCalculator(EstimatedRobotPose estimation) {
+    double smallestDistance = Double.POSITIVE_INFINITY;
+    for (var target : estimation.targetsUsed) {
+      var t3d = target.getBestCameraToTarget();
+      var distance = Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
+      if (distance < smallestDistance)
+        smallestDistance = distance;
+    }
+    double poseAmbiguityFactor = estimation.targetsUsed.size() != 1
+        ? 1
+        : Math.max(
+            1,
+            (estimation.targetsUsed.get(0).getPoseAmbiguity()
+                + Constants.VisionConstants.POSE_AMBIGUITY_SHIFTER)
+                * Constants.VisionConstants.POSE_AMBIGUITY_MULTIPLIER);
+    double confidenceMultiplier = Math.max(
+        1,
+        (Math.max(
+            1,
+            Math.max(0, smallestDistance - Constants.VisionConstants.NOISY_DISTANCE_METERS)
+                * Constants.VisionConstants.DISTANCE_WEIGHT)
+            * poseAmbiguityFactor)
+            / (1
+                + ((estimation.targetsUsed.size() - 1) * Constants.VisionConstants.TAG_PRESENCE_WEIGHT)));
+
+    return Constants.VisionConstants.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
+  }
 }
