@@ -8,6 +8,8 @@ import static edu.wpi.first.math.util.Units.degreesToRadians;
 import static java.lang.Math.PI;
 import static java.lang.Math.toRadians;
 
+import com.pathplanner.lib.auto.PIDConstants;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -19,6 +21,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.swerve.ModuleConfiguration;
+import frc.robot.util.ArmSetpoint;
+import frc.robot.util.XYACalulator;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -42,40 +46,36 @@ public final class Constants {
 
     /**
      * The left-to-right distance between the drivetrain wheels
-     *
+     * <p>
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.6;
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.57785;
     /**
      * The front-to-back distance between the drivetrain wheels.
-     *
+     * <p>
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.749;
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.57785;
 
-    // Pick the longest side of the robot for this and measure outside bumper to
-    // outside bumper
-    public static final double ROBOT_LENGTH_WIDTH = 0.749;
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2;
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 9;
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(145.19 + 180);
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 1;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 2;
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 9;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(8.7 + 180);
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 4;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 10;
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(297.42 + 180);
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 3;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 4;
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 10;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(161.5 + 180);
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 5;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(2.54 + 180);
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 6;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 11;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(88.41 + 180);
-
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 7;
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 8;
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 12;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(45.4 + 180);
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 7;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 8;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 12;
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(11.65 + 180);
 
     public static final int PIGEON_ID = 13;
 
@@ -110,11 +110,17 @@ public final class Constants {
         // Back right
         new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
-    /** Voltage needed to overcome the motor’s static friction. kS */
+    /**
+     * Voltage needed to overcome the motor’s static friction. kS
+     */
     public static final double DRIVE_kS = 0.6716;
-    /** Voltage needed to hold (or "cruise") at a given constant velocity. kV */
+    /**
+     * Voltage needed to hold (or "cruise") at a given constant velocity. kV
+     */
     public static final double DRIVE_kV = 2.5913;
-    /** Voltage needed to induce a given acceleration in the motor shaft. kA */
+    /**
+     * Voltage needed to induce a given acceleration in the motor shaft. kA
+     */
     public static final double DRIVE_kA = 0.19321;
 
     public static final double STEER_kP = 0.2;
@@ -161,8 +167,17 @@ public final class Constants {
      * robot.
      */
     public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(
-        new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(13.5), 0.0), new Rotation3d());
+        // Left Camera
+        // new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(-6.5615),
+        // Units.inchesToMeters(-30.0)),
+        // new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(-45)));
+        // Right Camera
+        new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(6.5615), Units.inchesToMeters(-30.0)),
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(45)));
     public static final Transform3d ROBOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
+
+    /** Minimum target ambiguity. Targets with higher ambiguity will be discarded */
+    public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
   }
 
   public static class AutoConstants {
@@ -179,6 +194,9 @@ public final class Constants {
     public static double Y_kI = 0.0;
     public static double Y_kD = 0.0;
 
+    public static PIDConstants translationConstants = new PIDConstants(X_kP, X_kI, X_kD);
+    public static PIDConstants rotationConstants = new PIDConstants(THETA_kP, THETA_kI, THETA_kD);
+
     public static PIDController translationController = new PIDController(Constants.AutoConstants.X_kP,
         Constants.AutoConstants.X_kI, Constants.AutoConstants.X_kD);
     public static PIDController strafeController = new PIDController(Constants.AutoConstants.Y_kP,
@@ -191,6 +209,173 @@ public final class Constants {
   public static class PneumaticsConstants {
     public static final double MIN_PRESSURE = 80;
     public static final double MAX_PRESSURE = 120;
+  }
+
+  public static class ArmConstants {
+    /**
+     * CAN ID of the arm angle encoder (at the pivot point)
+     */
+    public static final int ARM_ANGLE_ENCODER_ID = 20;
+    /**
+     * CAN ID of the front elevator motor
+     */
+    public static final int ELEVATOR_FRONT_FALCON_ID = 26;
+    /**
+     * CAN ID of the back elevator motor
+     */
+    public static final int ELEVATOR_BACK_FALCON_ID = 23;
+    /**
+     * Radius of the spool in meters
+     */
+    public static final double DRUM_RADIUS = Units.inchesToMeters(5.0 / 8.0);
+    /**
+     * Mass of the arm in kg
+     */
+    public static final double ARM_MASS = Units.lbsToKilograms(65);
+    /**
+     * Maximum speed of the arm in m/s
+     * <p>
+     * This should be tuned later once we determine how fast we want it to move
+     */
+    public static final double MAX_SPEED = 0.05;
+    /**
+     * Maximum acceleration of the arm in m/s^2
+     * <p>
+     * This should be tuned later once we determine how fast we want it to move
+     */
+    public static final double MAX_ACCELERATION = 0.05;
+    /**
+     * Gear ratio of the elevator from the motors to the spool
+     */
+    public static final double ELEVATOR_GEARING = 3.80;
+    /**
+     * Height of the pivot point from the ground.
+     */
+    public static final double PIVOT_POINT_HEIGHT = Units.inchesToMeters(21);
+    /**
+     * How far out the mount point is from the pivot point.
+     */
+    public static final double MOUNT_POINT_DISTANCE_ON_ARM = Units.inchesToMeters(21);
+    /**
+     * Angle offset of CANCoder relative to the arm. This is the angle between the
+     * arm and the encoder's zero position.
+     * <p>
+     * Should be set to 0 when the arm is parallel to the ground.
+     */
+    public static final double ARM_ANGLE_ABSOLUTE_OFFSET = -155.4785;
+    public static final double MAX_ARM_LENGTH = Units.inchesToMeters(40);
+    public static final double MIN_ARM_LENGTH = Units.inchesToMeters(10);
+    /**
+     * Tolerance for when the elevator considers itself to be at the target point
+     */
+    public static final double AT_TARGET_TOLERANCE = Units.inchesToMeters(2);
+  }
+
+  public static class ExtensionConstants {
+    /**
+     * CAN ID of the extension encoder
+     */
+    public static final int EXTENSION_FALCON_ID = 24;
+    /**
+     * Gear ratio of the extension from the motor to the spool
+     */
+    public static final double EXTENSION_GEARING = 1;
+    /**
+     * Mass of the extension in kg
+     */
+    public static final double EXTENSION_MASS = Units.lbsToKilograms(66);
+    /**
+     * Maximum speed of the extension in m/s
+     * <p>
+     * This should be tuned later once we determine how fast we want it to move
+     */
+    public static final double MAX_SPEED = 0.2;
+    /**
+     * Maximum acceleration of the extension in m/s^2
+     * <p>
+     * This should be tuned later once we determine how fast we want it to move
+     */
+    public static final double MAX_ACCELERATION = 0.2;
+    /**
+     * Maximum length of the extension in meters
+     */
+    public static final double EXTENSION_LENGTH = Units.inchesToMeters(48);
+    /**
+     * Radius of the spool in meters
+     */
+    public static final double SPOOL_RADIUS = Units.inchesToMeters(1);
+
+    /**
+     * Circumference of the spool in meters
+     */
+    public static final double SPOOL_CIRCUMFERENCE = 2 * Math.PI * SPOOL_RADIUS;
+    /**
+     * Tolerance for when the extension considers itself to be at the target point
+     */
+    public static final double AT_TARGET_TOLERANCE = Units.inchesToMeters(2);
+    public static final double MAX_VOLTAGE = 5.0;
+    public static final double MAX_EXTENSION = Units.inchesToMeters(80);
+    public static final double MIN_EXTENSION = .2;
+  }
+
+  public static class WristConstants {
+    public static final int MOTOR_ID = 25;
+    public static final int TICKS_PER_REVOLUTION = 42;
+    public static final double GEAR_RATIO = 49;
+    public static final int ENCODER_ID = 40;
+  }
+
+  public static class IntakeConstants {
+    public static final int MOTOR_ID = 33;
+    public static final int TICKS_PER_REVOLUTION = 4096;
+    public static final double GEAR_RATIO = 49;
+  }
+
+  // These are all very arbitrary and need to be tuned
+  public static class ArmSetpoints {
+    /**
+     * Put arm on ground to pick up a cone that's lying down
+     */
+    public static final ArmSetpoint GROUND_CUBE_PICKUP = new ArmSetpoint(-12, 0, -40);
+    /**
+     * Put arm above ground to pick up a cone that's standing up
+     */
+    public static final ArmSetpoint ABOVE_CONE_PICKUP = new ArmSetpoint(0, 0, -45);
+    /**
+     * Put arm down onto the cone that's standing up to pick it up
+     */
+    public static final ArmSetpoint ABOVE_CONE_PICKUP_2 = new ArmSetpoint(-15, Units.inchesToMeters(10), -25);
+    /**
+     * Put arm into a safe position for transit across the field
+     */
+    // public static final ArmSetpoint TRANSIT = XYACalulator.Calulator(0, 0, 90);
+    public static final ArmSetpoint TRANSIT = new ArmSetpoint(0, -0.06, 90);
+    /**
+     * Extend the arm out to place cone on the high peg
+     */
+    public static final ArmSetpoint HIGH_PEG = XYACalulator.Calulator(18, 34, -20);
+    /**
+     * Extend the arm out to place cone on the mid peg
+     */
+    public static final ArmSetpoint MID_PEG = XYACalulator.Calulator(-1, 17, -20);
+    /**
+     * Extend the arm out to place cone on the high peg
+     */
+    public static final ArmSetpoint HIGH_CUBE = XYACalulator.Calulator(18, 28, -20);
+    /**
+     * Extend the arm out to place cone on the mid peg
+     */
+    public static final ArmSetpoint MID_CUBE = XYACalulator.Calulator(-1, 14, -20);
+    /**
+     * Extend the arm out to place on the hybrid node
+     */
+    public static final ArmSetpoint HYBRID_NODE = XYACalulator.Calulator(0, 0, -45);
+    /**
+     * Put arm out upside down to pick up a cone direct from the single substation
+     */
+    // public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = XYACalulator.Calulator(-.2, 2, 34);
+    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, -.06, 34);
+    public static final ArmSetpoint STARTING_CONFIG = new ArmSetpoint(71, 0, -106);
   }
 
 }

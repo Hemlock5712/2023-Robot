@@ -6,7 +6,6 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.robot.subsystems.PoseEstimatorSubsystem;
 
 public class Node {
   double x, y;
@@ -24,13 +23,6 @@ public class Node {
     this.x = x;
     this.y = y;
     this.holonomicRotation = holonomicRotation;
-    this.neighbors = new ArrayList<>();
-  }
-
-  public Node(PoseEstimatorSubsystem p) {
-    this.x = p.getCurrentPose().getX();
-    this.y = p.getCurrentPose().getY();
-    this.holonomicRotation = p.getCurrentPose().getRotation();
     this.neighbors = new ArrayList<>();
   }
 
@@ -71,10 +63,5 @@ public class Node {
   @Override
   public String toString() {
     return "X Position: " + getX() + "\t" + "Y Position: " + getY();
-  }
-
-  @Override
-  public Node clone(){
-    return new Node(this.x,this.y, this.holonomicRotation);
   }
 }

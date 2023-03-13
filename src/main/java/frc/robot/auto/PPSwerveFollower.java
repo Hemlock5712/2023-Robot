@@ -48,6 +48,7 @@ public class PPSwerveFollower extends CommandBase {
     if (resetOdom)
       poseEstimatorSystem.setCurrentPose(alliancePath.getInitialHolonomicPose());
     poseEstimatorSystem.addTrajectory(alliancePath);
+    
     controllerCommand = DrivetrainSubsystem.followTrajectory(driveSystem, poseEstimatorSystem, alliancePath);
     controllerCommand.initialize();
   }

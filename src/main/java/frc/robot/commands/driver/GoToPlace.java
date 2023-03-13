@@ -8,15 +8,17 @@ import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commands.PPAStar;
+import frc.robot.commands.operator.Position;
 import frc.robot.pathfind.Node;
 import frc.robot.pathfind.Obstacle;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.util.FieldConstants;
-import frc.robot.util.TargetPosition;
+import frc.robot.util.enums.TargetPosition;
 
 public class GoToPlace extends CommandBase {
   DrivetrainSubsystem drivetrain;
@@ -39,9 +41,11 @@ public class GoToPlace extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    TargetPosition target = drivetrain.getTargetPosition();
-    Node targetPosition = new Node(FieldConstants.PlacementPositions.get(target));
-    pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap);
+    TargetPosition target = Position.getPlacementPosition().getPosition();
+    Pose2d posePosition = FieldConstants.PlacementPositions.get(target);
+    Node targetPosition = new Node(posePosition);
+    pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap,
+        false);
     pathfindCommand.schedule();
   }
 
@@ -59,6 +63,6 @@ public class GoToPlace extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return pathfindCommand.isFinished();
   }
 }

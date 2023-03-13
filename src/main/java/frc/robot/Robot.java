@@ -38,6 +38,9 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
+
+    
+
     Logger.getInstance().recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
     if (isReal()) {
@@ -129,6 +132,7 @@ public class Robot extends LoggedRobot {
       autonomousCommand.cancel();
     }
     checkDriverStationUpdate();
+    robotContainer.startTeleopPosCommand();
   }
 
   /** This function is called periodically during operator control. */
