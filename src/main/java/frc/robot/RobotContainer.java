@@ -34,10 +34,15 @@ import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.balance.AutoBalance;
 import frc.robot.commands.balance.Balance;
+import frc.robot.commands.driver.GoToLoadWithArm;
+import frc.robot.commands.driver.GoToPlaceWithArm;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
+import frc.robot.commands.operator.NextNode;
 import frc.robot.commands.operator.SingleSubstation;
+import frc.robot.pathfind.MapCreator;
+import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtensionSubsystem;
@@ -46,7 +51,9 @@ import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.util.ArmSetpoint;
+import frc.robot.util.FieldConstants;
 import frc.robot.util.PiecePicker;
+import frc.robot.util.enums.Direction;
 import frc.robot.util.enums.GamePiece;
 
 /**
@@ -76,11 +83,10 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
 
-  // final List<Obstacle> standardObstacles = FieldConstants.standardObstacles;
   // final List<Obstacle> cablePath = FieldConstants.cablePath;
 
-  // public MapCreator map = new MapCreator();
-  // public VisGraph standardMap = new VisGraph();
+  public MapCreator map = new MapCreator();
+  public VisGraph standardMap = new VisGraph();
   // public VisGraph cableMap = new VisGraph();
 
   private PneumaticHub pch = new PneumaticHub(1);
@@ -151,7 +157,7 @@ public class RobotContainer {
     // Set up the default command for the drivetrain.
     drivetrainSubsystem.setDefaultCommand(fieldOrientedDriveCommand);
 
-    // map.createGraph(standardMap, standardObstacles);
+    map.createGraph(standardMap, FieldConstants.standardObstacles);
     // map.createGraph(cableMap, cablePath);
 
     intakeSubsystem.setDefaultCommand(new HoldIntakeCommand(intakeSubsystem));
@@ -160,9 +166,10 @@ public class RobotContainer {
         makeAutoBuilderCommand("SingleWithAutoBalance", new PathConstraints(1.5, 1)));
     autoChooser.setDefaultOption("Barrier Side 2 Cube",
         makeAutoBuilderCommand("Center2GamePiece", new PathConstraints(2.5, 2)));
-    autoChooser.addOption("Barrier Place 1 Pickup 1 Balance", makeAutoBuilderCommand("pickupBalance", new PathConstraints(2.5, 2)));
+    autoChooser.addOption("Barrier Place 1 Pickup 1 Balance",
+        makeAutoBuilderCommand("pickupBalance", new PathConstraints(2.5, 2)));
     autoChooser.addOption("Wall Side 2 Cube", makeAutoBuilderCommand("Wall2GamePiece", new PathConstraints(2.5, 2)));
-    
+
     autoChooser.addOption("Do Nothing", Commands.none());
 
     SmartDashboard.putData(autoChooser);
@@ -235,10 +242,6 @@ public class RobotContainer {
 
     controller.back().whileTrue(new Balance(drivetrainSubsystem, poseEstimator));
 
-    // controller2.pov(0).whileTrue(new NextNode(Direction.Up));
-    // controller2.pov(90).whileTrue(new NextNode(Direction.Right));
-    // controller2.pov(180).whileTrue(new NextNode(Direction.Down));
-    // controller2.pov(270).whileTrue(new NextNode(Direction.Left));
     // controller2.leftTrigger(0.5).whileTrue(
     // new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new
     // ArmSetpoint(30, 0, 45)).andThen(
@@ -258,6 +261,20 @@ public class RobotContainer {
 
     controller2.back().and(controller2.start()).whileTrue(new MoveToSetpoint(elevatorSubsystem, extensionSubsystem,
         wristSubsystem, Constants.ArmSetpoints.STARTING_CONFIG));
+
+    // Drive to Point stuff beyond this point
+    controller2.pov(0).whileTrue(new NextNode(Direction.Up));
+    controller2.pov(90).whileTrue(new NextNode(Direction.Right));
+    controller2.pov(180).whileTrue(new NextNode(Direction.Down));
+    controller2.pov(270).whileTrue(new NextNode(Direction.Left));
+
+    controller.a()
+        .whileTrue(new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 1),
+            FieldConstants.standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem));
+    controller.y()
+        .whileTrue(new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 1),
+            FieldConstants.standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem,
+            intakeSubsystem));
   }
 
   public void startTeleopPosCommand() {
@@ -289,10 +306,10 @@ public class RobotContainer {
 
   private CommandBase makeAutoBuilderCommand(String pathName, PathConstraints constraints) {
     // return new PPAutoBuilder(drivetrainSubsystem, poseEstimator, pathName,
-    //     constraints,
-    //     true, eventMap);
+    // constraints,
+    // true, eventMap);
     var path = PathPlanner.loadPath(pathName, constraints);
-    
+
     poseEstimator.addTrajectory(path);
     // controllerCommand = DrivetrainSubsystem.followTrajectory(driveSystem,
     // poseEstimatorSystem, alliancePath);
