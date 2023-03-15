@@ -269,10 +269,10 @@ public class RobotContainer {
     controller2.pov(270).whileTrue(new NextNode(Direction.Left));
 
     controller.a()
-        .whileTrue(new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 1),
+        .whileTrue(new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(3, 2),
             FieldConstants.standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem));
     controller.y()
-        .whileTrue(new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2, 1),
+        .whileTrue(new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(3, 2),
             FieldConstants.standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem,
             intakeSubsystem));
   }
