@@ -182,7 +182,7 @@ public final class Constants {
     public static final Transform3d LEFT_CAMERA_TO_ROBOT = new Transform3d(
         new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(-6.5615), Units.inchesToMeters(-30.0)),
         new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(-45)));
-    public static final Transform3d LEFT_TO_RIGHT_CAMERA = RIGHT_CAMERA_TO_ROBOT.inverse();
+    public static final Transform3d ROBOT_TO_LEFT_CAMERA = LEFT_CAMERA_TO_ROBOT.inverse();
 
     /** Minimum target ambiguity. Targets with higher ambiguity will be discarded */
     public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;

@@ -65,10 +65,10 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   private final Supplier<SwerveModulePosition[]> modulePositionSupplier;
   private final SwerveDrivePoseEstimator poseEstimator;
   private final Field2d field2d = new Field2d();
-  private final PhotonRunnable rightEstimator = new PhotonRunnable(new PhotonCamera("photonvision"),
-      Constants.VisionConstants.RIGHT_CAMERA_TO_ROBOT);
+  private final PhotonRunnable rightEstimator = new PhotonRunnable(new PhotonCamera("rightCamera"),
+      Constants.VisionConstants.ROBOT_TO_RIGHT_CAMERA);
   private final PhotonRunnable leftEstimator = new PhotonRunnable(new PhotonCamera("leftCamera"),
-      Constants.VisionConstants.LEFT_CAMERA_TO_ROBOT);
+      Constants.VisionConstants.ROBOT_TO_LEFT_CAMERA);
 
   private final Notifier rightNotifier = new Notifier(rightEstimator);
   private final Notifier leftNotifier = new Notifier(leftEstimator);
