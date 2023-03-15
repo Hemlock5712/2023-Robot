@@ -219,12 +219,9 @@ public final class Constants {
     public static PIDConstants translationConstants = new PIDConstants(X_kP, X_kI, X_kD);
     public static PIDConstants rotationConstants = new PIDConstants(THETA_kP, THETA_kI, THETA_kD);
 
-    public static PIDController translationController = new PIDController(Constants.AutoConstants.X_kP,
-        Constants.AutoConstants.X_kI, Constants.AutoConstants.X_kD);
-    public static PIDController strafeController = new PIDController(Constants.AutoConstants.Y_kP,
-        Constants.AutoConstants.Y_kI, Constants.AutoConstants.Y_kD);
-    public static PIDController thetaController = new PIDController(Constants.AutoConstants.THETA_kP,
-        Constants.AutoConstants.THETA_kI, Constants.AutoConstants.THETA_kD);
+    public static PIDController translationController = new PIDController(X_kP, X_kI, X_kD);
+    public static PIDController strafeController = new PIDController(Y_kP, Y_kI, Y_kD);
+    public static PIDController thetaController = new PIDController(THETA_kP, THETA_kI, THETA_kD);
 
   }
 

@@ -9,7 +9,6 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -58,17 +57,7 @@ public class PhotonRunnable implements Runnable {
           // Make sure the measurement is on the field
           if (estimatedPose.getX() > 0.0 && estimatedPose.getX() <= FieldConstants.FIELD_LENGTH_METERS
               && estimatedPose.getY() > 0.0 && estimatedPose.getY() <= FieldConstants.FIELD_WIDTH_METERS) {
-            if (photonResults.targets.size() < 2) {
-              for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
-                Transform3d bestTarget = target.getBestCameraToTarget();
-                double distance = Math.hypot(bestTarget.getX(), bestTarget.getY());
-                if (distance < 4) {
-                  atomicEstimatedRobotPose.set(estimatedRobotPose);
-                }
-              }
-            } else {
-              atomicEstimatedRobotPose.set(estimatedRobotPose);
-            }
+            atomicEstimatedRobotPose.set(estimatedRobotPose);
           }
         });
       }

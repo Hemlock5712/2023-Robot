@@ -168,7 +168,7 @@ public class PPAStar extends CommandBase {
     double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
 
-    int midpoints = (int) Math.floor(distance / 2);
+    int midpoints = (int) Math.floor(distance / 1);
 
     Rotation2d heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
