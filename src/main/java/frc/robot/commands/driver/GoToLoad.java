@@ -40,7 +40,7 @@ public class GoToLoad extends CommandBase {
   @Override
   public void initialize() {
     // 7.08
-    Node targetPosition = new Node(new Pose2d(14.5, 7, Rotation2d.fromDegrees(90)));
+    Node targetPosition = new Node(new Pose2d(14.5, 6.75, Rotation2d.fromDegrees(90)));
     pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap,
         true);
     pathfindCommand.schedule();

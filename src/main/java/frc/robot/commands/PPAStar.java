@@ -33,7 +33,7 @@ public class PPAStar extends CommandBase {
   private final List<Obstacle> obstacles;
   private VisGraph AStarMap;
   private boolean singleSubstation;
-  private Rotation2d SINGLE_SUBSTATION_ANGLE = Rotation2d.fromDegrees(0);
+  private Rotation2d SINGLE_SUBSTATION_ANGLE = Rotation2d.fromDegrees(30);
   private Rotation2d FACE_TARGETS_OFFSET = Rotation2d.fromDegrees(180);
   private Rotation2d FACE_TARGETS_SS = Rotation2d.fromDegrees(180);
 
@@ -124,6 +124,9 @@ public class PPAStar extends CommandBase {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
         Rotation2d tempHol = FACE_TARGETS_OFFSET;
+        if (singleSubstation) {
+          finalHol = SINGLE_SUBSTATION_ANGLE;
+        }
         if (fullPath.get(i).getX() <= 5.40 + 0.1) {
           tempHol = FACE_TARGETS_SS;
         }
