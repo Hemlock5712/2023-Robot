@@ -226,7 +226,7 @@ public final class Constants {
   }
 
   public static class PneumaticsConstants {
-    public static final double MIN_PRESSURE = 80;
+    public static final double MIN_PRESSURE = 90;
     public static final double MAX_PRESSURE = 120;
   }
 
