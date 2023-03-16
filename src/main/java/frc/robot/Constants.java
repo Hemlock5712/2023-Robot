@@ -117,21 +117,21 @@ public final class Constants {
     /**
      * Voltage needed to overcome the motor’s static friction. kS
      */
-    public static final double DRIVE_kS = 0.6716;
+    public static final double DRIVE_kS = 0.18;
     /**
      * Voltage needed to hold (or "cruise") at a given constant velocity. kV
      */
-    public static final double DRIVE_kV = 2.5913;
+    public static final double DRIVE_kV = 2.3;
     /**
      * Voltage needed to induce a given acceleration in the motor shaft. kA
      */
-    public static final double DRIVE_kA = 0.19321;
+    public static final double DRIVE_kA = 0.52878;
 
     public static final double STEER_kP = 0.2;
-    public static final double STEER_kI = 0.0;
-    public static final double STEER_kD = 0.1;
+    public static final double STEER_kI = 0.001;
+    public static final double STEER_kD = 0.0;
 
-    public static final double DRIVE_kP = 0.02;
+    public static final double DRIVE_kP = 0.04;
     public static final double DRIVE_kI = 0.0;
     public static final double DRIVE_kD = 0.0;
 
@@ -145,8 +145,8 @@ public final class Constants {
     public static final double Y_RATE_LIMIT = 6.0;
     public static final double ROTATION_RATE_LIMIT = 5.0 * PI;
 
-    public static final double HEADING_MAX_VELOCITY = PI * 2;
-    public static final double HEADING_MAX_ACCELERATION = PI * 2;
+    public static final double HEADING_MAX_VELOCITY = PI * 4;
+    public static final double HEADING_MAX_ACCELERATION = PI * 16;
 
     public static final double HEADING_kP = 2.0;
     public static final double HEADING_kI = 0.0;
@@ -204,7 +204,7 @@ public final class Constants {
 
   public static class AutoConstants {
     public static TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(PI, 2 / PI);
-    public static double THETA_kP = 2;
+    public static double THETA_kP = 2.5;
     public static double THETA_kI = 0.0;
     public static double THETA_kD = 0.0;
 
