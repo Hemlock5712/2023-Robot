@@ -192,7 +192,7 @@ public final class Constants {
     public static final double DISTANCE_WEIGHT = 7;
     public static final int TAG_PRESENCE_WEIGHT = 10;
 
-    public static Matrix<N3, N1> VISION_MEASUREMENT_STANDARD_DEVIATIONS = Matrix.mat(Nat.N3(), Nat.N1())
+    public static final Matrix<N3, N1> VISION_MEASUREMENT_STANDARD_DEVIATIONS = Matrix.mat(Nat.N3(), Nat.N1())
         .fill(
             // if these numbers are less than one, multiplying will do bad things
             1, // x
