@@ -30,13 +30,13 @@ public class MoveElevatorAngle extends CommandBase {
   @Override
   public void execute() {
     elevator.setAngle(angle);
-    //System.out.println("Setting angle" + angle);
+    // System.out.println("Setting angle" + angle);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //System.out.println("Finished with MoveElevatorAngle");
+    // System.out.println("Finished with MoveElevatorAngle");
   }
 
   // Returns true when the command should end.

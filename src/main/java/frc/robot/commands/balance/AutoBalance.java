@@ -97,7 +97,7 @@ public class AutoBalance extends CommandBase {
     omegaController.setTolerance(Units.degreesToRadians(3));
     omegaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    addRequirements(driveSystem, poseEstimatorSystem);
+    addRequirements(driveSystem);
   }
 
   private double getDistanceFromX() {

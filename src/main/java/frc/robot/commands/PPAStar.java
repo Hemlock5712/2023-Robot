@@ -33,7 +33,7 @@ public class PPAStar extends CommandBase {
   private final List<Obstacle> obstacles;
   private VisGraph AStarMap;
   private boolean singleSubstation;
-  private Rotation2d SINGLE_SUBSTATION_ANGLE = Rotation2d.fromDegrees(30);
+  private Rotation2d SINGLE_SUBSTATION_ANGLE = Rotation2d.fromDegrees(0);
   private Rotation2d FACE_TARGETS_OFFSET = Rotation2d.fromDegrees(180);
   private Rotation2d FACE_TARGETS_SS = Rotation2d.fromDegrees(180);
 
@@ -51,7 +51,7 @@ public class PPAStar extends CommandBase {
       Node endNode = AStarMap.getNode(i);
       AStarMap.addEdge(new Edge(finalPosition, endNode), obstacles);
     }
-    addRequirements(driveSystem, poseEstimatorSystem);
+    addRequirements(driveSystem);
   }
 
   // ----------------------------------------------------------------------------
