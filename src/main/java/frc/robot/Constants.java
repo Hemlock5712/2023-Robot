@@ -117,7 +117,7 @@ public final class Constants {
     /**
      * Voltage needed to overcome the motor’s static friction. kS
      */
-    public static final double DRIVE_kS = 0.18;
+    public static final double DRIVE_kS = 0.6716;
     /**
      * Voltage needed to hold (or "cruise") at a given constant velocity. kV
      */

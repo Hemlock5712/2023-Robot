@@ -93,42 +93,67 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-  Map<String, Command> eventMap = Map.of(
-      "extendHigh",
-      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_CUBE)
-          .alongWith(new RunIntakeCommand(intakeSubsystem))
-          .withTimeout(1.5),
-      "extendMid",
-      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.MID_CUBE)
-          .withTimeout(1),
-      "outtake",
-      new WaitCommand(0.5).deadlineWith(new ReverseIntakeCommand(intakeSubsystem)),
-      "extendIn",
-      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
-          .withTimeout(0.5).andThen(
-              new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)
-                  .withTimeout(0.5)),
-      // "autoBalance",
-      // new AutoBalance(drivetrainSubsystem, poseEstimator));
-      "autoBalance",
-      new AutoBalance(drivetrainSubsystem, poseEstimator),
-      "newAutoBalance",
-      new Balance(drivetrainSubsystem, poseEstimator),
-      "goToIntakeMode",
-      new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-          Constants.ArmSetpoints.GROUND_CUBE_PICKUP),
-      "startIntake",
-      new WaitCommand(1.5).deadlineWith(new RunIntakeCommand(intakeSubsystem)),
-      "cone",
-      new InstantCommand(() -> {
-        PiecePicker.toggle(false);
-        ledSubsystem.setGamePiece(GamePiece.CONE);
-      }),
-      "cube",
-      new InstantCommand(() -> {
-        PiecePicker.toggle(true);
-        ledSubsystem.setGamePiece(GamePiece.CUBE);
-      }));
+  Map<String, Command> eventMap = Map.ofEntries(
+      Map.entry(
+          "cubeHigh",
+          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_CUBE)
+              .alongWith(new RunIntakeCommand(intakeSubsystem))
+              .withTimeout(1)),
+      Map.entry(
+          "cubeMid",
+          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.MID_CUBE)
+              .withTimeout(1)),
+      Map.entry(
+          "extendLow",
+          new MoveToSetpoint(elevatorSubsystem,
+              extensionSubsystem, wristSubsystem,
+              Constants.ArmSetpoints.HYBRID_NODE)),
+      Map.entry(
+          "coneHigh",
+          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_PEG)
+              .alongWith(new RunIntakeCommand(intakeSubsystem))
+              .withTimeout(1)),
+      Map.entry(
+          "coneMid",
+          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_PEG)
+              .alongWith(new RunIntakeCommand(intakeSubsystem))
+              .withTimeout(1)),
+      Map.entry(
+          "outtake",
+          new WaitCommand(0.25).deadlineWith(new ReverseIntakeCommand(intakeSubsystem))),
+      Map.entry(
+          "extendIn",
+          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
+              .withTimeout(0.5)),
+      Map.entry(
+          "transit",
+          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)
+              .withTimeout(0.1)),
+      Map.entry(
+          "autoBalance",
+          new AutoBalance(drivetrainSubsystem, poseEstimator)),
+      Map.entry(
+          "newAutoBalance",
+          new Balance(drivetrainSubsystem, poseEstimator)),
+      Map.entry(
+          "goToIntakeMode",
+          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+              Constants.ArmSetpoints.GROUND_CUBE_PICKUP)),
+      Map.entry(
+          "startIntake",
+          new WaitCommand(1.5).deadlineWith(new RunIntakeCommand(intakeSubsystem))),
+      Map.entry(
+          "cone",
+          new InstantCommand(() -> {
+            PiecePicker.toggle(false);
+            ledSubsystem.setGamePiece(GamePiece.CONE);
+          })),
+      Map.entry(
+          "cube",
+          new InstantCommand(() -> {
+            PiecePicker.toggle(true);
+            ledSubsystem.setGamePiece(GamePiece.CUBE);
+          })));
 
   // private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new
   // FieldHeadingDriveCommand(
@@ -164,12 +189,15 @@ public class RobotContainer {
 
     autoChooser.addOption("Center With Balance",
         makeAutoBuilderCommand("SingleWithAutoBalance", new PathConstraints(1.5, 1)));
-    autoChooser.setDefaultOption("Barrier Side 2 Cube",
-        makeAutoBuilderCommand("Center2GamePiece", new PathConstraints(2.5, 2)));
+    // autoChooser.setDefaultOption("Barrier Side 2 Cube",
+    // makeAutoBuilderCommand("Center2GamePiece", new PathConstraints(2.5, 2)));
     autoChooser.addOption("Barrier Place 1 Pickup 1 Balance",
         makeAutoBuilderCommand("pickupBalance", new PathConstraints(2.5, 2)));
     autoChooser.addOption("Wall Side 2 Cube", makeAutoBuilderCommand("Wall2GamePiece", new PathConstraints(2.5, 2)));
-
+    // autoChooser.setDefaultOption("3 Cube",
+    // makeAutoBuilderCommand("2Cube1Cone", new PathConstraints(3, 3)));
+    autoChooser.setDefaultOption("3 Cube",
+        makeAutoBuilderCommand("3Cube", new PathConstraints(3, 3)));
     autoChooser.addOption("Do Nothing", Commands.none());
 
     SmartDashboard.putData(autoChooser);
@@ -305,9 +333,6 @@ public class RobotContainer {
   }
 
   private CommandBase makeAutoBuilderCommand(String pathName, PathConstraints constraints) {
-    // return new PPAutoBuilder(drivetrainSubsystem, poseEstimator, pathName,
-    // constraints,
-    // true, eventMap);
     var path = PathPlanner.loadPath(pathName, constraints);
 
     poseEstimator.addTrajectory(path);
