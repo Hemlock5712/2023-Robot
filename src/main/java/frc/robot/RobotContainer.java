@@ -34,8 +34,8 @@ import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.balance.AutoBalance;
 import frc.robot.commands.balance.Balance;
+import frc.robot.commands.balance.NewBalance;
 import frc.robot.commands.driver.GoToLoadWithArm;
-import frc.robot.commands.driver.GoToPlaceWithArm;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
@@ -296,9 +296,13 @@ public class RobotContainer {
     controller2.pov(180).whileTrue(new NextNode(Direction.Down));
     controller2.pov(270).whileTrue(new NextNode(Direction.Left));
 
-    controller.a()
-        .whileTrue(new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2.5, 2),
-            FieldConstants.standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem));
+    // controller.a()
+    // .whileTrue(new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new
+    // PathConstraints(2.5, 2),
+    // FieldConstants.standardObstacles, standardMap, extensionSubsystem,
+    // elevatorSubsystem, wristSubsystem));
+
+    controller.a().whileTrue(new NewBalance(drivetrainSubsystem, poseEstimator));
     controller.y()
         .whileTrue(new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2.5, 2),
             FieldConstants.standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem,
