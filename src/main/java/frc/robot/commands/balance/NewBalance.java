@@ -20,9 +20,6 @@ public class NewBalance extends CommandBase {
     this.drivetrain = d;
     this.poseEstimatorSystem = p;
 
-    state = 0;
-    debounceCount = 0;
-
     /**********
      * CONFIG *
      **********/
@@ -35,7 +32,7 @@ public class NewBalance extends CommandBase {
     robotSpeedSlow = 0.3;
 
     // Angle where the robot knows it is on the charge station, default = 13.0
-    onChargeStationDegree = 13.0;
+    onChargeStationDegree = 10.0;
 
     // Angle where the robot can assume it is level on the charging station
     // Used for exiting the drive forward sequence as well as for auto balancing,
@@ -86,15 +83,27 @@ public class NewBalance extends CommandBase {
         if (getTilt() > onChargeStationDegree) {
           debounceCount++;
         }
+        if (getTilt() < -onChargeStationDegree) {
+          debounceCount++;
+        }
         if (debounceCount > secondsToTicks(debounceTime)) {
           state = 1;
           debounceCount = 0;
+          if (getTilt() < 0) {
+            return -robotSpeedSlow;
+          }
           return robotSpeedSlow;
+        }
+        if (getTilt() < 0) {
+          return -robotSpeedFast;
         }
         return robotSpeedFast;
       // driving up charge station, drive slower, stopping when level
       case 1:
         if (getTilt() < levelDegree) {
+          debounceCount++;
+        }
+        if (getTilt() > -levelDegree) {
           debounceCount++;
         }
         if (debounceCount > secondsToTicks(debounceTime)) {
@@ -124,10 +133,9 @@ public class NewBalance extends CommandBase {
     return 0;
   }
 
-
-
   private void selfBalancing() {
-    System.out.println();
+    System.out.println(getTilt());
+
     if (autoBalanceRoutine() == 0) {
       drivetrain.setWheelsToX();
     } else {
@@ -138,7 +146,8 @@ public class NewBalance extends CommandBase {
 
   @Override
   public void initialize() {
-    
+    state = 0;
+    debounceCount = 0;
   }
 
   @Override

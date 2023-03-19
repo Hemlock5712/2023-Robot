@@ -377,6 +377,9 @@ public final class Constants {
      * Extend the arm out to place cone on the mid peg
      */
     public static final ArmSetpoint MID_PEG = XYACalulator.Calulator(-1, 17, -20);
+
+    public static final ArmSetpoint AUTO_MID_PEG = XYACalulator.Calulator(-1, 17, -20);
+
     /**
      * Extend the arm out to place cone on the high peg
      */
@@ -396,6 +399,9 @@ public final class Constants {
     // XYACalulator.Calulator(-.2, 2, 34);
     public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, -.06, 34);
     public static final ArmSetpoint STARTING_CONFIG = new ArmSetpoint(71, 0, -106);
+
+
+    public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(-4, 0, -10);
   }
 
 }

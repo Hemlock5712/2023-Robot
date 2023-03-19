@@ -134,14 +134,14 @@ public class RobotContainer {
           new AutoBalance(drivetrainSubsystem, poseEstimator)),
       Map.entry(
           "newAutoBalance",
-          new Balance(drivetrainSubsystem, poseEstimator)),
+          new NewBalance(drivetrainSubsystem, poseEstimator)),
       Map.entry(
           "goToIntakeMode",
           new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
               Constants.ArmSetpoints.GROUND_CUBE_PICKUP)),
       Map.entry(
           "startIntake",
-          new WaitCommand(1.5).deadlineWith(new RunIntakeCommand(intakeSubsystem))),
+          new WaitCommand(2).deadlineWith(new RunIntakeCommand(intakeSubsystem))),
       Map.entry(
           "cone",
           new InstantCommand(() -> {
@@ -197,7 +197,7 @@ public class RobotContainer {
     // autoChooser.setDefaultOption("3 Cube",
     // makeAutoBuilderCommand("2Cube1Cone", new PathConstraints(3, 3)));
     autoChooser.setDefaultOption("3 Cube",
-        makeAutoBuilderCommand("3Cube", new PathConstraints(3, 3)));
+        makeAutoBuilderCommand("2Cube1GrabPark", new PathConstraints(3, 3)));
     autoChooser.addOption("Do Nothing", Commands.none());
 
     SmartDashboard.putData(autoChooser);
@@ -257,6 +257,10 @@ public class RobotContainer {
         new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
             Constants.ArmSetpoints.GROUND_CUBE_PICKUP).alongWith(
                 new RunIntakeCommand(intakeSubsystem))));
+
+    controller.leftBumper().whileTrue(new MoveToSetpoint(elevatorSubsystem,
+        extensionSubsystem, wristSubsystem,
+        Constants.ArmSetpoints.AUTO_MID_PEG));
 
     controller2.leftBumper().onTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
