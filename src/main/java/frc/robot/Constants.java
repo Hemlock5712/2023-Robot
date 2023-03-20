@@ -167,7 +167,8 @@ public final class Constants {
   public static class VisionConstants {
 
     /**
-     * Physical location of the right camera on the robot, relative to the center of the
+     * Physical location of the right camera on the robot, relative to the center of
+     * the
      * robot.
      */
     public static final Transform3d RIGHT_CAMERA_TO_ROBOT = new Transform3d(
@@ -176,7 +177,8 @@ public final class Constants {
     public static final Transform3d ROBOT_TO_RIGHT_CAMERA = RIGHT_CAMERA_TO_ROBOT.inverse();
 
     /**
-     * Physical location of the left camera on the robot, relative to the center of the
+     * Physical location of the left camera on the robot, relative to the center of
+     * the
      * robot.
      */
     public static final Transform3d LEFT_CAMERA_TO_ROBOT = new Transform3d(
@@ -184,8 +186,9 @@ public final class Constants {
         new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(-45)));
     public static final Transform3d ROBOT_TO_LEFT_CAMERA = LEFT_CAMERA_TO_ROBOT.inverse();
 
-        /**
-     * Physical location of the back camera on the robot, relative to the center of the
+    /**
+     * Physical location of the back camera on the robot, relative to the center of
+     * the
      * robot.
      */
     public static final Transform3d BACK_CAMERA_TO_ROBOT = new Transform3d(
@@ -201,13 +204,32 @@ public final class Constants {
     public static final double DISTANCE_WEIGHT = 7;
     public static final int TAG_PRESENCE_WEIGHT = 10;
 
+    /**
+     * Standard deviations of model states. Increase these numbers to trust your
+     * model's state estimates less. This
+     * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then
+     * meters.
+     */
     public static final Matrix<N3, N1> VISION_MEASUREMENT_STANDARD_DEVIATIONS = Matrix.mat(Nat.N3(), Nat.N1())
         .fill(
             // if these numbers are less than one, multiplying will do bad things
-            1, // x
-            1, // y
-            1 * Math.PI // theta
+            0.9, // x
+            0.9, // y
+            0.9 * Math.PI // theta
         );
+
+    /**
+     * Standard deviations of the vision measurements. Increase these numbers to
+     * trust global measurements from vision
+     * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and
+     * radians.
+     */
+    public static final Matrix<N3, N1> STATE_STANDARD_DEVIATIONS = Matrix.mat(Nat.N3(), Nat.N1())
+        .fill(
+            // if these numbers are less than one, multiplying will do bad things
+            .1, // x
+            .1, // y
+            .1);
 
   }
 
@@ -408,7 +430,6 @@ public final class Constants {
     // XYACalulator.Calulator(-.2, 2, 34);
     public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, -.06, 34);
     public static final ArmSetpoint STARTING_CONFIG = new ArmSetpoint(71, 0, -106);
-
 
     public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(-4, 0, -10);
   }

@@ -13,8 +13,6 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,22 +43,6 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   // This in turn means the particualr component will have a stronger influence
   // on the final pose estimate.
 
-  /**
-   * Standard deviations of model states. Increase these numbers to trust your
-   * model's state estimates less. This
-   * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then
-   * meters.
-   */
-  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
-
-  /**
-   * Standard deviations of the vision measurements. Increase these numbers to
-   * trust global measurements from vision
-   * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and
-   * radians.
-   */
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(1.5, 1.5, 1.5);
-
   private final Supplier<Rotation2d> rotationSupplier;
   private final Supplier<SwerveModulePosition[]> modulePositionSupplier;
   private final SwerveDrivePoseEstimator poseEstimator;
@@ -69,9 +51,13 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       Constants.VisionConstants.ROBOT_TO_RIGHT_CAMERA);
   private final PhotonRunnable leftEstimator = new PhotonRunnable(new PhotonCamera("leftCamera"),
       Constants.VisionConstants.ROBOT_TO_LEFT_CAMERA);
+  // private final PhotonRunnable backEstimator = new PhotonRunnable(new PhotonCamera("backCamera"),
+  //     Constants.VisionConstants.ROBOT_TO_BACK_CAMERA);
 
   private final Notifier rightNotifier = new Notifier(rightEstimator);
   private final Notifier leftNotifier = new Notifier(leftEstimator);
+  //private final Notifier backNotifier = new Notifier(backEstimator);
+
   private OriginPosition originPosition = kBlueAllianceWallRightSide;
 
   private final ArrayList<Double> xValues = new ArrayList<Double>();
@@ -87,8 +73,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         rotationSupplier.get(),
         modulePositionSupplier.get(),
         new Pose2d(),
-        stateStdDevs,
-        visionMeasurementStdDevs);
+        Constants.VisionConstants.STATE_STANDARD_DEVIATIONS,
+        Constants.VisionConstants.VISION_MEASUREMENT_STANDARD_DEVIATIONS);
 
     // Start PhotonVision thread
     rightNotifier.setName("rightRunnable");
@@ -97,6 +83,9 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     // Start PhotonVision thread
     leftNotifier.setName("leftRunnable");
     leftNotifier.startPeriodic(0.02);
+
+    //backNotifier.setName("backRunnable");
+    //backNotifier.startPeriodic(0.02);
 
   }
 
@@ -142,18 +131,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
     estimatorChecker(rightEstimator);
     estimatorChecker(leftEstimator);
-
-    // var leftCameraPose = leftEstimator.grabLatestEstimatedPose();
-    // if (leftCameraPose != null) {
-    // // New pose from vision
-    // var pose2d = leftCameraPose.estimatedPose.toPose2d();
-    // if (originPosition == kRedAllianceWallRightSide) {
-    // pose2d = flipAlliance(pose2d);
-    // }
-    // confidenceCalculator(leftCameraPose);
-    // poseEstimator.addVisionMeasurement(pose2d, leftCameraPose.timestampSeconds,
-    // confidenceCalculator(leftCameraPose));
-    // }
+    //estimatorChecker(backEstimator);
 
     // Set the pose on the dashboard
     var dashboardPose = poseEstimator.getEstimatedPosition();
