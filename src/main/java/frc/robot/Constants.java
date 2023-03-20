@@ -167,22 +167,31 @@ public final class Constants {
   public static class VisionConstants {
 
     /**
-     * Physical location of the camera on the robot, relative to the center of the
+     * Physical location of the right camera on the robot, relative to the center of the
      * robot.
      */
     public static final Transform3d RIGHT_CAMERA_TO_ROBOT = new Transform3d(
-        new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(6.5615), Units.inchesToMeters(-30.0)),
+        new Translation3d(Units.inchesToMeters(11.88), Units.inchesToMeters(6.88), Units.inchesToMeters(-31.09)),
         new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(45)));
     public static final Transform3d ROBOT_TO_RIGHT_CAMERA = RIGHT_CAMERA_TO_ROBOT.inverse();
 
     /**
-     * Physical location of the camera on the robot, relative to the center of the
+     * Physical location of the left camera on the robot, relative to the center of the
      * robot.
      */
     public static final Transform3d LEFT_CAMERA_TO_ROBOT = new Transform3d(
-        new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(-6.5615), Units.inchesToMeters(-30.0)),
+        new Translation3d(Units.inchesToMeters(11.88), Units.inchesToMeters(-6.88), Units.inchesToMeters(-31.09)),
         new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(-45)));
     public static final Transform3d ROBOT_TO_LEFT_CAMERA = LEFT_CAMERA_TO_ROBOT.inverse();
+
+        /**
+     * Physical location of the back camera on the robot, relative to the center of the
+     * robot.
+     */
+    public static final Transform3d BACK_CAMERA_TO_ROBOT = new Transform3d(
+        new Translation3d(Units.inchesToMeters(13.76), Units.inchesToMeters(-6.1), Units.inchesToMeters(-33.65)),
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(180)));
+    public static final Transform3d ROBOT_TO_BACK_CAMERA = BACK_CAMERA_TO_ROBOT.inverse();
 
     /** Minimum target ambiguity. Targets with higher ambiguity will be discarded */
     public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
