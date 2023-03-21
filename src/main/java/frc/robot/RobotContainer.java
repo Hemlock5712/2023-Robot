@@ -35,6 +35,7 @@ import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.balance.AutoBalance;
 import frc.robot.commands.balance.Balance;
 import frc.robot.commands.balance.NewBalance;
+import frc.robot.commands.driver.DriveToPoseCommand;
 import frc.robot.commands.driver.GoToLoadWithArm;
 import frc.robot.commands.driver.WheelXMode;
 import frc.robot.commands.operator.HighPlace;
@@ -263,9 +264,7 @@ public class RobotContainer {
                 new RunIntakeCommand(intakeSubsystem))));
 
     controller.leftBumper()
-        .whileTrue(new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2.5, 2),
-            FieldConstants.standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem,
-            intakeSubsystem));
+        .whileTrue(new DriveToPoseCommand(drivetrainSubsystem, poseEstimator::getCurrentPose, 14.5, ledSubsystem));
 
     controller2.leftBumper().onTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
