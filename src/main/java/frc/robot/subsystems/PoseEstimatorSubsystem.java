@@ -51,12 +51,12 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       Constants.VisionConstants.ROBOT_TO_RIGHT_CAMERA);
   private final PhotonRunnable leftEstimator = new PhotonRunnable(new PhotonCamera("leftCamera"),
       Constants.VisionConstants.ROBOT_TO_LEFT_CAMERA);
-  // private final PhotonRunnable backEstimator = new PhotonRunnable(new PhotonCamera("backCamera"),
-  //     Constants.VisionConstants.ROBOT_TO_BACK_CAMERA);
+  private final PhotonRunnable backEstimator = new PhotonRunnable(new PhotonCamera("backCamera"),
+      Constants.VisionConstants.ROBOT_TO_BACK_CAMERA);
 
   private final Notifier rightNotifier = new Notifier(rightEstimator);
   private final Notifier leftNotifier = new Notifier(leftEstimator);
-  //private final Notifier backNotifier = new Notifier(backEstimator);
+  private final Notifier backNotifier = new Notifier(backEstimator);
 
   private OriginPosition originPosition = kBlueAllianceWallRightSide;
 
@@ -84,8 +84,8 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     leftNotifier.setName("leftRunnable");
     leftNotifier.startPeriodic(0.02);
 
-    //backNotifier.setName("backRunnable");
-    //backNotifier.startPeriodic(0.02);
+    backNotifier.setName("backRunnable");
+    backNotifier.startPeriodic(0.02);
 
   }
 
@@ -131,7 +131,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
     estimatorChecker(rightEstimator);
     estimatorChecker(leftEstimator);
-    //estimatorChecker(backEstimator);
+    estimatorChecker(backEstimator);
 
     // Set the pose on the dashboard
     var dashboardPose = poseEstimator.getEstimatedPosition();

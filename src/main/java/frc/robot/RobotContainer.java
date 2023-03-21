@@ -185,6 +185,7 @@ public class RobotContainer {
     map.createGraph(standardMap, FieldConstants.standardObstacles);
     // map.createGraph(cableMap, cablePath);
 
+    PiecePicker.toggle(false);
     intakeSubsystem.setDefaultCommand(new HoldIntakeCommand(intakeSubsystem));
 
     autoChooser.addOption("Center With Balance",
@@ -258,9 +259,10 @@ public class RobotContainer {
             Constants.ArmSetpoints.GROUND_CUBE_PICKUP).alongWith(
                 new RunIntakeCommand(intakeSubsystem))));
 
-    controller.leftBumper().whileTrue(new MoveToSetpoint(elevatorSubsystem,
-        extensionSubsystem, wristSubsystem,
-        Constants.ArmSetpoints.AUTO_MID_PEG));
+    controller.leftBumper()
+        .whileTrue(new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2.5, 2),
+            FieldConstants.standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem,
+            intakeSubsystem));
 
     controller2.leftBumper().onTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
