@@ -65,7 +65,7 @@
         "x": 7.442960415155281,
         "y": 4.044499325020839
       },
-      "holonomicAngle": -104.53445508054016,
+      "holonomicAngle": -101.82148834060729,
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
@@ -158,39 +158,14 @@
         "y": 4.0414102180517535
       },
       "prevControl": {
-        "x": 7.338058898360031,
-        "y": 4.933436471380277
+        "x": 7.604704445340098,
+        "y": 4.907507613529998
       },
       "nextControl": {
-        "x": 7.435311017338769,
-        "y": 3.120145776885245
+        "x": 7.157680080484717,
+        "y": 3.138036169310773
       },
-      "holonomicAngle": -104.53,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 6.178232427639234,
-        "y": 3.4993857888071647
-      },
-      "prevControl": {
-        "x": 6.559698658298503,
-        "y": 3.379197798325477
-      },
-      "nextControl": {
-        "x": 5.484060790185638,
-        "y": 3.718097400607613
-      },
-      "holonomicAngle": -178.2642954110716,
+      "holonomicAngle": -107.5924245621813,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -217,7 +192,7 @@
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
-      "velOverride": 0.25,
+      "velOverride": 0.75,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -239,7 +214,7 @@
       "nextControl": null,
       "holonomicAngle": 180.0,
       "isReversal": false,
-      "velOverride": 0.25,
+      "velOverride": 0.75,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -252,6 +227,9 @@
       }
     }
   ],
+  "maxVelocity": 3.5,
+  "maxAcceleration": null,
+  "isReversed": null,
   "markers": [
     {
       "position": 0.5090909090909422,
@@ -260,7 +238,7 @@
       ]
     },
     {
-      "position": 1.7,
+      "position": 1.6,
       "names": [
         "goToIntakeMode",
         "startIntake"

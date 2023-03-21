@@ -36,6 +36,7 @@ import frc.robot.commands.balance.AutoBalance;
 import frc.robot.commands.balance.Balance;
 import frc.robot.commands.balance.NewBalance;
 import frc.robot.commands.driver.GoToLoadWithArm;
+import frc.robot.commands.driver.WheelXMode;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
@@ -80,8 +81,8 @@ public class RobotContainer {
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
   private final ExtensionSubsystem extensionSubsystem = new ExtensionSubsystem();
   private final WristSubsystem wristSubsystem = new WristSubsystem();
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(ledSubsystem);
 
   // final List<Obstacle> cablePath = FieldConstants.cablePath;
 
@@ -197,8 +198,10 @@ public class RobotContainer {
     autoChooser.addOption("Wall Side 2 Cube", makeAutoBuilderCommand("Wall2GamePiece", new PathConstraints(2.5, 2)));
     // autoChooser.setDefaultOption("3 Cube",
     // makeAutoBuilderCommand("2Cube1Cone", new PathConstraints(3, 3)));
-    autoChooser.setDefaultOption("3 Cube",
-        makeAutoBuilderCommand("2Cube1GrabPark", new PathConstraints(3, 3)));
+    autoChooser.addOption("2.5 Cube Balance",
+        makeAutoBuilderCommand("2Cube1GrabPark", new PathConstraints(3.5, 3)).withTimeout(14.9)
+            .andThen(new WheelXMode(drivetrainSubsystem)));
+    autoChooser.setDefaultOption("3 Cube", makeAutoBuilderCommand("3Cube", new PathConstraints(3, 3)));
     autoChooser.addOption("Do Nothing", Commands.none());
 
     SmartDashboard.putData(autoChooser);

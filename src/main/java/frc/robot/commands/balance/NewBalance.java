@@ -24,7 +24,7 @@ public class NewBalance extends CommandBase {
      * CONFIG *
      **********/
     // Speed the robot drived while scoring/approaching station, default = 0.4
-    robotSpeedFast = 0.5;
+    robotSpeedFast = 0.8;
 
     // Speed the robot drives while balancing itself on the charge station.
     // Should be roughly half the fast speed, to make the robot more accurate,
@@ -123,9 +123,9 @@ public class NewBalance extends CommandBase {
           return 0;
         }
         if (getTilt() >= levelDegree) {
-          return 0.1;
+          return robotSpeedSlow;
         } else if (getTilt() <= -levelDegree) {
-          return -0.1;
+          return -robotSpeedSlow;
         }
       case 3:
         return 0;

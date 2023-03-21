@@ -386,7 +386,7 @@ public final class Constants {
     /**
      * Put arm on ground to pick up a cone that's lying down
      */
-    public static final ArmSetpoint GROUND_CUBE_PICKUP = new ArmSetpoint(-12, 0, -40);
+    public static final ArmSetpoint GROUND_CUBE_PICKUP = new ArmSetpoint(-11, 0, -40);
     /**
      * Put arm above ground to pick up a cone that's standing up
      */
@@ -403,11 +403,14 @@ public final class Constants {
     /**
      * Extend the arm out to place cone on the high peg
      */
-    public static final ArmSetpoint HIGH_PEG = XYACalulator.Calulator(18, 34, -20);
+    public static final ArmSetpoint HIGH_PEG = new ArmSetpoint(35, Units.inchesToMeters(30), -50);
     /**
      * Extend the arm out to place cone on the mid peg
      */
-    public static final ArmSetpoint MID_PEG = XYACalulator.Calulator(-1, 17, -20);
+    // public static final ArmSetpoint MID_PEG = XYACalulator.Calulator(-13, 11,
+    // -20);
+
+    public static final ArmSetpoint MID_PEG = new ArmSetpoint(30, Units.inchesToMeters(10), -48);
 
     public static final ArmSetpoint AUTO_MID_PEG = XYACalulator.Calulator(-1, 17, -20);
 

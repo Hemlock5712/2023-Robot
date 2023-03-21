@@ -42,6 +42,7 @@ public class WristSubsystem extends SubsystemBase {
     wristEncoder.configMagnetOffset(-50);
     wristMotor.setIdleMode(IdleMode.kBrake);
     wristMotor.setSmartCurrentLimit(30, 80);
+    wristMotor.burnFlash();
     // wristMotor.setSmartCurrentLimit(30, 40);
 
   }
