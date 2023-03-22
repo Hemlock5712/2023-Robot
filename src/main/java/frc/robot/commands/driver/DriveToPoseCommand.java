@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -17,7 +16,6 @@ import frc.robot.subsystems.LEDSubsystem;
 public class DriveToPoseCommand extends CommandBase {
 
   private static final double TRANSLATION_TOLERANCE = 0.02;
-  private static final double THETA_TOLERANCE = Units.degreesToRadians(2.0);
 
   private final ProfiledPIDController xController;
 
@@ -68,7 +66,7 @@ public class DriveToPoseCommand extends CommandBase {
     }
 
     if (xSpeed == 0) {
-      // TODO JOSH
+      ledSubsystem.setLEDColor(0.77);
     }
 
     drivetrainSubsystem.drive(
