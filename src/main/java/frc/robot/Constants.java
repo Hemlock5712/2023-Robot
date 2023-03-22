@@ -189,10 +189,9 @@ public final class Constants {
      * the
      * robot.
      */
-    public static final Transform3d BACK_CAMERA_TO_ROBOT = new Transform3d(
-        new Translation3d(Units.inchesToMeters(13.76), Units.inchesToMeters(-6.1), Units.inchesToMeters(-33.65)),
+    public static final Transform3d ROBOT_TO_BACK_CAMERA = new Transform3d(
+        new Translation3d(Units.inchesToMeters(-13.76), Units.inchesToMeters(6.1), Units.inchesToMeters(33.65)),
         new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(180)));
-    public static final Transform3d ROBOT_TO_BACK_CAMERA = BACK_CAMERA_TO_ROBOT.inverse();
 
     /** Minimum target ambiguity. Targets with higher ambiguity will be discarded */
     public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
