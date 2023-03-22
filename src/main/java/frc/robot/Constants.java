@@ -171,20 +171,18 @@ public final class Constants {
      * the
      * robot.
      */
-    public static final Transform3d RIGHT_CAMERA_TO_ROBOT = new Transform3d(
-        new Translation3d(Units.inchesToMeters(11.88), Units.inchesToMeters(6.88), Units.inchesToMeters(-31.09)),
-        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(45)));
-    public static final Transform3d ROBOT_TO_RIGHT_CAMERA = RIGHT_CAMERA_TO_ROBOT.inverse();
+    public static final Transform3d ROBOT_TO_RIGHT_CAMERA = new Transform3d(
+        new Translation3d(Units.inchesToMeters(-11.88), Units.inchesToMeters(-6.88), Units.inchesToMeters(31.09)),
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(-45)));
 
     /**
      * Physical location of the left camera on the robot, relative to the center of
      * the
      * robot.
      */
-    public static final Transform3d LEFT_CAMERA_TO_ROBOT = new Transform3d(
-        new Translation3d(Units.inchesToMeters(11.88), Units.inchesToMeters(-6.88), Units.inchesToMeters(-31.09)),
-        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(-45)));
-    public static final Transform3d ROBOT_TO_LEFT_CAMERA = LEFT_CAMERA_TO_ROBOT.inverse();
+    public static final Transform3d ROBOT_TO_LEFT_CAMERA = new Transform3d(
+        new Translation3d(Units.inchesToMeters(-11.88), Units.inchesToMeters(6.88), Units.inchesToMeters(31.09)),
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(45)));
 
     /**
      * Physical location of the back camera on the robot, relative to the center of

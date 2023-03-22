@@ -54,18 +54,18 @@
     },
     {
       "anchorPoint": {
-        "x": 7.376391692285166,
+        "x": 7.38,
         "y": 5.287115485263
       },
       "prevControl": {
-        "x": 7.347864090745977,
-        "y": 5.819630713994524
+        "x": 7.3514397342556705,
+        "y": 5.81962896312171
       },
       "nextControl": {
-        "x": 7.442960415155281,
-        "y": 4.044499325020839
+        "x": 7.446644944294365,
+        "y": 4.044503410655832
       },
-      "holonomicAngle": -104.53445508054016,
+      "holonomicAngle": -105.0,
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
@@ -165,7 +165,7 @@
         "x": 7.435311017338769,
         "y": 3.120145776885245
       },
-      "holonomicAngle": -111.5014343240477,
+      "holonomicAngle": -105.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -237,7 +237,6 @@
     {
       "position": 1.7,
       "names": [
-        "goToIntakeMode",
         "startIntake"
       ]
     },
@@ -248,7 +247,7 @@
       ]
     },
     {
-      "position": 5.5,
+      "position": 5.4,
       "names": [
         "goToIntakeMode"
       ]
@@ -260,7 +259,7 @@
       ]
     },
     {
-      "position": 5.963636363636733,
+      "position": 5.8,
       "names": [
         "startIntake"
       ]
@@ -269,6 +268,12 @@
       "position": 4.993939393939636,
       "names": [
         "outtake"
+      ]
+    },
+    {
+      "position": 1.3,
+      "names": [
+        "goToIntakeMode"
       ]
     }
   ]
