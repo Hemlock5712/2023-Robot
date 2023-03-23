@@ -134,7 +134,7 @@ public class NewBalance extends CommandBase {
   }
 
   private void selfBalancing() {
-    System.out.println(getTilt());
+    // System.out.println(getTilt());
 
     if (autoBalanceRoutine() == 0) {
       drivetrain.setWheelsToX();
