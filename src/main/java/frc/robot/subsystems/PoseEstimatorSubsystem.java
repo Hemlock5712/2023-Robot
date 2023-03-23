@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide;
 import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide;
 
-import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import org.photonvision.EstimatedRobotPose;
@@ -55,14 +54,18 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   // PhotonCamera("backCamera"),
   // Constants.VisionConstants.ROBOT_TO_BACK_CAMERA);
 
-  private final Notifier rightNotifier = new Notifier(rightEstimator);
-  private final Notifier leftNotifier = new Notifier(leftEstimator);
+  // private final Notifier rightNotifier = new Notifier(rightEstimator);
+  // private final Notifier leftNotifier = new Notifier(leftEstimator);
+  private final Notifier allNotifier = new Notifier(() -> {
+    rightEstimator.run();
+    leftEstimator.run();
+  });
   // private final Notifier backNotifier = new Notifier(backEstimator);
 
   private OriginPosition originPosition = kBlueAllianceWallRightSide;
 
-  private final ArrayList<Double> xValues = new ArrayList<Double>();
-  private final ArrayList<Double> yValues = new ArrayList<Double>();
+  // private final ArrayList<Double> xValues = new ArrayList<Double>();
+  // private final ArrayList<Double> yValues = new ArrayList<Double>();
 
   public PoseEstimatorSubsystem(Supplier<Rotation2d> rotationSupplier,
       Supplier<SwerveModulePosition[]> modulePositionSupplier) {
@@ -78,12 +81,15 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         Constants.VisionConstants.VISION_MEASUREMENT_STANDARD_DEVIATIONS);
 
     // Start PhotonVision thread
-    rightNotifier.setName("rightRunnable");
-    rightNotifier.startPeriodic(0.02);
+    // rightNotifier.setName("rightRunnable");
+    // rightNotifier.startPeriodic(0.02);
 
-    // Start PhotonVision thread
-    leftNotifier.setName("leftRunnable");
-    leftNotifier.startPeriodic(0.02);
+    // // Start PhotonVision thread
+    // leftNotifier.setName("leftRunnable");
+    // leftNotifier.startPeriodic(0.02);
+
+    allNotifier.setName("runAll");
+    allNotifier.startPeriodic(0.02);
 
     // backNotifier.setName("backRunnable");
     // backNotifier.startPeriodic(0.02);
@@ -198,10 +204,10 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     field2d.getObject("Trajectory").setTrajectory(traj);
   }
 
-  public void resetPoseRating() {
-    xValues.clear();
-    yValues.clear();
-  }
+  // public void resetPoseRating() {
+  // xValues.clear();
+  // yValues.clear();
+  // }
 
   private Matrix<N3, N1> confidenceCalculator(EstimatedRobotPose estimation) {
     double smallestDistance = Double.POSITIVE_INFINITY;

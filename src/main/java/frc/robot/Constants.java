@@ -182,7 +182,7 @@ public final class Constants {
      */
     public static final Transform3d ROBOT_TO_LEFT_CAMERA = new Transform3d(
         new Translation3d(Units.inchesToMeters(-11.88), Units.inchesToMeters(6.88), Units.inchesToMeters(31.09)),
-        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(45)));
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(47)));
 
     /**
      * Physical location of the back camera on the robot, relative to the center of

@@ -33,15 +33,12 @@ import frc.robot.commands.HoldIntakeCommand;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.balance.AutoBalance;
-import frc.robot.commands.balance.Balance;
 import frc.robot.commands.balance.NewBalance;
 import frc.robot.commands.driver.DriveToPoseCommand;
-import frc.robot.commands.driver.GoToLoadWithArm;
 import frc.robot.commands.driver.WheelXMode;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
-import frc.robot.commands.operator.NextNode;
 import frc.robot.commands.operator.SingleSubstation;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.VisGraph;
@@ -55,7 +52,6 @@ import frc.robot.subsystems.WristSubsystem;
 import frc.robot.util.ArmSetpoint;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.PiecePicker;
-import frc.robot.util.enums.Direction;
 import frc.robot.util.enums.GamePiece;
 
 /**
@@ -194,15 +190,14 @@ public class RobotContainer {
         makeAutoBuilderCommand("SingleWithAutoBalance", new PathConstraints(1.5, 1)));
     // autoChooser.setDefaultOption("Barrier Side 2 Cube",
     // makeAutoBuilderCommand("Center2GamePiece", new PathConstraints(2.5, 2)));
-    autoChooser.addOption("Barrier Place 1 Pickup 1 Balance",
-        makeAutoBuilderCommand("pickupBalance", new PathConstraints(2.5, 2)));
     autoChooser.addOption("Wall Side 2 Cube", makeAutoBuilderCommand("Wall2GamePiece", new PathConstraints(2.5, 2)));
     // autoChooser.setDefaultOption("3 Cube",
     // makeAutoBuilderCommand("2Cube1Cone", new PathConstraints(3, 3)));
     autoChooser.addOption("2.5 Cube Balance",
         makeAutoBuilderCommand("2Cube1GrabPark", new PathConstraints(3.5, 3)).withTimeout(14.9)
             .andThen(new WheelXMode(drivetrainSubsystem)));
-    autoChooser.setDefaultOption("3 Cube", makeAutoBuilderCommand("3Cube", new PathConstraints(3, 3)));
+    autoChooser.setDefaultOption("3 Cube", makeAutoBuilderCommand("3Cube", new PathConstraints(3, 3))
+        .withTimeout(14.9).andThen(new WaitCommand(0.25).deadlineWith(new ReverseIntakeCommand(intakeSubsystem))));
     autoChooser.addOption("Do Nothing", Commands.none());
 
     SmartDashboard.putData(autoChooser);
@@ -246,14 +241,12 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
-    controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
+    controller.leftBumper()
+        .whileTrue(new DriveToPoseCommand(drivetrainSubsystem, poseEstimator::getCurrentPose, 14.5, ledSubsystem));
 
-    controller2.leftTrigger(0.5).whileTrue(
-        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
-            .withTimeout(0.5).andThen(
-                new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-                    Constants.ArmSetpoints.TRANSIT)));
+    controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
+
+    controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
 
     controller.rightBumper().whileTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
@@ -263,58 +256,43 @@ public class RobotContainer {
             Constants.ArmSetpoints.GROUND_CUBE_PICKUP).alongWith(
                 new RunIntakeCommand(intakeSubsystem))));
 
-    controller.leftBumper()
-        .whileTrue(new DriveToPoseCommand(drivetrainSubsystem, poseEstimator::getCurrentPose, 14.5, ledSubsystem));
-
     controller2.leftBumper().onTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
       ledSubsystem.setGamePiece(GamePiece.CUBE);
     }));
+
+    controller2.leftTrigger(0.5).whileTrue(
+        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
+            .withTimeout(0.5).andThen(
+                new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+                    Constants.ArmSetpoints.TRANSIT)));
 
     controller2.rightBumper().onTrue(new InstantCommand(() -> {
       PiecePicker.toggle(false);
       ledSubsystem.setGamePiece(GamePiece.CONE);
     }));
 
-    controller.back().whileTrue(new Balance(drivetrainSubsystem, poseEstimator));
-
-    // controller2.leftTrigger(0.5).whileTrue(
-    // new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new
-    // ArmSetpoint(30, 0, 45)).andThen(
-    // new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-    // Constants.ArmSetpoints.TRANSIT)));
-
-    controller2.y().whileTrue(new HighPlace(elevatorSubsystem,
-        extensionSubsystem, wristSubsystem));
-    controller2.b().whileTrue(new MidPlace(elevatorSubsystem,
-        extensionSubsystem, wristSubsystem));
     controller2.a().whileTrue(new MoveToSetpoint(elevatorSubsystem,
         extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.HYBRID_NODE));
 
+    controller2.b().whileTrue(new MidPlace(elevatorSubsystem,
+        extensionSubsystem, wristSubsystem));
+
     controller2.x()
         .whileTrue(new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem));
+
+    controller2.y().whileTrue(new HighPlace(elevatorSubsystem,
+        extensionSubsystem, wristSubsystem));
 
     controller2.back().and(controller2.start()).whileTrue(new MoveToSetpoint(elevatorSubsystem, extensionSubsystem,
         wristSubsystem, Constants.ArmSetpoints.STARTING_CONFIG));
 
     // Drive to Point stuff beyond this point
-    controller2.pov(0).whileTrue(new NextNode(Direction.Up));
-    controller2.pov(90).whileTrue(new NextNode(Direction.Right));
-    controller2.pov(180).whileTrue(new NextNode(Direction.Down));
-    controller2.pov(270).whileTrue(new NextNode(Direction.Left));
-
-    // controller.a()
-    // .whileTrue(new GoToPlaceWithArm(drivetrainSubsystem, poseEstimator, new
-    // PathConstraints(2.5, 2),
-    // FieldConstants.standardObstacles, standardMap, extensionSubsystem,
-    // elevatorSubsystem, wristSubsystem));
-
-    controller.a().whileTrue(new NewBalance(drivetrainSubsystem, poseEstimator));
-    controller.y()
-        .whileTrue(new GoToLoadWithArm(drivetrainSubsystem, poseEstimator, new PathConstraints(2.5, 2),
-            FieldConstants.standardObstacles, standardMap, extensionSubsystem, elevatorSubsystem, wristSubsystem,
-            intakeSubsystem));
+    // controller2.pov(0).whileTrue(new NextNode(Direction.Up));
+    // controller2.pov(90).whileTrue(new NextNode(Direction.Right));
+    // controller2.pov(180).whileTrue(new NextNode(Direction.Down));
+    // controller2.pov(270).whileTrue(new NextNode(Direction.Left));
   }
 
   public void startTeleopPosCommand() {
