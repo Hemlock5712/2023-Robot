@@ -242,7 +242,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     controller.leftBumper()
-        .whileTrue(new DriveToPoseCommand(drivetrainSubsystem, poseEstimator::getCurrentPose, 14.5, ledSubsystem));
+        .whileTrue(new DriveToPoseCommand(drivetrainSubsystem, poseEstimator::getCurrentPose, 14.35, ledSubsystem));
 
     controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
 
