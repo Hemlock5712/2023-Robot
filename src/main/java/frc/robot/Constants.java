@@ -46,7 +46,7 @@ public final class Constants {
 
     public static Alliance alliance = Alliance.Invalid;
 
-    public static final boolean ADD_TO_DASHBOARD = true;
+    public static final boolean ADD_TO_DASHBOARD = false;
 
     /**
      * The left-to-right distance between the drivetrain wheels
@@ -141,8 +141,8 @@ public final class Constants {
 
     public static final double DEADBAND = 0.1;
 
-    public static final double X_RATE_LIMIT = 6.0;
-    public static final double Y_RATE_LIMIT = 6.0;
+    public static final double X_RATE_LIMIT = 8;
+    public static final double Y_RATE_LIMIT = 8;
     public static final double ROTATION_RATE_LIMIT = 5.0 * PI;
 
     public static final double HEADING_MAX_VELOCITY = PI * 4;

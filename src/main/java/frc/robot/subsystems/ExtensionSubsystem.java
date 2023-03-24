@@ -3,10 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.subsystems.ElevatorSubsystemBasePID;
 
@@ -16,16 +13,21 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
 
   AnalogInput stringPotentiometer = new AnalogInput(0);
 
-  private NetworkTableEntry extensionLengthEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
-      .getEntry("extensionLength");
-  private NetworkTableEntry targetLengthEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
-      .getEntry("targetLength");
-  private NetworkTableEntry motorVoltageEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
-      .getEntry("currentVoltage");
-  private NetworkTableEntry atSetpointEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
-      .getEntry("atSetpoint");
-  private NetworkTableEntry motorTempEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
-      .getEntry("TempOfMotor");
+  // private NetworkTableEntry extensionLengthEntry =
+  // NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
+  // .getEntry("extensionLength");
+  // private NetworkTableEntry targetLengthEntry =
+  // NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
+  // .getEntry("targetLength");
+  // private NetworkTableEntry motorVoltageEntry =
+  // NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
+  // .getEntry("currentVoltage");
+  // private NetworkTableEntry atSetpointEntry =
+  // NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
+  // .getEntry("atSetpoint");
+  // private NetworkTableEntry motorTempEntry =
+  // NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
+  // .getEntry("TempOfMotor");
 
   public ExtensionSubsystem() {
     super(25, 0, 0, .05, .61, .2, 0.1, Constants.ExtensionConstants.EXTENSION_GEARING);
@@ -92,11 +94,11 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
   public void periodic() {
     super.periodic();
     // System.out.println("ExtensionSubsystem.periodic() == " + setpoint);
-    extensionLengthEntry.setDouble(getHeight());
-    targetLengthEntry.setDouble(setpoint);
-    motorVoltageEntry.setDouble(motor.getMotorOutputVoltage());
-    motorTempEntry.setDouble(motor.getTemperature());
-    SmartDashboard.putData(this);
-    atSetpointEntry.setBoolean(atTarget());
+    // extensionLengthEntry.setDouble(getHeight());
+    // targetLengthEntry.setDouble(setpoint);
+    // motorVoltageEntry.setDouble(motor.getMotorOutputVoltage());
+    // motorTempEntry.setDouble(motor.getTemperature());
+    // SmartDashboard.putData(this);
+    // atSetpointEntry.setBoolean(atTarget());
   }
 }

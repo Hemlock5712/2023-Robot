@@ -7,7 +7,6 @@ package frc.robot.commands.balance;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
@@ -41,31 +40,31 @@ public class Balance extends CommandBase {
   public void execute() {
     Rotation2d rotation = poseEstimator.getCurrentPose().getRotation();
 
-    SmartDashboard.putNumber("Roll", Units.radiansToDegrees(drivetrain.getRoll()));
-    SmartDashboard.putNumber("Pitch", Units.radiansToDegrees(drivetrain.getPitch()));
+    // SmartDashboard.putNumber("Roll",
+    // Units.radiansToDegrees(drivetrain.getRoll()));
+    // SmartDashboard.putNumber("Pitch",
+    // Units.radiansToDegrees(drivetrain.getPitch()));
 
     angleDegrees = rotation.getCos() * drivetrain.getRoll()
-                    + rotation.getSin() * drivetrain.getPitch();
+        + rotation.getSin() * drivetrain.getPitch();
 
-    SmartDashboard.putNumber("AngleDegrees", angleDegrees);
+    // SmartDashboard.putNumber("AngleDegrees", angleDegrees);
 
-    double angleVelocityDegreesPerSec =
-            rotation.getCos() * Units.radiansToDegrees(drivetrain.getRollDPS())
-                    + rotation.getSin() * Units.radiansToDegrees(drivetrain.getPitchDPS());
-    boolean shouldStop =
-            (angleDegrees < 0.0 && angleVelocityDegreesPerSec > velocityThreshold)
-                    || (angleDegrees > 0.0
-                    && angleVelocityDegreesPerSec < -velocityThreshold);
+    double angleVelocityDegreesPerSec = rotation.getCos() * Units.radiansToDegrees(drivetrain.getRollDPS())
+        + rotation.getSin() * Units.radiansToDegrees(drivetrain.getPitchDPS());
+    boolean shouldStop = (angleDegrees < 0.0 && angleVelocityDegreesPerSec > velocityThreshold)
+        || (angleDegrees > 0.0
+            && angleVelocityDegreesPerSec < -velocityThreshold);
 
     if (shouldStop) {
       drivetrain.stop();
     } else {
       drivetrain.drive(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                      Units.inchesToMeters(speed) * (angleDegrees > 0.0 ? -1.0 : 1.0),
-                      0.0,
-                      0.0,
-                      rotation));
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              Units.inchesToMeters(speed) * (angleDegrees > 0.0 ? -1.0 : 1.0),
+              0.0,
+              0.0,
+              rotation));
     }
 
   }
