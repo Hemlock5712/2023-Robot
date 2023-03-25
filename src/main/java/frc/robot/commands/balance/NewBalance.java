@@ -37,7 +37,7 @@ public class NewBalance extends CommandBase {
     // Angle where the robot can assume it is level on the charging station
     // Used for exiting the drive forward sequence as well as for auto balancing,
     // default = 6.0
-    levelDegree = 6.0;
+    levelDegree = 9.0;
 
     // Amount of time a sensor condition needs to be met before changing states in
     // seconds
