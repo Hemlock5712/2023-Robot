@@ -190,7 +190,7 @@ public class RobotContainer {
         makeAutoBuilderCommand("SingleWithAutoBalance", new PathConstraints(1.5, 1)));
     // autoChooser.setDefaultOption("Barrier Side 2 Cube",
     // makeAutoBuilderCommand("Center2GamePiece", new PathConstraints(2.5, 2)));
-    autoChooser.addOption("Wall Side 2 Cube", makeAutoBuilderCommand("Wall2GamePiece", new PathConstraints(2.5, 2)));
+    autoChooser.addOption("Wall Side 2 Cube", makeAutoBuilderCommand("DoubleWallSide", new PathConstraints(2, 2)));
     // autoChooser.setDefaultOption("3 Cube",
     // makeAutoBuilderCommand("2Cube1Cone", new PathConstraints(3, 3)));
     autoChooser.addOption("2.5 Cube Balance",

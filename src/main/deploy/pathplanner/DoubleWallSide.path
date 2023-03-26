@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 2.0,
-        "y": 1.5975456861945754
+        "x": 2.0987854075352295,
+        "y": 1.0460120564369244
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9904907994869365,
-        "y": 0.2852760153918885
+        "x": 3.5251654844946714,
+        "y": 0.5515336297576509
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -17,8 +17,8 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "cone",
-          "extendHigh",
+          "cube",
+          "cubeHigh",
           "outtake",
           "extendIn"
         ],
@@ -29,66 +29,16 @@
     },
     {
       "anchorPoint": {
-        "x": 5.9119748132734715,
-        "y": 1.3217788713157492
+        "x": 4.452689731143294,
+        "y": 0.72
       },
       "prevControl": {
-        "x": 5.3889687850550105,
-        "y": 0.608588832836028
+        "x": 3.5873524844545654,
+        "y": 0.6058895938432444
       },
       "nextControl": {
-        "x": 7.106519596948096,
-        "y": 2.950703576326605
-      },
-      "holonomicAngle": -179.02897806892085,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 7.214735283563094,
-        "y": 1.540490483116198
-      },
-      "prevControl": {
-        "x": 7.309410699230728,
-        "y": 1.9124296160961902
-      },
-      "nextControl": {
-        "x": 7.0816064763802125,
-        "y": 1.0174844548977358
-      },
-      "holonomicAngle": -100.09750438407514,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 4.143263517843763,
-        "y": 0.7417176400189098
-      },
-      "prevControl": {
-        "x": 5.075168007195132,
-        "y": 0.7324908628966195
-      },
-      "nextControl": {
-        "x": 3.182834266024406,
-        "y": 0.7512268405319723
+        "x": 5.0232338845676185,
+        "y": 0.7952365916603503
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -104,11 +54,111 @@
     },
     {
       "anchorPoint": {
-        "x": 2.0892762070221664,
+        "x": 6.849766564933625,
+        "y": 2.068612857291776
+      },
+      "prevControl": {
+        "x": 6.244527334518722,
+        "y": 1.5701805498912698
+      },
+      "nextControl": {
+        "x": 7.081962041711037,
+        "y": 2.259832661696703
+      },
+      "holonomicAngle": -124.380344723845,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 7.396108863233415,
+        "y": 1.686173248481923
+      },
+      "prevControl": {
+        "x": 7.396108863233415,
+        "y": 2.451052466101628
+      },
+      "nextControl": {
+        "x": 7.396108863233415,
+        "y": 2.451052466101628
+      },
+      "holonomicAngle": -105.33328479305355,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.064399511127677,
+        "y": 0.866659801032237
+      },
+      "prevControl": {
+        "x": 6.854397862027465,
+        "y": 1.2031405801191855
+      },
+      "nextControl": {
+        "x": 5.695618459775317,
+        "y": 0.7095863902710461
+      },
+      "holonomicAngle": -168.38851357611148,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 4.45951900987204,
+        "y": 0.72
+      },
+      "prevControl": {
+        "x": 5.39142349922341,
+        "y": 0.7107732228777096
+      },
+      "nextControl": {
+        "x": 3.4990897580526834,
+        "y": 0.7295092005130625
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.3,
         "y": 1.036502855923861
       },
       "prevControl": {
-        "x": 2.5647362326753136,
+        "x": 2.775460025653147,
         "y": 0.6751532364274702
       },
       "nextControl": null,
@@ -119,8 +169,6 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "cube",
-          "extendHigh",
           "outtake",
           "extendIn"
         ],
@@ -130,24 +178,32 @@
       }
     }
   ],
+  "maxVelocity": 2.0,
+  "maxAcceleration": 2.0,
+  "isReversed": null,
   "markers": [
     {
-      "position": 0.921212121212143,
+      "position": 1.4242424242424925,
       "names": [
-        "event",
         "goToIntakeMode"
       ]
     },
     {
-      "position": 1.1878787878787482,
+      "position": 2.3636363636362576,
       "names": [
         "startIntake"
       ]
     },
     {
-      "position": 2.472727272727298,
+      "position": 5.636363636363696,
       "names": [
-        "extendIn"
+        "cubeMid"
+      ]
+    },
+    {
+      "position": 3.6969696969696937,
+      "names": [
+        "transit"
       ]
     }
   ]
