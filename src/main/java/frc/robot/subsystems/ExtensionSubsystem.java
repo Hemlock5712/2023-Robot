@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
@@ -16,6 +17,11 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
 
   AnalogInput stringPotentiometer = new AnalogInput(0);
 
+  // Distance read by string potentiometer where it is considered as an error
+  double stringPotentiometerErrorVoltage = .01;
+
+  double stringPotentiometerBackupDistanceOffset = 0;
+
   private NetworkTableEntry extensionLengthEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
       .getEntry("extensionLength");
   private NetworkTableEntry targetLengthEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
@@ -26,15 +32,30 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
       .getEntry("atSetpoint");
   private NetworkTableEntry motorTempEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
       .getEntry("TempOfMotor");
+  private NetworkTableEntry backupLengthEntry = NetworkTableInstance.getDefault().getTable("ExtensionSubsystem")
+      .getEntry("backupLength");
+
+  private boolean isRunningBackup = false;
+  private boolean wasRunningBackup = false;
 
   public ExtensionSubsystem() {
     super(25, 0, 0, .05, .61, .2, 0.1, Constants.ExtensionConstants.EXTENSION_GEARING);
     motor.setInverted(true);
+
+    stringPotentiometerBackupDistanceOffset = getHeight();
+    if (stringPotentiometer.getVoltage() < stringPotentiometerErrorVoltage) {
+      // Set the backup distance calculation to use the starting config if the string potentiometer is not working on startup
+      // Also will send an alert to the driver station about there being an issue
+      System.err.println("Error reading value from extension potentiometer. Defaulting to backup encoder with current length of " + Constants.ArmSetpoints.STARTING_CONFIG.getLength());
+      stringPotentiometerBackupDistanceOffset = Constants.ArmSetpoints.STARTING_CONFIG.getLength();
+    }
   }
 
   /**
-   * Calculate the position pf the extension based on the motor encoder
+   * Calculate the position pf the extension based on the string potentiometer
    *
+   * This will be used in normal operation, but if the string potentiometer is not
+   * working, it will use the backup encoder to calculate the position instead
    * 
    * @return extension length in meters
    */
@@ -43,9 +64,24 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
     double distance = ((stringPotentiometer.getVoltage()) * Constants.ExtensionConstants.MAX_EXTENSION
         / Constants.ExtensionConstants.MAX_VOLTAGE) - Constants.ExtensionConstants.MIN_EXTENSION;
 
-    // double distance = (motor.getSelectedSensorPosition() *
-    // Constants.ExtensionConstants.SPOOL_CIRCUMFERENCE)
-    // / (Constants.ExtensionConstants.EXTENSION_GEARING * 4096);
+    if(isRunningBackup || stringPotentiometer.getVoltage() < stringPotentiometerErrorVoltage) {
+      isRunningBackup = true;
+      return getBackupHeight();
+    }
+
+    return distance * 2;
+  }
+
+  /**
+   * Calculate the position pf the extension based on the motor encoder
+   *
+   * This should only be used if the string potentiometer is not working
+   *
+   * @return extension length in meters
+   */
+  private double getBackupHeight() {
+    double distance = motor.getSelectedSensorPosition() * Constants.ExtensionConstants.SPOOL_CIRCUMFERENCE
+        / (Constants.ExtensionConstants.EXTENSION_GEARING * 4096) + stringPotentiometerBackupDistanceOffset;
     return distance * 2;
   }
 
@@ -93,10 +129,15 @@ public class ExtensionSubsystem extends ElevatorSubsystemBasePID {
     super.periodic();
     // System.out.println("ExtensionSubsystem.periodic() == " + setpoint);
     extensionLengthEntry.setDouble(getHeight());
+    backupLengthEntry.setDouble(getBackupHeight());
     targetLengthEntry.setDouble(setpoint);
     motorVoltageEntry.setDouble(motor.getMotorOutputVoltage());
     motorTempEntry.setDouble(motor.getTemperature());
     SmartDashboard.putData(this);
     atSetpointEntry.setBoolean(atTarget());
+    if(isRunningBackup != wasRunningBackup) {
+      System.err.println("ElevatorSubsystem is running backup encoder. This needs to be looked at ASAP");
+      wasRunningBackup = true;
+    }
   }
 }
