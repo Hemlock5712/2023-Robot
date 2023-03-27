@@ -321,7 +321,7 @@ public final class Constants {
   public static class WristConstants {
     public static final int MOTOR_ID = 25;
     public static final int TICKS_PER_REVOLUTION = 42;
-    public static final double GEAR_RATIO = 49;
+    public static final double GEAR_RATIO = 9 * 7 * 4;
     public static final int ENCODER_ID = 40;
   }
 

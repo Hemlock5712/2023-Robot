@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -30,6 +31,10 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
   private NetworkTableEntry atSetpointEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
       .getEntry("atSetpoint");
 
+  private double backupAngleOffset = 0;
+  private boolean wasRunningBackup = false;
+  private boolean isRunningBackup = false;
+
   /**
    * Creates a new ElevatorSubsystem.
    *
@@ -46,6 +51,13 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
     angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     angleEncoder.configMagnetOffset(Constants.ArmConstants.ARM_ANGLE_ABSOLUTE_OFFSET);
     angleEncoder.configSensorDirection(true);
+    backupAngleOffset = getAngle();
+    if(angleEncoder.getLastError() != ErrorCode.OK) {
+      // Set the backup encoder to the starting position of the arm if there's a CANCoder issue on startup
+      // Also will send an alert to the driver station about there being an issue
+      System.err.println("Error reading value from elevator angle encoder. Defaulting to backup encoder with current angle of " + Constants.ArmSetpoints.STARTING_CONFIG.getAngle());
+        backupAngleOffset = Constants.ArmSetpoints.STARTING_CONFIG.getAngle();
+    }
   }
 
   /**
@@ -58,6 +70,9 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
     // Calculate the Y position of where the mounting point is, based off the
     // current angle
     double y = Math.sin(getAngle()) * Constants.ArmConstants.MOUNT_POINT_DISTANCE_ON_ARM;
+    if(angleEncoder.getLastError() != ErrorCode.OK) {
+        y = Math.sin(getBackupAngle()) * Constants.ArmConstants.MOUNT_POINT_DISTANCE_ON_ARM;
+    }
     // Return the y component of the arm position, with the pivot point added.
     // This should give the absolute position of the arm mounting change
     return y + Constants.ArmConstants.PIVOT_POINT_HEIGHT;
@@ -108,7 +123,17 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
    * @return Current angle, based on absolute CANCoder readings
    */
   public double getAngle() {
-    return Math.toRadians(angleEncoder.getAbsolutePosition());
+    double angle = Math.toRadians(angleEncoder.getAbsolutePosition());
+    if(isRunningBackup || angleEncoder.getLastError() != ErrorCode.OK) {
+        isRunningBackup = true;
+        return getBackupAngle();
+    }
+    return angle;
+  }
+  public double getBackupAngle() {
+    return Math.asin(
+            (elevatorMotorFront.getSelectedSensorPosition() / Constants.ArmConstants.ELEVATOR_GEARING)
+                    / Constants.ArmConstants.MOUNT_POINT_DISTANCE_ON_ARM);
   }
 
   /**
@@ -150,8 +175,13 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
     targetHeight.setDouble(setpoint);
     SmartDashboard.putNumber("ElevatorSubsystem/PID", pidController.calculate(getHeight()));
     SmartDashboard.putNumber("ElevatorSubsystem/Feedforward", feedforward.calculate(getHeight()));
-    SmartDashboard.putNumber("ElevatorSubsystem/CurrestAngle", angleEncoder.getAbsolutePosition());
+    SmartDashboard.putNumber("ElevatorSubsystem/CurrentAngle", angleEncoder.getAbsolutePosition());
+    SmartDashboard.putNumber("ElevatorSubsystem/BackupAngle", getBackupAngle());
     atSetpointEntry.setBoolean(atTarget());
+    if(isRunningBackup != wasRunningBackup) {
+      System.err.println("ElevatorSubsystem is running backup encoder. This needs to be looked at ASAP");
+      wasRunningBackup = true;
+    }
   }
 
  
