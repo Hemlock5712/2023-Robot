@@ -130,10 +130,11 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
     }
     return angle;
   }
+
   public double getBackupAngle() {
     return Math.asin(
             (elevatorMotorFront.getSelectedSensorPosition() / Constants.ArmConstants.ELEVATOR_GEARING)
-                    / Constants.ArmConstants.MOUNT_POINT_DISTANCE_ON_ARM);
+                    / Constants.ArmConstants.MOUNT_POINT_DISTANCE_ON_ARM) + backupAngleOffset;
   }
 
   /**
