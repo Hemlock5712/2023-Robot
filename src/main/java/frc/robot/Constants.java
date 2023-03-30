@@ -182,7 +182,7 @@ public final class Constants {
      */
     public static final Transform3d ROBOT_TO_LEFT_CAMERA = new Transform3d(
         new Translation3d(Units.inchesToMeters(-11.88), Units.inchesToMeters(6.88), Units.inchesToMeters(31.09)),
-        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(47)));
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(46)));
 
     /**
      * Physical location of the back camera on the robot, relative to the center of
@@ -407,7 +407,7 @@ public final class Constants {
     // public static final ArmSetpoint MID_PEG = XYACalulator.Calulator(-13, 11,
     // -20);
 
-    public static final ArmSetpoint MID_PEG = new ArmSetpoint(30, Units.inchesToMeters(10), -48);
+    public static final ArmSetpoint MID_PEG = new ArmSetpoint(31, Units.inchesToMeters(10.5), -48);
 
     public static final ArmSetpoint AUTO_MID_PEG = XYACalulator.Calulator(-1, 17, -20);
 
