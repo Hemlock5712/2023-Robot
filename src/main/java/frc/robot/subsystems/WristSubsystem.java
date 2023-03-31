@@ -7,8 +7,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -23,16 +21,22 @@ public class WristSubsystem extends SubsystemBase {
   // 0.07);
   private ArmFeedforward wristFeedforward = new ArmFeedforward(0, .2, .79, .04);
 
-  private NetworkTableEntry wristTargetAngleEntry = NetworkTableInstance.getDefault().getTable("Wrist")
-      .getEntry("targetAngle");
-  private NetworkTableEntry wristCurrentAngleEntry = NetworkTableInstance.getDefault().getTable("Wrist")
-      .getEntry("currentAngle");
-  private NetworkTableEntry wristVoltageEntry = NetworkTableInstance.getDefault().getTable("Wrist").getEntry("voltage");
-  private NetworkTableEntry wristCurrentEntry = NetworkTableInstance.getDefault().getTable("Wrist").getEntry("current");
-  private NetworkTableEntry wristTemperatureEntry = NetworkTableInstance.getDefault().getTable("Wrist")
-      .getEntry("temperature");
-  private NetworkTableEntry atSetpointEntry = NetworkTableInstance.getDefault().getTable("Wrist")
-      .getEntry("atSetpoint");
+  // private NetworkTableEntry wristTargetAngleEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist")
+  // .getEntry("targetAngle");
+  // private NetworkTableEntry wristCurrentAngleEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist")
+  // .getEntry("currentAngle");
+  // private NetworkTableEntry wristVoltageEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist").getEntry("voltage");
+  // private NetworkTableEntry wristCurrentEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist").getEntry("current");
+  // private NetworkTableEntry wristTemperatureEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist")
+  // .getEntry("temperature");
+  // private NetworkTableEntry atSetpointEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist")
+  // .getEntry("atSetpoint");
 
   private double setpoint = 0;
 
@@ -93,14 +97,15 @@ public class WristSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     run();
-    double feedforward = wristFeedforward.calculate(setpoint, 0);
-    double output = wristPID.calculate(getAngle(), setpoint) + feedforward;
+
+    // double feedforward = wristFeedforward.calculate(setpoint, 0);
+    // double output = wristPID.calculate(getAngle(), setpoint) + feedforward;
     // setVoltage(output);
-    wristCurrentAngleEntry.setDouble(getAngle());
-    wristTargetAngleEntry.setDouble(setpoint);
-    wristVoltageEntry.setDouble(wristMotor.getAppliedOutput());
-    wristCurrentEntry.setDouble(wristMotor.getOutputCurrent());
-    wristTemperatureEntry.setDouble(wristMotor.getMotorTemperature());
+    // wristCurrentAngleEntry.setDouble(getAngle());
+    // wristTargetAngleEntry.setDouble(setpoint);
+    // wristVoltageEntry.setDouble(wristMotor.getAppliedOutput());
+    // wristCurrentEntry.setDouble(wristMotor.getOutputCurrent());
+    // wristTemperatureEntry.setDouble(wristMotor.getMotorTemperature());
 
   }
 }
