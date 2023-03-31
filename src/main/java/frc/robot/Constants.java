@@ -378,6 +378,13 @@ public final class Constants {
     public static final double GEAR_RATIO = 49;
   }
 
+  public static class SpacerConstants {
+
+    public static final int CANCODER_ID = 28;
+    public static final int MOTOR_ID = 29;
+
+  }
+
   // These are all very arbitrary and need to be tuned
   public static class ArmSetpoints {
     /**
@@ -433,5 +440,6 @@ public final class Constants {
 
     public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(-4, 0, -10);
   }
+
 
 }

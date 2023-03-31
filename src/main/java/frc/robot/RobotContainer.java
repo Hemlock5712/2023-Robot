@@ -251,10 +251,11 @@ public class RobotContainer {
     controller.rightBumper().whileTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
       ledSubsystem.setGamePiece(GamePiece.CUBE);
-    }).andThen(
-        new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-            Constants.ArmSetpoints.GROUND_CUBE_PICKUP).alongWith(
-                new RunIntakeCommand(intakeSubsystem))));
+    })// .andThen(new MoveSpacerAngle(0))
+        .andThen(
+            new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+                Constants.ArmSetpoints.GROUND_CUBE_PICKUP).alongWith(
+                    new RunIntakeCommand(intakeSubsystem))));
 
     controller2.leftBumper().onTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
@@ -265,7 +266,9 @@ public class RobotContainer {
         new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
             .withTimeout(0.5).andThen(
                 new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-                    Constants.ArmSetpoints.TRANSIT)));
+                    Constants.ArmSetpoints.TRANSIT))
+    // .alongWith(new MoveSpacerAngle(0))
+    );
 
     controller2.rightBumper().onTrue(new InstantCommand(() -> {
       PiecePicker.toggle(false);
@@ -280,7 +283,9 @@ public class RobotContainer {
         extensionSubsystem, wristSubsystem));
 
     controller2.x()
-        .whileTrue(new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem));
+        .whileTrue(new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem)
+        // .andThen(new MoveSpacerAngle(0))
+        );
 
     controller2.y().whileTrue(new HighPlace(elevatorSubsystem,
         extensionSubsystem, wristSubsystem));
