@@ -251,7 +251,7 @@ public class RobotContainer {
     controller.rightBumper().whileTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
       ledSubsystem.setGamePiece(GamePiece.CUBE);
-    }).andThen(new MoveSpacerAngle(22, spacerSubsystem))
+    }).andThen(new MoveSpacerAngle(24, spacerSubsystem))
         .andThen(
             new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
                 Constants.ArmSetpoints.GROUND_CUBE_PICKUP).alongWith(
@@ -264,7 +264,7 @@ public class RobotContainer {
 
     controller2.leftTrigger(0.5).whileTrue(
         new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
-            .withTimeout(0.5).alongWith(new MoveSpacerAngle(22, spacerSubsystem)).andThen(
+            .withTimeout(0.5).alongWith(new MoveSpacerAngle(24, spacerSubsystem)).andThen(
                 new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
                     Constants.ArmSetpoints.TRANSIT)));
 
