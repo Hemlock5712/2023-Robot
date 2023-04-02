@@ -281,7 +281,7 @@ public class RobotContainer {
         extensionSubsystem, wristSubsystem));
 
     controller2.x()
-        .whileTrue(new ParallelDeadlineGroup(new MoveSpacerAngle(0, spacerSubsystem),
+        .whileTrue(new ParallelDeadlineGroup(new MoveSpacerAngle(2, spacerSubsystem),
             new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(20, -0.06, 45)))
             .andThen(
                 new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem)));

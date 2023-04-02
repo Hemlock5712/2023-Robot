@@ -19,19 +19,16 @@ public class SpacerSubsystem extends SubsystemBase {
   /** Creates a new SpacerSubsystem. */
   public SpacerSubsystem() {
     SpacerMotor.setIdleMode(IdleMode.kCoast);
-    SpacerMotor.setSmartCurrentLimit(20, 20);
+    SpacerMotor.setSmartCurrentLimit(30, 30);
     SpacerMotor.burnFlash();
     SpacerMotor.getEncoder().setPosition(0);
     pidController = new PIDController(0.4, 0, 0);
 
   }
 
-
   public void setMotorVoltage(double voltage) {
     SpacerMotor.setVoltage(voltage);
   }
-
-
 
   @Override
   public void periodic() {
