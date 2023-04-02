@@ -379,10 +379,7 @@ public final class Constants {
   }
 
   public static class SpacerConstants {
-
-    public static final int CANCODER_ID = 28;
     public static final int MOTOR_ID = 29;
-
   }
 
   // These are all very arbitrary and need to be tuned
@@ -435,11 +432,13 @@ public final class Constants {
      */
     // public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP =
     // XYACalulator.Calulator(-.2, 2, 34);
-    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, -.06, 34);
+    // WAS 34 AT MIDLAND
+    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, -.06, 45);
+    // public static final ArmSetpoint TEST_SINGLE_SUBSTATION_PICKUP = new
+    // ArmSetpoint(0, -.06, 45);
     public static final ArmSetpoint STARTING_CONFIG = new ArmSetpoint(71, 0, -106);
 
     public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(-4, 0, -10);
   }
-
 
 }

@@ -8,10 +8,13 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.SpacerSubsystem;
 
 public class MoveSpacerAngle extends CommandBase {
-  SpacerSubsystem SpacerSubsystem;
+  SpacerSubsystem spacerSubsystem;
   double angle;
+  boolean atTarget = false;
+
   /** Creates a new MoveSpacerAngle. */
-  public MoveSpacerAngle(double angle) {
+  public MoveSpacerAngle(double angle, SpacerSubsystem spacerSubsystem) {
+    this.spacerSubsystem = spacerSubsystem;
     this.angle = angle;
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -19,20 +22,23 @@ public class MoveSpacerAngle extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    SpacerSubsystem.setAngle(angle);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    System.out.println(angle);
+    this.atTarget = spacerSubsystem.pidPower(angle);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return SpacerSubsystem.atTarget();
+    return this.atTarget;
   }
 }

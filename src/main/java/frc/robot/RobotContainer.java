@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DrivetrainConstants;
@@ -40,6 +41,7 @@ import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
 import frc.robot.commands.operator.SingleSubstation;
+import frc.robot.commands.operator.subcommands.MoveSpacerAngle;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.VisGraph;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -48,6 +50,7 @@ import frc.robot.subsystems.ExtensionSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PoseEstimatorSubsystem;
+import frc.robot.subsystems.SpacerSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.util.ArmSetpoint;
 import frc.robot.util.FieldConstants;
@@ -80,6 +83,7 @@ public class RobotContainer {
   private final WristSubsystem wristSubsystem = new WristSubsystem();
   private final LEDSubsystem ledSubsystem = new LEDSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(ledSubsystem);
+  private final SpacerSubsystem spacerSubsystem = new SpacerSubsystem();
 
   // final List<Obstacle> cablePath = FieldConstants.cablePath;
 
@@ -113,7 +117,7 @@ public class RobotContainer {
               .withTimeout(1)),
       Map.entry(
           "coneMid",
-          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_PEG)
+          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.MID_PEG)
               .alongWith(new RunIntakeCommand(intakeSubsystem))
               .withTimeout(1)),
       Map.entry(
@@ -186,10 +190,6 @@ public class RobotContainer {
     PiecePicker.toggle(false);
     intakeSubsystem.setDefaultCommand(new HoldIntakeCommand(intakeSubsystem));
 
-    autoChooser.addOption("Center With Balance",
-        makeAutoBuilderCommand("SingleWithAutoBalance", new PathConstraints(1.5, 1)));
-    // autoChooser.setDefaultOption("Barrier Side 2 Cube",
-    // makeAutoBuilderCommand("Center2GamePiece", new PathConstraints(2.5, 2)));
     autoChooser.addOption("Wall Side 2 Cube", makeAutoBuilderCommand("DoubleWallSide", new PathConstraints(2, 2)));
     // autoChooser.setDefaultOption("3 Cube",
     // makeAutoBuilderCommand("2Cube1Cone", new PathConstraints(3, 3)));
@@ -251,7 +251,7 @@ public class RobotContainer {
     controller.rightBumper().whileTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
       ledSubsystem.setGamePiece(GamePiece.CUBE);
-    })// .andThen(new MoveSpacerAngle(0))
+    }).andThen(new MoveSpacerAngle(22, spacerSubsystem))
         .andThen(
             new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
                 Constants.ArmSetpoints.GROUND_CUBE_PICKUP).alongWith(
@@ -264,11 +264,9 @@ public class RobotContainer {
 
     controller2.leftTrigger(0.5).whileTrue(
         new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
-            .withTimeout(0.5).andThen(
+            .withTimeout(0.5).alongWith(new MoveSpacerAngle(22, spacerSubsystem)).andThen(
                 new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-                    Constants.ArmSetpoints.TRANSIT))
-    // .alongWith(new MoveSpacerAngle(0))
-    );
+                    Constants.ArmSetpoints.TRANSIT)));
 
     controller2.rightBumper().onTrue(new InstantCommand(() -> {
       PiecePicker.toggle(false);
@@ -283,9 +281,10 @@ public class RobotContainer {
         extensionSubsystem, wristSubsystem));
 
     controller2.x()
-        .whileTrue(new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem)
-        // .andThen(new MoveSpacerAngle(0))
-        );
+        .whileTrue(new ParallelDeadlineGroup(new MoveSpacerAngle(0, spacerSubsystem),
+            new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(20, -0.06, 45)))
+            .andThen(
+                new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem)));
 
     controller2.y().whileTrue(new HighPlace(elevatorSubsystem,
         extensionSubsystem, wristSubsystem));
