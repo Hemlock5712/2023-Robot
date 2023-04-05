@@ -54,6 +54,7 @@ import frc.robot.subsystems.WristSubsystem;
 import frc.robot.util.ArmSetpoint;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.PiecePicker;
+import frc.robot.util.ResetGyro;
 import frc.robot.util.enums.GamePiece;
 
 /**
@@ -187,14 +188,15 @@ public class RobotContainer {
     intakeSubsystem.setDefaultCommand(new HoldIntakeCommand(intakeSubsystem));
 
     autoChooser.addOption("Wall Side 2.5 Cube", makeAutoBuilderCommand("WALL25", new PathConstraints(2.5, 2)));
-    autoChooser.addOption("Wall Side 2.5 Cube Park", makeAutoBuilderCommand("WALL25PARK", new PathConstraints(2.5, 2)).withTimeout(14.9)
-    .andThen(new WheelXMode(drivetrainSubsystem)));
+    autoChooser.addOption("Wall Side 2.5 Cube Park",
+        makeAutoBuilderCommand("WALL25PARK", new PathConstraints(2.5, 2)).withTimeout(14.9)
+            .andThen(new WheelXMode(drivetrainSubsystem)));
     autoChooser.setDefaultOption("Human 2.5 Cube Park",
         makeAutoBuilderCommand("HUMAN25PARK", new PathConstraints(3.5, 3)).withTimeout(14.9)
             .andThen(new WheelXMode(drivetrainSubsystem)));
     autoChooser.addOption("Human 3 Cube", makeAutoBuilderCommand("HUMAN3", new PathConstraints(3, 3))
         .withTimeout(14.9).andThen(new WaitCommand(0.25).deadlineWith(new ReverseIntakeCommand(intakeSubsystem))));
-        autoChooser.addOption("Human 2.5 Cube", makeAutoBuilderCommand("HUMAN25", new PathConstraints(3, 3)));  
+    autoChooser.addOption("Human 2.5 Cube", makeAutoBuilderCommand("HUMAN25", new PathConstraints(3, 3)));
     autoChooser.addOption("Do Nothing", Commands.none());
 
     SmartDashboard.putData(autoChooser);
@@ -244,6 +246,10 @@ public class RobotContainer {
     controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
 
     controller.rightTrigger(0.5).whileTrue(new ReverseIntakeCommand(intakeSubsystem));
+
+    controller.a().whileTrue(new InstantCommand(() -> {
+      ResetGyro.resetGyro(poseEstimator);
+    }));
 
     controller.rightBumper().whileTrue(new InstantCommand(() -> {
       PiecePicker.toggle(true);
