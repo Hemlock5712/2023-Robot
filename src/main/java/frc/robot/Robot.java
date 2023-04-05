@@ -133,6 +133,7 @@ public class Robot extends LoggedRobot {
     }
     checkDriverStationUpdate();
     robotContainer.startTeleopPosCommand();
+    robotContainer.cancelVision();
   }
 
   /** This function is called periodically during operator control. */

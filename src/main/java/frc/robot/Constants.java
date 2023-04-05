@@ -166,6 +166,8 @@ public final class Constants {
 
   public static class VisionConstants {
 
+    public static boolean USE_VISION = true;
+
     /**
      * Physical location of the right camera on the robot, relative to the center of
      * the

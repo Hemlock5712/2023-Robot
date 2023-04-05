@@ -135,9 +135,13 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   public void periodic() {
     // Update pose estimator with drivetrain sensors
     poseEstimator.update(rotationSupplier.get(), modulePositionSupplier.get());
+    if (Constants.VisionConstants.USE_VISION) {
+      estimatorChecker(rightEstimator);
+      estimatorChecker(leftEstimator);
+    } else {
+      allNotifier.close();
+    }
 
-    estimatorChecker(rightEstimator);
-    estimatorChecker(leftEstimator);
     // estimatorChecker(backEstimator);
 
     // Set the pose on the dashboard

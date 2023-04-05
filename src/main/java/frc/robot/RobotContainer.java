@@ -356,4 +356,8 @@ public class RobotContainer {
   public void onAllianceChanged(Alliance currentAlliance) {
     poseEstimator.setAlliance(currentAlliance);
   }
+
+  public void cancelVision() {
+    Constants.VisionConstants.USE_VISION = false;
+  }
 }
