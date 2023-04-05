@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 1.965656600352348,
-        "y": 4.906747464740481
+        "x": 1.9977785447668597,
+        "y": 4.417423057188069
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.469644227544684,
-        "y": 4.754600256531473
+        "x": 2.3960824661308973,
+        "y": 4.707428171149415
       },
       "holonomicAngle": -180.0,
       "isReversal": false,
@@ -17,8 +17,8 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "cone",
-          "coneHigh",
+          "cube",
+          "cubeHigh",
           "outtake",
           "extendIn"
         ],
@@ -193,9 +193,7 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "outtake"
-        ],
+        "names": [],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -209,7 +207,6 @@
     {
       "position": 0.5090909090909422,
       "names": [
-        "cube",
         "transit"
       ]
     },
@@ -259,12 +256,6 @@
       "position": 6.278787878788103,
       "names": [
         "cubeMid"
-      ]
-    },
-    {
-      "position": 6.872727272727627,
-      "names": [
-        "extendLow"
       ]
     }
   ]

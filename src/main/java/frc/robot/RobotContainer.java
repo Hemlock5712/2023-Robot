@@ -33,7 +33,6 @@ import frc.robot.commands.FieldOrientedDriveCommand;
 import frc.robot.commands.HoldIntakeCommand;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
-import frc.robot.commands.balance.AutoBalance;
 import frc.robot.commands.balance.NewBalance;
 import frc.robot.commands.driver.DriveToPoseCommand;
 import frc.robot.commands.driver.WheelXMode;
@@ -132,9 +131,6 @@ public class RobotContainer {
           new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.TRANSIT)
               .withTimeout(0.1)),
       Map.entry(
-          "autoBalance",
-          new AutoBalance(drivetrainSubsystem, poseEstimator)),
-      Map.entry(
           "newAutoBalance",
           new NewBalance(drivetrainSubsystem, poseEstimator)),
       Map.entry(
@@ -190,14 +186,15 @@ public class RobotContainer {
     PiecePicker.toggle(false);
     intakeSubsystem.setDefaultCommand(new HoldIntakeCommand(intakeSubsystem));
 
-    autoChooser.addOption("Wall Side 2 Cube", makeAutoBuilderCommand("DoubleWallSide", new PathConstraints(2, 2)));
-    // autoChooser.setDefaultOption("3 Cube",
-    // makeAutoBuilderCommand("2Cube1Cone", new PathConstraints(3, 3)));
-    autoChooser.addOption("2.5 Cube Balance",
-        makeAutoBuilderCommand("2Cube1GrabPark", new PathConstraints(3.5, 3)).withTimeout(14.9)
+    autoChooser.addOption("Wall Side 2.5 Cube", makeAutoBuilderCommand("WALL25", new PathConstraints(2.5, 2)));
+    autoChooser.addOption("Wall Side 2.5 Cube Park", makeAutoBuilderCommand("WALL25PARK", new PathConstraints(2.5, 2)).withTimeout(14.9)
+    .andThen(new WheelXMode(drivetrainSubsystem)));
+    autoChooser.setDefaultOption("Human 2.5 Cube Park",
+        makeAutoBuilderCommand("HUMAN25PARK", new PathConstraints(3.5, 3)).withTimeout(14.9)
             .andThen(new WheelXMode(drivetrainSubsystem)));
-    autoChooser.setDefaultOption("3 Cube", makeAutoBuilderCommand("3Cube", new PathConstraints(3, 3))
+    autoChooser.addOption("Human 3 Cube", makeAutoBuilderCommand("HUMAN3", new PathConstraints(3, 3))
         .withTimeout(14.9).andThen(new WaitCommand(0.25).deadlineWith(new ReverseIntakeCommand(intakeSubsystem))));
+        autoChooser.addOption("Human 2.5 Cube", makeAutoBuilderCommand("HUMAN25", new PathConstraints(3, 3)));  
     autoChooser.addOption("Do Nothing", Commands.none());
 
     SmartDashboard.putData(autoChooser);
