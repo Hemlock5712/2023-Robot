@@ -198,6 +198,7 @@ public class RobotContainer {
         .withTimeout(14.9).andThen(new WaitCommand(0.25).deadlineWith(new ReverseIntakeCommand(intakeSubsystem))));
     autoChooser.addOption("Human 2.5 Cube", makeAutoBuilderCommand("HUMAN25", new PathConstraints(3, 3)));
     autoChooser.addOption("Do Nothing", Commands.none());
+    autoChooser.addOption("test", makeAutoBuilderCommand("test", new PathConstraints(2.5, 2)));
 
     SmartDashboard.putData(autoChooser);
 
@@ -363,7 +364,7 @@ public class RobotContainer {
     poseEstimator.setAlliance(currentAlliance);
   }
 
-  public void cancelVision() {
-    Constants.VisionConstants.USE_VISION = false;
+  public void changeVision(boolean useVision) {
+    Constants.VisionConstants.USE_VISION = useVision;
   }
 }
