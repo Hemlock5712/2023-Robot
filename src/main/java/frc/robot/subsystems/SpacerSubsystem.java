@@ -38,8 +38,8 @@ public class SpacerSubsystem extends SubsystemBase {
   public boolean pidPower(double angle) {
     pidController.setSetpoint(angle);
     double nextVoltage = pidController.calculate(SpacerMotor.getEncoder().getPosition(), angle);
-    System.out.println(SpacerMotor.getEncoder().getPosition());
-    System.out.println(nextVoltage);
+    // System.out.println(SpacerMotor.getEncoder().getPosition());
+    // System.out.println(nextVoltage);
     setMotorVoltage(nextVoltage);
     return Math.abs(SpacerMotor.getEncoder().getPosition() - angle) < 4;
   }
