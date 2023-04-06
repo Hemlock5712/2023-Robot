@@ -214,12 +214,12 @@ public class RobotContainer {
     // .withTimeout(14.9).andThen(new WaitCommand(0.25).deadlineWith(new
     // ReverseIntakeCommand(intakeSubsystem))));
 
-    autoChooser.addOption("Human 2.5 Cube Blue", makeAutoBuilderCommand("HUMAN25BLUE", new PathConstraints(3, 3)));
+    autoChooser.addOption("Human 2.5 Cube Blue", makeAutoBuilderCommand("HUMAN25BLUE", new PathConstraints(2, 2)));
     // autoChooser.addOption("Human 2.5 Cube Red",
     // makeAutoBuilderCommand("HUMAN25RED", new PathConstraints(3, 3)));
 
-    autoChooser.addOption("Human 3 Cube Center Blue",
-        makeAutoBuilderCommand("HUMAN3CENTERBLUE", new PathConstraints(3, 3)));
+    // autoChooser.addOption("Human 3 Cube Center Blue",
+    //     makeAutoBuilderCommand("HUMAN3CENTERBLUE", new PathConstraints(3, 3)));
     // autoChooser.addOption("Human 3 Cube Center Red",
     // makeAutoBuilderCommand("HUMAN3CENTERRED", new PathConstraints(3, 3)));
 
