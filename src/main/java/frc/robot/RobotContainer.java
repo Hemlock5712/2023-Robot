@@ -187,18 +187,37 @@ public class RobotContainer {
     PiecePicker.toggle(false);
     intakeSubsystem.setDefaultCommand(new HoldIntakeCommand(intakeSubsystem));
 
-    autoChooser.addOption("Wall Side 2.5 Cube", makeAutoBuilderCommand("WALL25", new PathConstraints(2.5, 2)));
-    autoChooser.addOption("Wall Side 2.5 Cube Park",
-        makeAutoBuilderCommand("WALL25PARK", new PathConstraints(2.5, 2)).withTimeout(14.9)
+    autoChooser.addOption("Wall Side 2.5 Cube Blue", makeAutoBuilderCommand("WALL25BLUE", new PathConstraints(2.5, 2)));
+    autoChooser.addOption("Wall Side 2.5 Cube Red", makeAutoBuilderCommand("WALL25RED", new PathConstraints(2.5, 2)));
+
+    autoChooser.addOption("Wall Side 2.5 Cube Park Blue",
+        makeAutoBuilderCommand("WALL25PARKBLUE", new PathConstraints(2.5, 2)).withTimeout(14.9)
             .andThen(new WheelXMode(drivetrainSubsystem)));
-    autoChooser.setDefaultOption("Human 2.5 Cube Park",
-        makeAutoBuilderCommand("HUMAN25PARK", new PathConstraints(3.5, 3)).withTimeout(14.9)
+    autoChooser.addOption("Wall Side 2.5 Cube Park Red",
+        makeAutoBuilderCommand("WALL25PARKRED", new PathConstraints(2.5, 2)).withTimeout(14.9)
             .andThen(new WheelXMode(drivetrainSubsystem)));
-    autoChooser.addOption("Human 3 Cube", makeAutoBuilderCommand("HUMAN3", new PathConstraints(3, 3))
+
+    autoChooser.setDefaultOption("Human 2.5 Cube Park Blue",
+        makeAutoBuilderCommand("HUMAN25PARKBLUE", new PathConstraints(3.5, 3)).withTimeout(14.9)
+            .andThen(new WheelXMode(drivetrainSubsystem)));
+    autoChooser.addOption("Human 2.5 Cube Park Red",
+        makeAutoBuilderCommand("HUMAN25PARKRED", new PathConstraints(3.5, 3)).withTimeout(14.9)
+            .andThen(new WheelXMode(drivetrainSubsystem)));
+
+    autoChooser.addOption("Human 3 Cube Blue", makeAutoBuilderCommand("HUMAN3BLUE", new PathConstraints(3, 3))
         .withTimeout(14.9).andThen(new WaitCommand(0.25).deadlineWith(new ReverseIntakeCommand(intakeSubsystem))));
-    autoChooser.addOption("Human 2.5 Cube", makeAutoBuilderCommand("HUMAN25", new PathConstraints(3, 3)));
+    autoChooser.addOption("Human 3 Cube Red", makeAutoBuilderCommand("HUMAN3RED", new PathConstraints(3, 3))
+        .withTimeout(14.9).andThen(new WaitCommand(0.25).deadlineWith(new ReverseIntakeCommand(intakeSubsystem))));
+
+    autoChooser.addOption("Human 2.5 Cube Blue", makeAutoBuilderCommand("HUMAN25BLUE", new PathConstraints(3, 3)));
+    autoChooser.addOption("Human 2.5 Cube Red", makeAutoBuilderCommand("HUMAN25RED", new PathConstraints(3, 3)));
+
+    autoChooser.addOption("Human 3 Cube Center Blue",
+        makeAutoBuilderCommand("HUMAN3CENTERBLUE", new PathConstraints(3, 3)));
+    autoChooser.addOption("Human 3 Cube Center Red",
+        makeAutoBuilderCommand("HUMAN3CENTERRED", new PathConstraints(3, 3)));
+
     autoChooser.addOption("Do Nothing", Commands.none());
-    autoChooser.addOption("test", makeAutoBuilderCommand("test", new PathConstraints(2.5, 2)));
 
     SmartDashboard.putData(autoChooser);
 
