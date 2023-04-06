@@ -219,7 +219,7 @@ public class RobotContainer {
     // makeAutoBuilderCommand("HUMAN25RED", new PathConstraints(3, 3)));
 
     // autoChooser.addOption("Human 3 Cube Center Blue",
-    //     makeAutoBuilderCommand("HUMAN3CENTERBLUE", new PathConstraints(3, 3)));
+    // makeAutoBuilderCommand("HUMAN3CENTERBLUE", new PathConstraints(3, 3)));
     // autoChooser.addOption("Human 3 Cube Center Red",
     // makeAutoBuilderCommand("HUMAN3CENTERRED", new PathConstraints(3, 3)));
 
@@ -293,7 +293,7 @@ public class RobotContainer {
 
     controller2.leftTrigger(0.5).whileTrue(
         new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(30, 0, 45))
-            .withTimeout(0.5).alongWith(new MoveSpacerAngle(24, spacerSubsystem)).andThen(
+            .withTimeout(0.5).alongWith(new MoveSpacerAngle(24, spacerSubsystem).withTimeout(3.0)).andThen(
                 new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
                     Constants.ArmSetpoints.TRANSIT)));
 
