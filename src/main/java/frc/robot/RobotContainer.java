@@ -40,6 +40,7 @@ import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
 import frc.robot.commands.operator.MoveToSetpoint;
 import frc.robot.commands.operator.SingleSubstation;
+import frc.robot.commands.operator.VisionController;
 import frc.robot.commands.operator.subcommands.MoveSpacerAngle;
 import frc.robot.pathfind.MapCreator;
 import frc.robot.pathfind.VisGraph;
@@ -148,6 +149,16 @@ public class RobotContainer {
             ledSubsystem.setGamePiece(GamePiece.CONE);
           })),
       Map.entry(
+          "visionOn",
+          new InstantCommand(() -> {
+            VisionController.setVisionOn();
+          })),
+      Map.entry(
+          "visionOff",
+          new InstantCommand(() -> {
+            VisionController.setVisionOff();
+          })),
+      Map.entry(
           "cube",
           new InstantCommand(() -> {
             PiecePicker.toggle(true);
@@ -223,6 +234,8 @@ public class RobotContainer {
     // autoChooser.addOption("Human 3 Cube Center Red",
     // makeAutoBuilderCommand("HUMAN3CENTERRED", new PathConstraints(3, 3)));
 
+    autoChooser.addOption("NO VISION", makeAutoBuilderCommand("EMERGENCY", new PathConstraints(2, 2)));
+
     autoChooser.addOption("Do Nothing", Commands.none());
 
     SmartDashboard.putData(autoChooser);
@@ -231,7 +244,7 @@ public class RobotContainer {
     configureButtonBindings();
     configureDashboard();
     reseedTimer.start();
-    pch.enableCompressorAnalog(80, 120);
+    pch.enableCompressorAnalog(Constants.PneumaticsConstants.MIN_PRESSURE, Constants.PneumaticsConstants.MAX_PRESSURE);
   }
 
   private void configureDashboard() {
