@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenixpro.signals.NeutralModeValue;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
@@ -55,14 +55,16 @@ import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.swerve.ModuleConfiguration;
+import frc.robot.swerve.ProSwerveModule;
 import frc.robot.swerve.SwerveModule;
+import frc.robot.swerve.SwerveModuleConstants;
 import frc.robot.swerve.SwerveSpeedController;
 import frc.robot.swerve.SwerveSteerController;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
   private final WPI_Pigeon2 pigeon = new WPI_Pigeon2(PIGEON_ID);
-  private final SwerveModule[] swerveModules;
+  private final ProSwerveModule[] swerveModules;
 
   private static final NetworkTable moduleStatesTable = NetworkTableInstance.getDefault().getTable("SwerveStates");
   NetworkTableEntry angleEntry = NetworkTableInstance.getDefault().getTable("DrivetrainSubsystem").getEntry("angle");
@@ -103,39 +105,39 @@ public class DrivetrainSubsystem extends SubsystemBase {
           .withPosition(6, 0);
     }
 
-    swerveModules = new SwerveModule[] {
-        createSwerveModule(
-            frontLeftLayout,
-            ModuleConfiguration.MK4I_L2,
-            FRONT_LEFT_MODULE_DRIVE_MOTOR,
-            FRONT_LEFT_MODULE_STEER_MOTOR,
-            FRONT_LEFT_MODULE_STEER_ENCODER,
-            FRONT_LEFT_MODULE_STEER_OFFSET),
-        createSwerveModule(
-            frontRightLayout,
-            ModuleConfiguration.MK4I_L2,
-            FRONT_RIGHT_MODULE_DRIVE_MOTOR,
-            FRONT_RIGHT_MODULE_STEER_MOTOR,
-            FRONT_RIGHT_MODULE_STEER_ENCODER,
-            FRONT_RIGHT_MODULE_STEER_OFFSET),
-        createSwerveModule(
-            backLeftLayout,
-            ModuleConfiguration.MK4I_L2,
-            BACK_LEFT_MODULE_DRIVE_MOTOR,
-            BACK_LEFT_MODULE_STEER_MOTOR,
-            BACK_LEFT_MODULE_STEER_ENCODER,
-            BACK_LEFT_MODULE_STEER_OFFSET),
-        createSwerveModule(
-            backRightLayout,
-            ModuleConfiguration.MK4I_L2,
-            BACK_RIGHT_MODULE_DRIVE_MOTOR,
-            BACK_RIGHT_MODULE_STEER_MOTOR,
-            BACK_RIGHT_MODULE_STEER_ENCODER,
-            BACK_RIGHT_MODULE_STEER_OFFSET) };
+    swerveModules = new ProSwerveModule[] {
+        new ProSwerveModule(
+          new SwerveModuleConstants()
+          .fromModuleConfiguration(ModuleConfiguration.MK4I_L2)
+            .withDriveMotorId(FRONT_LEFT_MODULE_DRIVE_MOTOR)
+            .withSteerMotorId(FRONT_LEFT_MODULE_STEER_MOTOR)
+            .withCANcoderId(FRONT_LEFT_MODULE_STEER_ENCODER)
+            .withCANcoderOffset(FRONT_LEFT_MODULE_STEER_OFFSET)),
+        new ProSwerveModule(
+          new SwerveModuleConstants()
+          .fromModuleConfiguration(ModuleConfiguration.MK4I_L2)
+            .withDriveMotorId(FRONT_RIGHT_MODULE_DRIVE_MOTOR)
+            .withSteerMotorId(FRONT_RIGHT_MODULE_STEER_MOTOR)
+            .withCANcoderId(FRONT_RIGHT_MODULE_STEER_ENCODER)
+            .withCANcoderOffset(FRONT_RIGHT_MODULE_STEER_OFFSET)),
+        new ProSwerveModule(
+          new SwerveModuleConstants()
+          .fromModuleConfiguration(ModuleConfiguration.MK4I_L2)
+            .withDriveMotorId(BACK_LEFT_MODULE_DRIVE_MOTOR)
+            .withSteerMotorId(BACK_LEFT_MODULE_STEER_MOTOR)
+            .withCANcoderId(BACK_LEFT_MODULE_STEER_ENCODER)
+            .withCANcoderOffset(BACK_LEFT_MODULE_STEER_OFFSET)),
+        new ProSwerveModule(
+          new SwerveModuleConstants()
+          .fromModuleConfiguration(ModuleConfiguration.MK4I_L2)
+            .withDriveMotorId(BACK_RIGHT_MODULE_DRIVE_MOTOR)
+            .withSteerMotorId(BACK_RIGHT_MODULE_STEER_MOTOR)
+            .withCANcoderId(BACK_RIGHT_MODULE_STEER_ENCODER)
+            .withCANcoderOffset(BACK_RIGHT_MODULE_STEER_OFFSET) )};
 
     // Put all the modules into brake mode
-    for (SwerveModule swerveModule : swerveModules) {
-      swerveModule.setNeutralMode(NeutralMode.Brake);
+    for (ProSwerveModule swerveModule : swerveModules) {
+      swerveModule.setNeutralMode(NeutralModeValue.Brake);
     }
 
     pigeon.zeroGyroBiasNow();
@@ -279,7 +281,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     IntStream.range(0, swerveModules.length).forEach(i -> {
       var swerveModule = swerveModules[i];
       var desiredState = SwerveModuleState.optimize(states[i], swerveModule.getSteerAngle());
-      swerveModule.setDesiredState(desiredState);
+      swerveModule.apply(desiredState);
 
       // Module setpoints for Advantage Scope
       if (DrivetrainConstants.ADD_TO_DASHBOARD) {
@@ -297,7 +299,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * Workaround for "dead wheel"
    */
   public void reseedSteerMotorOffsets() {
-    Arrays.stream(swerveModules).forEach(SwerveModule::reseedSteerMotorOffset);
+    // Arrays.stream(swerveModules).forEach(SwerveModule::reseedSteerMotorOffset);
   }
 
   /**
