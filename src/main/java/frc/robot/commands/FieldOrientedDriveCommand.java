@@ -52,6 +52,7 @@ public class FieldOrientedDriveCommand extends CommandBase {
   private Trigger isAligningTrigger;
 
   private double TARGET_ANGELE = 1.5708;
+  private double ALLIANCE_SPECIFIC = TARGET_ANGELE;
 
   /**
    * Constructor
@@ -91,9 +92,12 @@ public class FieldOrientedDriveCommand extends CommandBase {
     var robotAngle = robotAngleSupplier.get();
     thetaController.reset(robotAngle.getRadians());
     if (Constants.DrivetrainConstants.alliance == DriverStation.Alliance.Red) {
-      TARGET_ANGELE = -1 * TARGET_ANGELE;
+      ALLIANCE_SPECIFIC = -1 * TARGET_ANGELE;
     }
-    thetaController.setGoal(TARGET_ANGELE);
+    else{
+      ALLIANCE_SPECIFIC = TARGET_ANGELE;
+    }
+    thetaController.setGoal(ALLIANCE_SPECIFIC);
 
     // Calculate field relative speeds
     var chassisSpeeds = drivetrainSubsystem.getChassisSpeeds();
