@@ -8,9 +8,11 @@ public class LEDSubsystem extends SubsystemBase {
 
   private Spark blinkin = new Spark(0);
 
+  private boolean isHoldingGamePiece = false;
+
   private GamePiece gamePiece = GamePiece.NONE;
 
-  private double currentColor = BlinkinPatterns.END_TO_END;
+  private double currentColor = BlinkinPatterns.GOLD;
 
   /**
    * Creates a new LEDSubsystem.
@@ -30,6 +32,10 @@ public class LEDSubsystem extends SubsystemBase {
     }
   }
 
+  public void setIsHoldingGamePiece(boolean holdingGamePiece) {
+    isHoldingGamePiece = holdingGamePiece;
+  }
+
   public GamePiece getGamePiece() {
     return this.gamePiece;
   }
@@ -44,7 +50,11 @@ public class LEDSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    blinkin.set(currentColor);
+    if (isHoldingGamePiece) {
+      blinkin.set(BlinkinPatterns.GREEN);
+    } else {
+      blinkin.set(currentColor);
+    }
   }
 }
 
@@ -55,6 +65,6 @@ class BlinkinPatterns {
   public static final double GOLD = 0.67;
   public static final double YELLOW = 0.69;
   public static final double PURPLE = 0.91;
-  public static final double RED = 0.73;
+  public static final double GREEN = 0.77;
   public static final double END_TO_END = 0.45;
 }

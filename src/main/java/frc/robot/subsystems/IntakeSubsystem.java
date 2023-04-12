@@ -7,8 +7,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,17 +16,21 @@ public class IntakeSubsystem extends SubsystemBase {
   // private CANSparkMax lower = new CANSparkMax(17, MotorType.kBrushed);
   // private CANSparkMax upper = new CANSparkMax(16, MotorType.kBrushed);
 
+  private LEDSubsystem ledSubsystem;
+
   private TalonFX intake = new TalonFX(33);
   private Solenoid claw = new Solenoid(PneumaticsModuleType.REVPH, 8);
-  private NetworkTableEntry motorTempEntry = NetworkTableInstance.getDefault().getTable("Intake")
-      .getEntry("temperature");
+  // private NetworkTableEntry motorTempEntry =
+  // NetworkTableInstance.getDefault().getTable("Intake")
+  // .getEntry("temperature");
   // private double speedSetpoint = 0;
 
   // private PIDController intakePID = new PIDController(1, 0, 0);
   // private SimpleMotorFeedforward intakeFF = new SimpleMotorFeedforward(0.01,
   // 1.18, 0.01);
 
-  public IntakeSubsystem() {
+  public IntakeSubsystem(LEDSubsystem ledSubsystem) {
+    this.ledSubsystem = ledSubsystem;
     intake.setInverted(false);
   }
 
@@ -52,7 +54,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void reverseIntakeCone() {
     // speedSetpoint = -800;
-    intake.set(ControlMode.PercentOutput, .6);
+    intake.set(ControlMode.PercentOutput, .4);
   }
 
   public void stopIntake() {
@@ -81,6 +83,17 @@ public class IntakeSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("Intake/TargetSpeed", speedSetpoint);
     // speedSetpoint = 0;
     // This method will be called once per scheduler run
-    motorTempEntry.setDouble(intake.getTemperature());
+    // motorTempEntry.setDouble(intake.getTemperature());
+    // SmartDashboard.putNumber("Intake Current", intake.getSupplyCurrent());
+    // SmartDashboard.putNumber("Intake Speed", intake.getSelectedSensorVelocity());
+    if (Math.abs(intake.getMotorOutputPercent()) > .01) {
+      if (Math.abs(intake.getSelectedSensorVelocity()) < 500) {
+        ledSubsystem.setIsHoldingGamePiece(true);
+      } else {
+        ledSubsystem.setIsHoldingGamePiece(false);
+      }
+    } else {
+      ledSubsystem.setIsHoldingGamePiece(false);
+    }
   }
 }

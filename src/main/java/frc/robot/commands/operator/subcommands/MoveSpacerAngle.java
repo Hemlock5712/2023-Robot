@@ -5,43 +5,40 @@
 package frc.robot.commands.operator.subcommands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.SpacerSubsystem;
 
-public class MoveElevatorAngle extends CommandBase {
-  ElevatorSubsystem elevator;
+public class MoveSpacerAngle extends CommandBase {
+  SpacerSubsystem spacerSubsystem;
   double angle;
+  boolean atTarget = false;
 
-  /** Creates a new MoveElevatorAngle. */
-  public MoveElevatorAngle(ElevatorSubsystem elevator, double angle) {
-    this.elevator = elevator;
+  /** Creates a new MoveSpacerAngle. */
+  public MoveSpacerAngle(double angle, SpacerSubsystem spacerSubsystem) {
+    this.spacerSubsystem = spacerSubsystem;
     this.angle = angle;
-    addRequirements(elevator);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.enableAutoDrive();
-    elevator.setAngle(angle);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.setAngle(angle);
-    // System.out.println("Setting angle" + angle);
+    //System.out.println(angle);
+    this.atTarget = spacerSubsystem.pidPower(angle);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // System.out.println("Finished with MoveElevatorAngle");
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return elevator.atTarget();
+    return this.atTarget;
   }
 }

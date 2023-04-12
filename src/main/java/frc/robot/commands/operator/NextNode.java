@@ -5,7 +5,6 @@
 package frc.robot.commands.operator;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -27,7 +26,7 @@ public class NextNode extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //System.out.print("Placing high");
+    // System.out.print("Placing high");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,11 +38,9 @@ public class NextNode extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     PlacementPosition current = Position.getPlacementPosition();
-   
-  
+
     int changeX = 0;
     int changeY = 0;
-
 
     switch (direction) {
       case Right:
@@ -62,19 +59,19 @@ public class NextNode extends CommandBase {
         break;
     }
 
-    if(Constants.DrivetrainConstants.alliance == Alliance.Blue){
+    if (Constants.DrivetrainConstants.alliance == Alliance.Blue) {
       changeX *= -1;
     }
 
     TargetPosition newTargetPosition = TargetPosition.values()[((current.getPosition().ordinal() + changeX + 9) % 9)];
 
-    TargetLevel newTargetLevel = TargetLevel.values()[(current.getLevel().ordinal()+changeY+3)%3];
+    TargetLevel newTargetLevel = TargetLevel.values()[(current.getLevel().ordinal() + changeY + 3) % 3];
 
     Position.setPlacementPosition(new PlacementPosition(newTargetPosition, newTargetLevel));
 
-    SmartDashboard.putNumber("NextPosition", newTargetPosition.ordinal());
-    SmartDashboard.putNumber("NextLevel", 2 - newTargetLevel.ordinal());
-    }
+    // SmartDashboard.putNumber("NextPosition", newTargetPosition.ordinal());
+    // SmartDashboard.putNumber("NextLevel", 2 - newTargetLevel.ordinal());
+  }
 
   // Returns true when the command should end.
   @Override

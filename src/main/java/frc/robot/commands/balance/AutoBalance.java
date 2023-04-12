@@ -7,7 +7,6 @@ package frc.robot.commands.balance;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -81,8 +80,6 @@ public class AutoBalance extends CommandBase {
   // double minTargetXRed = 4.03;
   // double maxTargetXRed = 6.47;
 
-
-
   double initSpeed = 1;
   double pastVelocitySign = 0;
 
@@ -97,7 +94,7 @@ public class AutoBalance extends CommandBase {
     omegaController.setTolerance(Units.degreesToRadians(3));
     omegaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    addRequirements(driveSystem, poseEstimatorSystem);
+    addRequirements(driveSystem);
   }
 
   private double getDistanceFromX() {
@@ -118,7 +115,7 @@ public class AutoBalance extends CommandBase {
       // Calculating how much the robot accelerates downward based upon gravity and
       // the angle of the platform.
       double velocityOfGravity = 9.81 * Math.sin(pitch) * (useGravity ? 1 : 0.0); // Ternary operator is for testing!
-                                                                                     // DON'T use in production!
+                                                                                  // DON'T use in production!
       double velocityOfDistance = -velocityPerMeter * distanceFromCenter;
       double velocityAdded;
       // Checking if useDisableConstantOnPitch or useDisableConstantOnPos are in use
@@ -149,22 +146,20 @@ public class AutoBalance extends CommandBase {
     }
     double tempSpeed = initSpeed;
 
-    if(pastVelocitySign != 0 && pastVelocitySign != (velocity > 0 ? 1 : -1)) {
-        initSpeed /= 2;
+    if (pastVelocitySign != 0 && pastVelocitySign != (velocity > 0 ? 1 : -1)) {
+      initSpeed /= 2;
     }
     // if(Math.abs(velocity*tempSpeed)<.05){
-    //   velocity = 0;
+    // velocity = 0;
     // }
 
-
-
-    double tempVelocity = velocity*tempSpeed;
-    SmartDashboard.putNumber("Velocity", tempVelocity);
+    double tempVelocity = velocity * tempSpeed;
+    // SmartDashboard.putNumber("Velocity", tempVelocity);
 
     pastVelocitySign = (velocity > 0 ? 1 : -1);
-    
+
     return tempVelocity;
-    
+
   }
 
   private void selfBalancing() {
@@ -174,7 +169,7 @@ public class AutoBalance extends CommandBase {
 
   @Override
   public void initialize() {
-    
+
     // driveSystem.resetPitch();
   }
 

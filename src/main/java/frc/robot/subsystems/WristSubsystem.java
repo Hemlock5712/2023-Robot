@@ -7,9 +7,6 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -24,24 +21,31 @@ public class WristSubsystem extends SubsystemBase {
   // 0.07);
   private ArmFeedforward wristFeedforward = new ArmFeedforward(0, .2, .79, .04);
 
-  private NetworkTableEntry wristTargetAngleEntry = NetworkTableInstance.getDefault().getTable("Wrist")
-      .getEntry("targetAngle");
-  private NetworkTableEntry wristCurrentAngleEntry = NetworkTableInstance.getDefault().getTable("Wrist")
-      .getEntry("currentAngle");
-  private NetworkTableEntry wristVoltageEntry = NetworkTableInstance.getDefault().getTable("Wrist").getEntry("voltage");
-  private NetworkTableEntry wristCurrentEntry = NetworkTableInstance.getDefault().getTable("Wrist").getEntry("current");
-  private NetworkTableEntry wristTemperatureEntry = NetworkTableInstance.getDefault().getTable("Wrist")
-      .getEntry("temperature");
-  private NetworkTableEntry atSetpointEntry = NetworkTableInstance.getDefault().getTable("Wrist")
-      .getEntry("atSetpoint");
+  // private NetworkTableEntry wristTargetAngleEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist")
+  // .getEntry("targetAngle");
+  // private NetworkTableEntry wristCurrentAngleEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist")
+  // .getEntry("currentAngle");
+  // private NetworkTableEntry wristVoltageEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist").getEntry("voltage");
+  // private NetworkTableEntry wristCurrentEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist").getEntry("current");
+  // private NetworkTableEntry wristTemperatureEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist")
+  // .getEntry("temperature");
+  // private NetworkTableEntry atSetpointEntry =
+  // NetworkTableInstance.getDefault().getTable("Wrist")
+  // .getEntry("atSetpoint");
 
   private double setpoint = 0;
 
   public WristSubsystem() {
     wristEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-    wristEncoder.configMagnetOffset(-50);
+    wristEncoder.configMagnetOffset(10);
     wristMotor.setIdleMode(IdleMode.kBrake);
     wristMotor.setSmartCurrentLimit(30, 80);
+    wristMotor.burnFlash();
     // wristMotor.setSmartCurrentLimit(30, 40);
 
   }
@@ -75,32 +79,33 @@ public class WristSubsystem extends SubsystemBase {
     // + feedforward
     // double output = feedforward;
     double pid = wristPID.calculate(getAngle(), setpoint);
-    SmartDashboard.putNumber("WristPID", pid);
-    SmartDashboard.putNumber("WristFF", feedforward);
+    // SmartDashboard.putNumber("WristPID", pid);
+    // SmartDashboard.putNumber("WristFF", feedforward);
     double output = feedforward + pid;
-    SmartDashboard.putNumber("WristOutput", output);
+    // SmartDashboard.putNumber("WristOutput", output);
     // System.out.println(feedforward);
     // System.out.println("_________ " + output);
 
     setVoltage(output);
-    wristCurrentAngleEntry.setDouble(getAngle());
-    wristTargetAngleEntry.setDouble(setpoint);
-    wristVoltageEntry.setDouble(wristMotor.getAppliedOutput());
-    wristCurrentEntry.setDouble(wristMotor.getOutputCurrent());
-    atSetpointEntry.setBoolean(atTarget());
+    // wristCurrentAngleEntry.setDouble(getAngle());
+    // wristTargetAngleEntry.setDouble(setpoint);
+    // wristVoltageEntry.setDouble(wristMotor.getAppliedOutput());
+    // wristCurrentEntry.setDouble(wristMotor.getOutputCurrent());
+    // atSetpointEntry.setBoolean(atTarget());
   }
 
   @Override
   public void periodic() {
     run();
+
     // double feedforward = wristFeedforward.calculate(setpoint, 0);
     // double output = wristPID.calculate(getAngle(), setpoint) + feedforward;
-    // // setVoltage(output);
+    // setVoltage(output);
     // wristCurrentAngleEntry.setDouble(getAngle());
     // wristTargetAngleEntry.setDouble(setpoint);
     // wristVoltageEntry.setDouble(wristMotor.getAppliedOutput());
     // wristCurrentEntry.setDouble(wristMotor.getOutputCurrent());
-    wristTemperatureEntry.setDouble(wristMotor.getMotorTemperature());
+    // wristTemperatureEntry.setDouble(wristMotor.getMotorTemperature());
 
   }
 }

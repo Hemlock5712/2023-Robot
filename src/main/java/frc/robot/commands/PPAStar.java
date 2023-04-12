@@ -33,9 +33,9 @@ public class PPAStar extends CommandBase {
   private final List<Obstacle> obstacles;
   private VisGraph AStarMap;
   private boolean singleSubstation;
-  private Rotation2d SINGLE_SUBSTATION_ANGLE = Rotation2d.fromDegrees(0);
-  private Rotation2d FACE_TARGETS_OFFSET = Rotation2d.fromDegrees(180 + 45);
-  private Rotation2d FACE_TARGETS_SS = Rotation2d.fromDegrees(180);
+  private Rotation2d SINGLE_SUBSTATION_ANGLE = Rotation2d.fromDegrees(180);
+  private Rotation2d FACE_TARGETS_OFFSET = Rotation2d.fromDegrees(180);
+  private Rotation2d FACE_TARGETS_SCORING = Rotation2d.fromDegrees(180);
 
   public PPAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, Node finalPosition,
       List<Obstacle> obstacles, VisGraph AStarMap, boolean singleSubstation) {
@@ -51,7 +51,7 @@ public class PPAStar extends CommandBase {
       Node endNode = AStarMap.getNode(i);
       AStarMap.addEdge(new Edge(finalPosition, endNode), obstacles);
     }
-    addRequirements(driveSystem, poseEstimatorSystem);
+    addRequirements(driveSystem);
   }
 
   // ----------------------------------------------------------------------------
@@ -124,8 +124,11 @@ public class PPAStar extends CommandBase {
         // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
         // path. (Needs more testing)
         Rotation2d tempHol = FACE_TARGETS_OFFSET;
+        if (singleSubstation) {
+          finalHol = SINGLE_SUBSTATION_ANGLE;
+        }
         if (fullPath.get(i).getX() <= 5.40 + 0.1) {
-          tempHol = FACE_TARGETS_SS;
+          tempHol = FACE_TARGETS_SCORING;
         }
         heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
             fullPath.get(i + 1).getY() - fullPath.get(i).getY());
@@ -168,7 +171,7 @@ public class PPAStar extends CommandBase {
     double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
 
-    int midpoints = (int) Math.floor(distance / 2);
+    int midpoints = (int) Math.floor(distance / 1);
 
     Rotation2d heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());

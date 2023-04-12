@@ -6,9 +6,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.subsystems.ElevatorSubsystemBasePID;
 
@@ -18,17 +15,24 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
   TalonFX elevatorMotorFront = new TalonFX(Constants.ArmConstants.ELEVATOR_FRONT_FALCON_ID);
   TalonFX elevatorMotorBack = new TalonFX(Constants.ArmConstants.ELEVATOR_BACK_FALCON_ID);
 
-  NetworkTableEntry angleEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem").getEntry("angle");
-  NetworkTableEntry lengthEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem").getEntry("length");
-  NetworkTableEntry motorVoltageEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
-      .getEntry("currentVoltage");
-  NetworkTableEntry motorCurrentEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
-      .getEntry("motorCurrentDraw");
-  NetworkTableEntry tempEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem").getEntry("temperature");
-  NetworkTableEntry targetHeight = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
-      .getEntry("targetHeight");
-  private NetworkTableEntry atSetpointEntry = NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
-      .getEntry("atSetpoint");
+  // NetworkTableEntry angleEntry =
+  // NetworkTableInstance.getDefault().getTable("ElevatorSubsystem").getEntry("angle");
+  // NetworkTableEntry lengthEntry =
+  // NetworkTableInstance.getDefault().getTable("ElevatorSubsystem").getEntry("length");
+  // NetworkTableEntry motorVoltageEntry =
+  // NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
+  // .getEntry("currentVoltage");
+  // NetworkTableEntry motorCurrentEntry =
+  // NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
+  // .getEntry("motorCurrentDraw");
+  // NetworkTableEntry tempEntry =
+  // NetworkTableInstance.getDefault().getTable("ElevatorSubsystem").getEntry("temperature");
+  // NetworkTableEntry targetHeight =
+  // NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
+  // .getEntry("targetHeight");
+  // private NetworkTableEntry atSetpointEntry =
+  // NetworkTableInstance.getDefault().getTable("ElevatorSubsystem")
+  // .getEntry("atSetpoint");
 
   /**
    * Creates a new ElevatorSubsystem.
@@ -141,18 +145,20 @@ public class ElevatorSubsystem extends ElevatorSubsystemBasePID {
   @Override
   public void periodic() {
     super.periodic();
-    angleEntry.setDouble(getAngle());
-    lengthEntry.setDouble(getHeight());
-    motorVoltageEntry.setDouble(elevatorMotorFront.getMotorOutputVoltage());
-    motorCurrentEntry.setDouble(elevatorMotorFront.getStatorCurrent());
-    SmartDashboard.putData(this);
-    tempEntry.setDouble(elevatorMotorFront.getTemperature());
-    targetHeight.setDouble(setpoint);
-    SmartDashboard.putNumber("ElevatorSubsystem/PID", pidController.calculate(getHeight()));
-    SmartDashboard.putNumber("ElevatorSubsystem/Feedforward", feedforward.calculate(getHeight()));
-    SmartDashboard.putNumber("ElevatorSubsystem/CurrestAngle", angleEncoder.getAbsolutePosition());
-    atSetpointEntry.setBoolean(atTarget());
+    // angleEntry.setDouble(getAngle());
+    // lengthEntry.setDouble(getHeight());
+    // motorVoltageEntry.setDouble(elevatorMotorFront.getMotorOutputVoltage());
+    // motorCurrentEntry.setDouble(elevatorMotorFront.getStatorCurrent());
+    // SmartDashboard.putData(this);
+    // tempEntry.setDouble(elevatorMotorFront.getTemperature());
+    // targetHeight.setDouble(setpoint);
+    // SmartDashboard.putNumber("ElevatorSubsystem/PID",
+    // pidController.calculate(getHeight()));
+    // SmartDashboard.putNumber("ElevatorSubsystem/Feedforward",
+    // feedforward.calculate(getHeight()));
+    // SmartDashboard.putNumber("ElevatorSubsystem/CurrestAngle",
+    // angleEncoder.getAbsolutePosition());
+    // atSetpointEntry.setBoolean(atTarget());
   }
 
- 
 }

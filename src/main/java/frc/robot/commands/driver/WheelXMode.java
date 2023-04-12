@@ -1,14 +1,14 @@
-package frc.robot.commands;
+package frc.robot.commands.driver;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
-public class OpenClaw extends CommandBase {
-  IntakeSubsystem intakeSubsystem;
+public class WheelXMode extends CommandBase {
+  DrivetrainSubsystem drivetrainSubsystem;
 
   /** Creates a new ReverseIntakeCommand. */
-  public OpenClaw(IntakeSubsystem intakeSubsystem) {
-    this.intakeSubsystem = intakeSubsystem;
+  public WheelXMode(DrivetrainSubsystem drivetrainSubsystem) {
+    this.drivetrainSubsystem = drivetrainSubsystem;
   }
 
   // Called when the command is initially scheduled.
@@ -19,13 +19,13 @@ public class OpenClaw extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    intakeSubsystem.openIntake();
+    drivetrainSubsystem.setWheelsToX();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    intakeSubsystem.closeIntake();
+    drivetrainSubsystem.setWheelsToX();
   }
 
   // Returns true when the command should end.

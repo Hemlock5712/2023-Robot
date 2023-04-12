@@ -10,6 +10,8 @@ import static java.lang.Math.toRadians;
 
 import com.pathplanner.lib.auto.PIDConstants;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -17,6 +19,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -42,7 +46,7 @@ public final class Constants {
 
     public static Alliance alliance = Alliance.Invalid;
 
-    public static final boolean ADD_TO_DASHBOARD = true;
+    public static final boolean ADD_TO_DASHBOARD = false;
 
     /**
      * The left-to-right distance between the drivetrain wheels
@@ -75,7 +79,7 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 7;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 8;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 12;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(11.65 + 180);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(310.07 + 180);
 
     public static final int PIGEON_ID = 13;
 
@@ -117,17 +121,17 @@ public final class Constants {
     /**
      * Voltage needed to hold (or "cruise") at a given constant velocity. kV
      */
-    public static final double DRIVE_kV = 2.5913;
+    public static final double DRIVE_kV = 2.3;
     /**
      * Voltage needed to induce a given acceleration in the motor shaft. kA
      */
-    public static final double DRIVE_kA = 0.19321;
+    public static final double DRIVE_kA = 0.52878;
 
     public static final double STEER_kP = 0.2;
-    public static final double STEER_kI = 0.0;
-    public static final double STEER_kD = 0.1;
+    public static final double STEER_kI = 0.001;
+    public static final double STEER_kD = 0.0;
 
-    public static final double DRIVE_kP = 0.02;
+    public static final double DRIVE_kP = 0.04;
     public static final double DRIVE_kI = 0.0;
     public static final double DRIVE_kD = 0.0;
 
@@ -137,12 +141,12 @@ public final class Constants {
 
     public static final double DEADBAND = 0.1;
 
-    public static final double X_RATE_LIMIT = 6.0;
-    public static final double Y_RATE_LIMIT = 6.0;
+    public static final double X_RATE_LIMIT = 7.75;
+    public static final double Y_RATE_LIMIT = 7.75;
     public static final double ROTATION_RATE_LIMIT = 5.0 * PI;
 
-    public static final double HEADING_MAX_VELOCITY = PI * 2;
-    public static final double HEADING_MAX_ACCELERATION = PI * 2;
+    public static final double HEADING_MAX_VELOCITY = PI * 4;
+    public static final double HEADING_MAX_ACCELERATION = PI * 16;
 
     public static final double HEADING_kP = 2.0;
     public static final double HEADING_kI = 0.0;
@@ -162,27 +166,75 @@ public final class Constants {
 
   public static class VisionConstants {
 
+    public static boolean USE_VISION = true;
+
     /**
-     * Physical location of the camera on the robot, relative to the center of the
+     * Physical location of the right camera on the robot, relative to the center of
+     * the
      * robot.
      */
-    public static final Transform3d CAMERA_TO_ROBOT = new Transform3d(
-        // Left Camera
-        // new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(-6.5615),
-        // Units.inchesToMeters(-30.0)),
-        // new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(-45)));
-        // Right Camera
-        new Translation3d(Units.inchesToMeters(12.21), Units.inchesToMeters(6.5615), Units.inchesToMeters(-30.0)),
-        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(45)));
-    public static final Transform3d ROBOT_TO_CAMERA = CAMERA_TO_ROBOT.inverse();
+    public static final Transform3d ROBOT_TO_RIGHT_CAMERA = new Transform3d(
+        new Translation3d(Units.inchesToMeters(-11.88), Units.inchesToMeters(-6.88), Units.inchesToMeters(31.09)),
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(-45)));
+
+    /**
+     * Physical location of the left camera on the robot, relative to the center of
+     * the
+     * robot.
+     */
+    public static final Transform3d ROBOT_TO_LEFT_CAMERA = new Transform3d(
+        new Translation3d(Units.inchesToMeters(-11.88), Units.inchesToMeters(6.88), Units.inchesToMeters(31.09)),
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(46)));
+
+    /**
+     * Physical location of the back camera on the robot, relative to the center of
+     * the
+     * robot.
+     */
+    public static final Transform3d ROBOT_TO_BACK_CAMERA = new Transform3d(
+        new Translation3d(Units.inchesToMeters(-13.76), Units.inchesToMeters(6.1), Units.inchesToMeters(33.65)),
+        new Rotation3d(0, Math.toRadians(10.62), Math.toRadians(180)));
 
     /** Minimum target ambiguity. Targets with higher ambiguity will be discarded */
     public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
+    public static final double POSE_AMBIGUITY_SHIFTER = 0.2;
+    public static final double POSE_AMBIGUITY_MULTIPLIER = 4;
+    public static final double NOISY_DISTANCE_METERS = 2.5;
+    public static final double DISTANCE_WEIGHT = 7;
+    public static final int TAG_PRESENCE_WEIGHT = 10;
+
+    /**
+     * Standard deviations of model states. Increase these numbers to trust your
+     * model's state estimates less. This
+     * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then
+     * meters.
+     */
+    public static final Matrix<N3, N1> VISION_MEASUREMENT_STANDARD_DEVIATIONS = Matrix.mat(Nat.N3(), Nat.N1())
+        .fill(
+            // if these numbers are less than one, multiplying will do bad things
+            1, // x
+            1, // y
+            1 * Math.PI // theta
+        );
+
+    /**
+     * Standard deviations of the vision measurements. Increase these numbers to
+     * trust global measurements from vision
+     * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and
+     * radians.
+     */
+    public static final Matrix<N3, N1> STATE_STANDARD_DEVIATIONS = Matrix.mat(Nat.N3(), Nat.N1())
+        .fill(
+            // if these numbers are less than one, multiplying will do bad things
+            .1, // x
+            .1, // y
+            .1);
+
   }
 
   public static class AutoConstants {
     public static TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(PI, 2 / PI);
-    public static double THETA_kP = 2;
+    public static double THETA_kP = 2.75;
     public static double THETA_kI = 0.0;
     public static double THETA_kD = 0.0;
 
@@ -197,17 +249,14 @@ public final class Constants {
     public static PIDConstants translationConstants = new PIDConstants(X_kP, X_kI, X_kD);
     public static PIDConstants rotationConstants = new PIDConstants(THETA_kP, THETA_kI, THETA_kD);
 
-    public static PIDController translationController = new PIDController(Constants.AutoConstants.X_kP,
-        Constants.AutoConstants.X_kI, Constants.AutoConstants.X_kD);
-    public static PIDController strafeController = new PIDController(Constants.AutoConstants.Y_kP,
-        Constants.AutoConstants.Y_kI, Constants.AutoConstants.Y_kD);
-    public static PIDController thetaController = new PIDController(Constants.AutoConstants.THETA_kP,
-        Constants.AutoConstants.THETA_kI, Constants.AutoConstants.THETA_kD);
+    public static PIDController translationController = new PIDController(X_kP, X_kI, X_kD);
+    public static PIDController strafeController = new PIDController(Y_kP, Y_kI, Y_kD);
+    public static PIDController thetaController = new PIDController(THETA_kP, THETA_kI, THETA_kD);
 
   }
 
   public static class PneumaticsConstants {
-    public static final double MIN_PRESSURE = 80;
+    public static final double MIN_PRESSURE = 90;
     public static final double MAX_PRESSURE = 120;
   }
 
@@ -331,12 +380,16 @@ public final class Constants {
     public static final double GEAR_RATIO = 49;
   }
 
+  public static class SpacerConstants {
+    public static final int MOTOR_ID = 29;
+  }
+
   // These are all very arbitrary and need to be tuned
   public static class ArmSetpoints {
     /**
      * Put arm on ground to pick up a cone that's lying down
      */
-    public static final ArmSetpoint GROUND_CUBE_PICKUP = new ArmSetpoint(-12, 0, -40);
+    public static final ArmSetpoint GROUND_CUBE_PICKUP = new ArmSetpoint(-11, 0, -40);
     /**
      * Put arm above ground to pick up a cone that's standing up
      */
@@ -353,11 +406,17 @@ public final class Constants {
     /**
      * Extend the arm out to place cone on the high peg
      */
-    public static final ArmSetpoint HIGH_PEG = XYACalulator.Calulator(18, 34, -20);
+    public static final ArmSetpoint HIGH_PEG = new ArmSetpoint(35, Units.inchesToMeters(30), -50);
     /**
      * Extend the arm out to place cone on the mid peg
      */
-    public static final ArmSetpoint MID_PEG = XYACalulator.Calulator(-1, 17, -20);
+    // public static final ArmSetpoint MID_PEG = XYACalulator.Calulator(-13, 11,
+    // -20);
+
+    public static final ArmSetpoint MID_PEG = new ArmSetpoint(31, Units.inchesToMeters(10.5), -48);
+
+    public static final ArmSetpoint AUTO_MID_PEG = XYACalulator.Calulator(-1, 17, -20);
+
     /**
      * Extend the arm out to place cone on the high peg
      */
@@ -373,9 +432,15 @@ public final class Constants {
     /**
      * Put arm out upside down to pick up a cone direct from the single substation
      */
-    // public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = XYACalulator.Calulator(-.2, 2, 34);
-    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, -.06, 34);
+    // public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP =
+    // XYACalulator.Calulator(-.2, 2, 34);
+    // WAS 34 AT MIDLAND
+    public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, -.06, 45);
+    // public static final ArmSetpoint TEST_SINGLE_SUBSTATION_PICKUP = new
+    // ArmSetpoint(0, -.06, 45);
     public static final ArmSetpoint STARTING_CONFIG = new ArmSetpoint(71, 0, -106);
+
+    public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(-4, 0, -10);
   }
 
 }

@@ -3,25 +3,28 @@ package frc.robot.subsystems;
 import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kBlueAllianceWallRightSide;
 import static edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition.kRedAllianceWallRightSide;
 
-import java.util.ArrayList;
 import java.util.function.Supplier;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.util.FieldConstants;
 
@@ -39,33 +42,30 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   // This in turn means the particualr component will have a stronger influence
   // on the final pose estimate.
 
-  /**
-   * Standard deviations of model states. Increase these numbers to trust your
-   * model's state estimates less. This
-   * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then
-   * meters.
-   */
-  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
-
-  /**
-   * Standard deviations of the vision measurements. Increase these numbers to
-   * trust global measurements from vision
-   * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and
-   * radians.
-   */
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(1.5, 1.5, 1.5);
-
   private final Supplier<Rotation2d> rotationSupplier;
   private final Supplier<SwerveModulePosition[]> modulePositionSupplier;
   private final SwerveDrivePoseEstimator poseEstimator;
   private final Field2d field2d = new Field2d();
-  private final PhotonRunnable photonEstimator = new PhotonRunnable();
-  private final Notifier photonNotifier = new Notifier(photonEstimator);
+  private final PhotonRunnable rightEstimator = new PhotonRunnable(new PhotonCamera("rightCamera"),
+      Constants.VisionConstants.ROBOT_TO_RIGHT_CAMERA);
+  private final PhotonRunnable leftEstimator = new PhotonRunnable(new PhotonCamera("leftCamera"),
+      Constants.VisionConstants.ROBOT_TO_LEFT_CAMERA);
+  // private final PhotonRunnable backEstimator = new PhotonRunnable(new
+  // PhotonCamera("backCamera"),
+  // Constants.VisionConstants.ROBOT_TO_BACK_CAMERA);
+
+  // private final Notifier rightNotifier = new Notifier(rightEstimator);
+  // private final Notifier leftNotifier = new Notifier(leftEstimator);
+  private final Notifier allNotifier = new Notifier(() -> {
+    rightEstimator.run();
+    leftEstimator.run();
+  });
+  // private final Notifier backNotifier = new Notifier(backEstimator);
 
   private OriginPosition originPosition = kBlueAllianceWallRightSide;
 
-  private final ArrayList<Double> xValues = new ArrayList<Double>();
-  private final ArrayList<Double> yValues = new ArrayList<Double>();
+  // private final ArrayList<Double> xValues = new ArrayList<Double>();
+  // private final ArrayList<Double> yValues = new ArrayList<Double>();
 
   public PoseEstimatorSubsystem(Supplier<Rotation2d> rotationSupplier,
       Supplier<SwerveModulePosition[]> modulePositionSupplier) {
@@ -77,12 +77,22 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
         rotationSupplier.get(),
         modulePositionSupplier.get(),
         new Pose2d(),
-        stateStdDevs,
-        visionMeasurementStdDevs);
+        Constants.VisionConstants.STATE_STANDARD_DEVIATIONS,
+        Constants.VisionConstants.VISION_MEASUREMENT_STANDARD_DEVIATIONS);
 
     // Start PhotonVision thread
-    photonNotifier.setName("PhotonRunnable");
-    photonNotifier.startPeriodic(0.02);
+    // rightNotifier.setName("rightRunnable");
+    // rightNotifier.startPeriodic(0.02);
+
+    // // Start PhotonVision thread
+    // leftNotifier.setName("leftRunnable");
+    // leftNotifier.startPeriodic(0.02);
+
+    allNotifier.setName("runAll");
+    allNotifier.startPeriodic(0.02);
+
+    // backNotifier.setName("backRunnable");
+    // backNotifier.startPeriodic(0.02);
 
   }
 
@@ -125,16 +135,14 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
   public void periodic() {
     // Update pose estimator with drivetrain sensors
     poseEstimator.update(rotationSupplier.get(), modulePositionSupplier.get());
-
-    var visionPose = photonEstimator.grabLatestEstimatedPose();
-    if (visionPose != null) {
-      // New pose from vision
-      var pose2d = visionPose.estimatedPose.toPose2d();
-      if (originPosition == kRedAllianceWallRightSide) {
-        pose2d = flipAlliance(pose2d);
-      }
-      poseEstimator.addVisionMeasurement(pose2d, visionPose.timestampSeconds);
+    if (Constants.VisionConstants.USE_VISION) {
+      estimatorChecker(rightEstimator);
+      estimatorChecker(leftEstimator);
+    } else {
+      allNotifier.close();
     }
+
+    // estimatorChecker(backEstimator);
 
     // Set the pose on the dashboard
     var dashboardPose = poseEstimator.getEstimatedPosition();
@@ -155,10 +163,6 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
 
   public Pose2d getCurrentPose() {
     return poseEstimator.getEstimatedPosition();
-  }
-
-  public Pose2d getCurrentPosePP() {
-    return flipAlliance(poseEstimator.getEstimatedPosition());
   }
 
   /**
@@ -200,9 +204,49 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     field2d.getObject("Trajectory").setTrajectory(traj);
   }
 
-  public void resetPoseRating() {
-    xValues.clear();
-    yValues.clear();
+  // public void resetPoseRating() {
+  // xValues.clear();
+  // yValues.clear();
+  // }
+
+  private Matrix<N3, N1> confidenceCalculator(EstimatedRobotPose estimation) {
+    double smallestDistance = Double.POSITIVE_INFINITY;
+    for (var target : estimation.targetsUsed) {
+      var t3d = target.getBestCameraToTarget();
+      var distance = Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
+      if (distance < smallestDistance)
+        smallestDistance = distance;
+    }
+    double poseAmbiguityFactor = estimation.targetsUsed.size() != 1
+        ? 1
+        : Math.max(
+            1,
+            (estimation.targetsUsed.get(0).getPoseAmbiguity()
+                + Constants.VisionConstants.POSE_AMBIGUITY_SHIFTER)
+                * Constants.VisionConstants.POSE_AMBIGUITY_MULTIPLIER);
+    double confidenceMultiplier = Math.max(
+        1,
+        (Math.max(
+            1,
+            Math.max(0, smallestDistance - Constants.VisionConstants.NOISY_DISTANCE_METERS)
+                * Constants.VisionConstants.DISTANCE_WEIGHT)
+            * poseAmbiguityFactor)
+            / (1
+                + ((estimation.targetsUsed.size() - 1) * Constants.VisionConstants.TAG_PRESENCE_WEIGHT)));
+
+    return Constants.VisionConstants.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
   }
 
+  public void estimatorChecker(PhotonRunnable estamator) {
+    var cameraPose = estamator.grabLatestEstimatedPose();
+    if (cameraPose != null) {
+      // New pose from vision
+      var pose2d = cameraPose.estimatedPose.toPose2d();
+      if (originPosition == kRedAllianceWallRightSide) {
+        pose2d = flipAlliance(pose2d);
+      }
+      poseEstimator.addVisionMeasurement(pose2d, cameraPose.timestampSeconds,
+          confidenceCalculator(cameraPose));
+    }
+  }
 }

@@ -108,6 +108,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
+    robotContainer.changeVision(true);
     checkDriverStationUpdate();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
@@ -133,6 +134,7 @@ public class Robot extends LoggedRobot {
     }
     checkDriverStationUpdate();
     robotContainer.startTeleopPosCommand();
+    robotContainer.changeVision(false);
   }
 
   /** This function is called periodically during operator control. */
