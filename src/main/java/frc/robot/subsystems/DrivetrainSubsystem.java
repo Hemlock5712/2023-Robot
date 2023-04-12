@@ -56,6 +56,8 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.swerve.ModuleConfiguration;
 import frc.robot.swerve.SwerveModule;
+import frc.robot.swerve.SwerveSpeedController;
+import frc.robot.swerve.SwerveSteerController;
 import frc.robot.util.Translation2dPlus;
 
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -182,6 +184,30 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // back right
         new SwerveModuleState(0.0, Rotation2d.fromDegrees(-135.0))
     });
+  }
+
+  /**
+   * Creates a server module instance
+   * 
+   * @param container           shuffleboard layout, or null
+   * @param moduleConfiguration module configuration
+   * @param driveMotorPort      drive motor CAN ID
+   * @param steerMotorPort      steer motor CAN ID
+   * @param steerEncoderPort    steer encoder CAN ID
+   * @param steerOffset         offset for steer encoder
+   * @return new swerve module instance
+   */
+  private static SwerveModule createSwerveModule(
+      ShuffleboardLayout container,
+      ModuleConfiguration moduleConfiguration,
+      int driveMotorPort,
+      int steerMotorPort,
+      int steerEncoderPort,
+      double steerOffset) {
+
+    return new SwerveModule(
+        new SwerveSpeedController(driveMotorPort, moduleConfiguration, container),
+        new SwerveSteerController(steerMotorPort, steerEncoderPort, steerOffset, container, moduleConfiguration));
   }
 
   /**
