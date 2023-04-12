@@ -35,6 +35,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -57,6 +58,7 @@ import frc.robot.swerve.ModuleConfiguration;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSpeedController;
 import frc.robot.swerve.SwerveSteerController;
+import frc.robot.util.Translation2dPlus;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -67,6 +69,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
   NetworkTableEntry angleEntry = NetworkTableInstance.getDefault().getTable("DrivetrainSubsystem").getEntry("angle");
 
   private ChassisSpeeds desiredChassisSpeeds;
+  private Translation2d desiredCenterOfRotation;
+
+  private static final Translation2d[] WHEEL_POSITIONS = Arrays.copyOf(Constants.DrivetrainConstants.moduleTranslations,
+      Constants.DrivetrainConstants.moduleTranslations.length);
 
   public DrivetrainSubsystem() {
 
@@ -182,6 +188,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
    */
   public void setWheelsToX() {
     desiredChassisSpeeds = null;
+    desiredCenterOfRotation = new Translation2d();
     setModuleStates(new SwerveModuleState[] {
         // front left
         new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)),
@@ -214,7 +221,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void periodic() {
     // Set the swerve module states
     if (desiredChassisSpeeds != null) {
-      var desiredStates = DrivetrainConstants.KINEMATICS.toSwerveModuleStates(desiredChassisSpeeds);
+      var desiredStates = DrivetrainConstants.KINEMATICS.toSwerveModuleStates(desiredChassisSpeeds,
+          desiredCenterOfRotation);
       SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND);
       setModuleStates(desiredStates);
     }
@@ -232,6 +240,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Always reset desiredChassisSpeeds to null to prevent latching to the last
     // state (aka motor safety)!!
     desiredChassisSpeeds = null;
+    desiredCenterOfRotation = new Translation2d();
     angleEntry.setNumber(getRoll());
   }
 
@@ -331,6 +340,41 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   public double getPitch() {
     return pigeon.getPitch();
+  }
+
+  public void drive(Translation2d translation2d, double rotation, Rotation2d robotYaw) {
+    desiredCenterOfRotation = getCenterOfRotation(translation2d.getAngle(), rotation, robotYaw);
+    desiredChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+        translation2d.getX(),
+        translation2d.getY(),
+        rotation,
+        robotYaw);
+  }
+
+  private Translation2d getCenterOfRotation(final Rotation2d direction, final double rotation, Rotation2d robotYaw) {
+    final var here = new Translation2dPlus(1.0, direction.minus(robotYaw));
+
+    var cwCenter = WHEEL_POSITIONS[0];
+    var ccwCenter = WHEEL_POSITIONS[WHEEL_POSITIONS.length - 1];
+
+    for (int i = 0; i < WHEEL_POSITIONS.length - 1; i++) {
+      final var cw = WHEEL_POSITIONS[i];
+      final var ccw = WHEEL_POSITIONS[i + 1];
+
+      if (here.isWithinAngle(cw, ccw)) {
+        cwCenter = ccw;
+        ccwCenter = cw;
+      }
+    }
+
+    // if clockwise
+    if (Math.signum(rotation) == 1.0) {
+      return cwCenter;
+    } else if (Math.signum(rotation) == -1.0) {
+      return ccwCenter;
+    } else {
+      return new Translation2d();
+    }
   }
 
 }

@@ -181,7 +181,8 @@ public class RobotContainer {
       () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
       () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
       () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2,
-      controller.y());
+      controller.y(),
+      controller.leftBumper());
 
   private final Timer reseedTimer = new Timer();
 

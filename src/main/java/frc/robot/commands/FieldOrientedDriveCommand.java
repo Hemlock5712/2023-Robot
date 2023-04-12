@@ -50,6 +50,7 @@ public class FieldOrientedDriveCommand extends CommandBase {
   private final ProfiledPIDController thetaController;
 
   private Trigger isAligningTrigger;
+  private Trigger isEvadingTrigger;
 
   private double TARGET_ANGELE = 1.5708;
   private double ALLIANCE_SPECIFIC = TARGET_ANGELE;
@@ -72,13 +73,15 @@ public class FieldOrientedDriveCommand extends CommandBase {
       DoubleSupplier translationXSupplier,
       DoubleSupplier translationYSupplier,
       DoubleSupplier rotationSupplier,
-      Trigger isAligningTrigger) {
+      Trigger isAligningTrigger,
+      Trigger isEvadingTrigger) {
     this.drivetrainSubsystem = drivetrainSubsystem;
     this.robotAngleSupplier = robotAngleSupplier;
     this.translationXSupplier = translationXSupplier;
     this.translationYSupplier = translationYSupplier;
     this.rotationSupplier = rotationSupplier;
     this.isAligningTrigger = isAligningTrigger;
+    this.isEvadingTrigger = isEvadingTrigger;
 
     thetaController = new ProfiledPIDController(THETA_kP, THETA_kI, THETA_kD, DEFAULT_OMEGA_CONSTRAINTS);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -122,7 +125,14 @@ public class FieldOrientedDriveCommand extends CommandBase {
           ChassisSpeeds.fromFieldRelativeSpeeds(translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
               translateYRateLimiter.calculate(translationYSupplier.getAsDouble()), omegaSpeed,
               robotAngleSupplier.get()));
-    } else {
+    } 
+    else if(isEvadingTrigger.getAsBoolean()){
+      drivetrainSubsystem.drive(
+        new Translation2d(translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),translateYRateLimiter.calculate(translationYSupplier.getAsDouble())),
+        rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
+        robotAngleSupplier.get());
+    }
+    else {
       drivetrainSubsystem.drive(
           ChassisSpeeds.fromFieldRelativeSpeeds(
               translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
