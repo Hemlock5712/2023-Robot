@@ -35,7 +35,6 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -58,7 +57,6 @@ import frc.robot.swerve.ModuleConfiguration;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.swerve.SwerveSpeedController;
 import frc.robot.swerve.SwerveSteerController;
-import frc.robot.util.Translation2dPlus;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -68,11 +66,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private static final NetworkTable moduleStatesTable = NetworkTableInstance.getDefault().getTable("SwerveStates");
   NetworkTableEntry angleEntry = NetworkTableInstance.getDefault().getTable("DrivetrainSubsystem").getEntry("angle");
 
-  private static final Translation2d[] WHEEL_POSITIONS = Arrays.copyOf(Constants.DrivetrainConstants.moduleTranslations,
-      Constants.DrivetrainConstants.moduleTranslations.length);
-
   private ChassisSpeeds desiredChassisSpeeds;
-  private Translation2d desiredCenterOfRotation;
 
   public DrivetrainSubsystem() {
 
@@ -146,46 +140,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     pigeon.zeroGyroBiasNow();
   }
 
-  public Rotation2d getGyroscopeRotation() {
-    return pigeon.getRotation2d();
-  }
-
-  /**
-   * Sets the desired chassis speeds
-   * 
-   * @param chassisSpeeds desired chassis speeds
-   */
-  public void drive(Translation2d translation, double rotation, Rotation2d robotYaw, boolean isEvading) {
-    if (isEvading) {
-      desiredCenterOfRotation = getCenterOfRotation(translation.getAngle(), rotation, robotYaw);
-    } else {
-      desiredCenterOfRotation = new Translation2d();
-    }
-    desiredChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        translation.getX(),
-        translation.getY(),
-        rotation,
-        robotYaw);
-  }
-
-  /**
-   * Set the wheels to an X pattern to plant the robot.
-   */
-  public void setWheelsToX() {
-    desiredChassisSpeeds = null;
-    desiredCenterOfRotation = new Translation2d();
-    setModuleStates(new SwerveModuleState[] {
-        // front left
-        new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)),
-        // front right
-        new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)),
-        // back left
-        new SwerveModuleState(0.0, Rotation2d.fromDegrees(135.0)),
-        // back right
-        new SwerveModuleState(0.0, Rotation2d.fromDegrees(-135.0))
-    });
-  }
-
   /**
    * Creates a server module instance
    * 
@@ -210,6 +164,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         new SwerveSteerController(steerMotorPort, steerEncoderPort, steerOffset, container, moduleConfiguration));
   }
 
+  public Rotation2d getGyroscopeRotation() {
+    return pigeon.getRotation2d();
+  }
+
   /**
    * Sets the desired chassis speeds
    * 
@@ -217,7 +175,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
    */
   public void drive(ChassisSpeeds chassisSpeeds) {
     desiredChassisSpeeds = chassisSpeeds;
-    desiredCenterOfRotation = new Translation2d();
+  }
+
+  /**
+   * Set the wheels to an X pattern to plant the robot.
+   */
+  public void setWheelsToX() {
+    desiredChassisSpeeds = null;
+    setModuleStates(new SwerveModuleState[] {
+        // front left
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)),
+        // front right
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45.0)),
+        // back left
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(135.0)),
+        // back right
+        new SwerveModuleState(0.0, Rotation2d.fromDegrees(-135.0))
+    });
   }
 
   /**
@@ -240,8 +214,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void periodic() {
     // Set the swerve module states
     if (desiredChassisSpeeds != null) {
-      var desiredStates = DrivetrainConstants.KINEMATICS.toSwerveModuleStates(desiredChassisSpeeds,
-          desiredCenterOfRotation);
+      var desiredStates = DrivetrainConstants.KINEMATICS.toSwerveModuleStates(desiredChassisSpeeds);
       SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND);
       setModuleStates(desiredStates);
     }
@@ -259,7 +232,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Always reset desiredChassisSpeeds to null to prevent latching to the last
     // state (aka motor safety)!!
     desiredChassisSpeeds = null;
-    desiredCenterOfRotation = new Translation2d();
+    angleEntry.setNumber(getRoll());
   }
 
   /**
@@ -304,32 +277,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     });
     if (DrivetrainConstants.ADD_TO_DASHBOARD) {
       moduleStatesTable.getEntry("Setpoints").setDoubleArray(moduleSetpointArray);
-    }
-  }
-
-  private Translation2d getCenterOfRotation(final Rotation2d direction, final double rotation, Rotation2d robotYaw) {
-    final var here = new Translation2dPlus(1.0, direction.minus(robotYaw));
-
-    var cwCenter = WHEEL_POSITIONS[0];
-    var ccwCenter = WHEEL_POSITIONS[WHEEL_POSITIONS.length - 1];
-
-    for (int i = 0; i < WHEEL_POSITIONS.length - 1; i++) {
-      final var cw = WHEEL_POSITIONS[i];
-      final var ccw = WHEEL_POSITIONS[i + 1];
-
-      if (here.isWithinAngle(cw, ccw)) {
-        cwCenter = ccw;
-        ccwCenter = cw;
-      }
-    }
-
-    // if clockwise
-    if (Math.signum(rotation) == 1.0) {
-      return cwCenter;
-    } else if (Math.signum(rotation) == -1.0) {
-      return ccwCenter;
-    } else {
-      return new Translation2d();
     }
   }
 

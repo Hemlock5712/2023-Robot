@@ -1,5 +1,9 @@
 package frc.robot.commands;
 
+import static frc.robot.Constants.AutoConstants.THETA_kD;
+import static frc.robot.Constants.AutoConstants.THETA_kI;
+import static frc.robot.Constants.AutoConstants.THETA_kP;
+import static frc.robot.Constants.DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
 import static frc.robot.Constants.TeleopDriveConstants.ROTATION_RATE_LIMIT;
 import static frc.robot.Constants.TeleopDriveConstants.X_RATE_LIMIT;
 import static frc.robot.Constants.TeleopDriveConstants.Y_RATE_LIMIT;
@@ -7,12 +11,17 @@ import static frc.robot.Constants.TeleopDriveConstants.Y_RATE_LIMIT;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /**
@@ -34,9 +43,15 @@ public class FieldOrientedDriveCommand extends CommandBase {
   private final SlewRateLimiter translateXRateLimiter = new SlewRateLimiter(X_RATE_LIMIT);
   private final SlewRateLimiter translateYRateLimiter = new SlewRateLimiter(Y_RATE_LIMIT);
   private final SlewRateLimiter rotationRateLimiter = new SlewRateLimiter(ROTATION_RATE_LIMIT);
+  private static final double THETA_TOLERANCE = Units.degreesToRadians(2.0);
+  private static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(
+      MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * 0.4,
+      MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
+  private final ProfiledPIDController thetaController;
 
-  private Trigger isEvadingTrigger;
-  private boolean isEvading;
+  private Trigger isAligningTrigger;
+
+  private double TARGET_ANGELE = 1.5708;
 
   /**
    * Constructor
@@ -56,14 +71,17 @@ public class FieldOrientedDriveCommand extends CommandBase {
       DoubleSupplier translationXSupplier,
       DoubleSupplier translationYSupplier,
       DoubleSupplier rotationSupplier,
-      Trigger isEvadingTrigger) {
+      Trigger isAligningTrigger) {
     this.drivetrainSubsystem = drivetrainSubsystem;
     this.robotAngleSupplier = robotAngleSupplier;
     this.translationXSupplier = translationXSupplier;
     this.translationYSupplier = translationYSupplier;
     this.rotationSupplier = rotationSupplier;
-    this.isEvadingTrigger = isEvadingTrigger;
-    this.isEvading = isEvadingTrigger.getAsBoolean();
+    this.isAligningTrigger = isAligningTrigger;
+
+    thetaController = new ProfiledPIDController(THETA_kP, THETA_kI, THETA_kD, DEFAULT_OMEGA_CONSTRAINTS);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    thetaController.setTolerance(THETA_TOLERANCE);
 
     addRequirements(drivetrainSubsystem);
   }
@@ -71,6 +89,11 @@ public class FieldOrientedDriveCommand extends CommandBase {
   @Override
   public void initialize() {
     var robotAngle = robotAngleSupplier.get();
+    thetaController.reset(robotAngle.getRadians());
+    if (Constants.DrivetrainConstants.alliance == DriverStation.Alliance.Red) {
+      TARGET_ANGELE = -1 * TARGET_ANGELE;
+    }
+    thetaController.setGoal(TARGET_ANGELE);
 
     // Calculate field relative speeds
     var chassisSpeeds = drivetrainSubsystem.getChassisSpeeds();
@@ -85,26 +108,25 @@ public class FieldOrientedDriveCommand extends CommandBase {
 
   @Override
   public void execute() {
+    var robotPose = robotAngleSupplier.get();
+    if (isAligningTrigger.getAsBoolean()) {
+      var omegaSpeed = thetaController.calculate(robotPose.getRadians());
+      if (thetaController.atGoal()) {
+        omegaSpeed = 0;
+      }
+      drivetrainSubsystem.drive(
+          ChassisSpeeds.fromFieldRelativeSpeeds(translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
+              translateYRateLimiter.calculate(translationYSupplier.getAsDouble()), omegaSpeed,
+              robotAngleSupplier.get()));
+    } else {
+      drivetrainSubsystem.drive(
+          ChassisSpeeds.fromFieldRelativeSpeeds(
+              translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
+              translateYRateLimiter.calculate(translationYSupplier.getAsDouble()),
+              rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
+              robotAngleSupplier.get()));
+    }
 
-    double rAxis = rotationSupplier.getAsDouble();
-    double xAxis = translationXSupplier.getAsDouble();
-    double yAxis = translationYSupplier.getAsDouble();
-
-    // /* Square joystick inputs */
-    // double rAxisSquared = rAxis > 0 ? rAxis * rAxis : rAxis * rAxis * -1;
-    // double xAxisSquared = xAxis > 0 ? xAxis * xAxis : xAxis * xAxis * -1;
-    // double yAxisSquared = yAxis > 0 ? yAxis * yAxis : yAxis * yAxis * -1;
-    /* Filter joystick inputs using slew rate limiter */
-    double yAxisFiltered = translateYRateLimiter.calculate(yAxis);
-    double xAxisFiltered = translateXRateLimiter.calculate(xAxis);
-    double rAxisFiltered = rotationRateLimiter.calculate(rAxis);
-    this.isEvading = isEvadingTrigger.getAsBoolean();
-
-    drivetrainSubsystem.drive(
-        new Translation2d(xAxisFiltered, yAxisFiltered),
-        rAxisFiltered,
-        robotAngleSupplier.get(),
-        this.isEvading);
   }
 
   @Override
