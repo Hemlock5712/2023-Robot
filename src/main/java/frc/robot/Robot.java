@@ -39,8 +39,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
 
-    
-
     Logger.getInstance().recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
     if (isReal()) {
@@ -100,6 +98,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     robotContainer.disabledPeriodic();
+    robotContainer.changeVision(true);
   }
 
   /**

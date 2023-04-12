@@ -50,6 +50,7 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
       Constants.VisionConstants.ROBOT_TO_RIGHT_CAMERA);
   private final PhotonRunnable leftEstimator = new PhotonRunnable(new PhotonCamera("leftCamera"),
       Constants.VisionConstants.ROBOT_TO_LEFT_CAMERA);
+  private boolean NOTIFIER_STOPPED = false;
   // private final PhotonRunnable backEstimator = new PhotonRunnable(new
   // PhotonCamera("backCamera"),
   // Constants.VisionConstants.ROBOT_TO_BACK_CAMERA);
@@ -136,10 +137,17 @@ public class PoseEstimatorSubsystem extends SubsystemBase {
     // Update pose estimator with drivetrain sensors
     poseEstimator.update(rotationSupplier.get(), modulePositionSupplier.get());
     if (Constants.VisionConstants.USE_VISION) {
+      if (NOTIFIER_STOPPED) {
+        NOTIFIER_STOPPED = false;
+        allNotifier.startPeriodic(0.02);
+      }
       estimatorChecker(rightEstimator);
       estimatorChecker(leftEstimator);
     } else {
-      allNotifier.close();
+      if (!NOTIFIER_STOPPED) {
+        allNotifier.stop();
+        NOTIFIER_STOPPED = true;
+      }
     }
 
     // estimatorChecker(backEstimator);

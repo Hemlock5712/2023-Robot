@@ -104,7 +104,7 @@ public final class Constants {
         /
         Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
-    public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
+    public static final Translation2d[] moduleTranslations = new Translation2d[] {
         // Front left
         new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
         // Front right
@@ -112,7 +112,9 @@ public final class Constants {
         // Back left
         new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
         // Back right
-        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
+        new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0) };
+
+    public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(moduleTranslations);
 
     /**
      * Voltage needed to overcome the motor’s static friction. kS

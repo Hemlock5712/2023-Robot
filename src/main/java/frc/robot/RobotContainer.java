@@ -34,7 +34,6 @@ import frc.robot.commands.HoldIntakeCommand;
 import frc.robot.commands.ReverseIntakeCommand;
 import frc.robot.commands.RunIntakeCommand;
 import frc.robot.commands.balance.NewBalance;
-import frc.robot.commands.driver.DriveToPoseCommand;
 import frc.robot.commands.driver.WheelXMode;
 import frc.robot.commands.operator.HighPlace;
 import frc.robot.commands.operator.MidPlace;
@@ -181,7 +180,8 @@ public class RobotContainer {
       () -> poseEstimator.getCurrentPose().getRotation(),
       () -> -modifyAxis(controller.getLeftY()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
       () -> -modifyAxis(controller.getLeftX()) * DrivetrainConstants.MAX_VELOCITY_METERS_PER_SECOND,
-      () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2);
+      () -> -modifyAxis(controller.getRightX()) * DrivetrainConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2,
+      controller.leftBumper());
 
   private final Timer reseedTimer = new Timer();
 
@@ -189,6 +189,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
     // Set up the default command for the drivetrain.
     drivetrainSubsystem.setDefaultCommand(fieldOrientedDriveCommand);
 
@@ -279,8 +280,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    controller.leftBumper()
-        .whileTrue(new DriveToPoseCommand(drivetrainSubsystem, poseEstimator::getCurrentPose, 14.35, ledSubsystem));
+    // controller.leftBumper()
+    // .whileTrue(new DriveToPoseCommand(drivetrainSubsystem,
+    // poseEstimator::getCurrentPose, 14.35, ledSubsystem));
 
     controller.leftTrigger(0.5).whileTrue(new RunIntakeCommand(intakeSubsystem));
 

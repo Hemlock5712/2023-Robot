@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /**
@@ -34,6 +35,9 @@ public class FieldOrientedDriveCommand extends CommandBase {
   private final SlewRateLimiter translateYRateLimiter = new SlewRateLimiter(Y_RATE_LIMIT);
   private final SlewRateLimiter rotationRateLimiter = new SlewRateLimiter(ROTATION_RATE_LIMIT);
 
+  private Trigger isEvadingTrigger;
+  private boolean isEvading;
+
   /**
    * Constructor
    * 
@@ -51,12 +55,15 @@ public class FieldOrientedDriveCommand extends CommandBase {
       Supplier<Rotation2d> robotAngleSupplier,
       DoubleSupplier translationXSupplier,
       DoubleSupplier translationYSupplier,
-      DoubleSupplier rotationSupplier) {
+      DoubleSupplier rotationSupplier,
+      Trigger isEvadingTrigger) {
     this.drivetrainSubsystem = drivetrainSubsystem;
     this.robotAngleSupplier = robotAngleSupplier;
     this.translationXSupplier = translationXSupplier;
     this.translationYSupplier = translationYSupplier;
     this.rotationSupplier = rotationSupplier;
+    this.isEvadingTrigger = isEvadingTrigger;
+    this.isEvading = isEvadingTrigger.getAsBoolean();
 
     addRequirements(drivetrainSubsystem);
   }
@@ -78,12 +85,26 @@ public class FieldOrientedDriveCommand extends CommandBase {
 
   @Override
   public void execute() {
+
+    double rAxis = rotationSupplier.getAsDouble();
+    double xAxis = translationXSupplier.getAsDouble();
+    double yAxis = translationYSupplier.getAsDouble();
+
+    // /* Square joystick inputs */
+    // double rAxisSquared = rAxis > 0 ? rAxis * rAxis : rAxis * rAxis * -1;
+    // double xAxisSquared = xAxis > 0 ? xAxis * xAxis : xAxis * xAxis * -1;
+    // double yAxisSquared = yAxis > 0 ? yAxis * yAxis : yAxis * yAxis * -1;
+    /* Filter joystick inputs using slew rate limiter */
+    double yAxisFiltered = translateYRateLimiter.calculate(yAxis);
+    double xAxisFiltered = translateXRateLimiter.calculate(xAxis);
+    double rAxisFiltered = rotationRateLimiter.calculate(rAxis);
+    this.isEvading = isEvadingTrigger.getAsBoolean();
+
     drivetrainSubsystem.drive(
-        ChassisSpeeds.fromFieldRelativeSpeeds(
-            translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
-            translateYRateLimiter.calculate(translationYSupplier.getAsDouble()),
-            rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
-            robotAngleSupplier.get()));
+        new Translation2d(xAxisFiltered, yAxisFiltered),
+        rAxisFiltered,
+        robotAngleSupplier.get(),
+        this.isEvading);
   }
 
   @Override
