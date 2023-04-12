@@ -430,7 +430,7 @@ public final class Constants {
     /**
      * Extend the arm out to place on the hybrid node
      */
-    public static final ArmSetpoint HYBRID_NODE = XYACalulator.Calulator(0, 0, -45);
+    public static final ArmSetpoint HYBRID_NODE = new ArmSetpoint(10, Units.inchesToMeters(0), -45);
     /**
      * Put arm out upside down to pick up a cone direct from the single substation
      */
