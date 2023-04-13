@@ -47,13 +47,13 @@ public class FieldOrientedDriveCommand extends CommandBase {
   private static final TrapezoidProfile.Constraints DEFAULT_OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(
       MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * 0.4,
       MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
-  private final ProfiledPIDController thetaController;
+  private static ProfiledPIDController thetaController;
 
   private Trigger isAligningTrigger;
   private Trigger isEvadingTrigger;
 
-  private double TARGET_ANGELE = 1.5708;
-  private double ALLIANCE_SPECIFIC = TARGET_ANGELE;
+  private static double TARGET_ANGELE = 1.5708;
+  private static double ALLIANCE_SPECIFIC = TARGET_ANGELE;
 
   /**
    * Constructor
@@ -96,8 +96,7 @@ public class FieldOrientedDriveCommand extends CommandBase {
     thetaController.reset(robotAngle.getRadians());
     if (Constants.DrivetrainConstants.alliance == DriverStation.Alliance.Red) {
       ALLIANCE_SPECIFIC = -1 * TARGET_ANGELE;
-    }
-    else{
+    } else {
       ALLIANCE_SPECIFIC = TARGET_ANGELE;
     }
     thetaController.setGoal(ALLIANCE_SPECIFIC);
@@ -125,14 +124,13 @@ public class FieldOrientedDriveCommand extends CommandBase {
           ChassisSpeeds.fromFieldRelativeSpeeds(translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
               translateYRateLimiter.calculate(translationYSupplier.getAsDouble()), omegaSpeed,
               robotAngleSupplier.get()));
-    } 
-    else if(isEvadingTrigger.getAsBoolean()){
+    } else if (isEvadingTrigger.getAsBoolean()) {
       drivetrainSubsystem.drive(
-        new Translation2d(translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),translateYRateLimiter.calculate(translationYSupplier.getAsDouble())),
-        rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
-        robotAngleSupplier.get());
-    }
-    else {
+          new Translation2d(translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
+              translateYRateLimiter.calculate(translationYSupplier.getAsDouble())),
+          rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
+          robotAngleSupplier.get());
+    } else {
       drivetrainSubsystem.drive(
           ChassisSpeeds.fromFieldRelativeSpeeds(
               translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
@@ -155,5 +153,14 @@ public class FieldOrientedDriveCommand extends CommandBase {
 
   public static ChassisSpeeds getRobotSpeeds(Translation2d fieldSpeeds, ChassisSpeeds chassisSpeeds) {
     return new ChassisSpeeds(fieldSpeeds.getX(), fieldSpeeds.getY(), chassisSpeeds.omegaRadiansPerSecond);
+  }
+
+  public static void setAllianceAngle() {
+    if (Constants.DrivetrainConstants.alliance == DriverStation.Alliance.Red) {
+      ALLIANCE_SPECIFIC = -1 * TARGET_ANGELE;
+    } else {
+      ALLIANCE_SPECIFIC = TARGET_ANGELE;
+    }
+    thetaController.setGoal(ALLIANCE_SPECIFIC);
   }
 }

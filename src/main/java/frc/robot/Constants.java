@@ -143,8 +143,8 @@ public final class Constants {
 
     public static final double DEADBAND = 0.1;
 
-    public static final double X_RATE_LIMIT = 7.75;
-    public static final double Y_RATE_LIMIT = 7.75;
+    public static final double X_RATE_LIMIT = 8;
+    public static final double Y_RATE_LIMIT = 8;
     public static final double ROTATION_RATE_LIMIT = 5.0 * PI;
 
     public static final double HEADING_MAX_VELOCITY = PI * 4;

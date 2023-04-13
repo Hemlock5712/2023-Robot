@@ -413,6 +413,7 @@ public class RobotContainer {
 
   public void onAllianceChanged(Alliance currentAlliance) {
     poseEstimator.setAlliance(currentAlliance);
+    FieldOrientedDriveCommand.setAllianceAngle();
   }
 
   public void changeVision(boolean useVision) {
