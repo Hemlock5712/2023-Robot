@@ -98,13 +98,22 @@ public class RobotContainer {
   Map<String, Command> eventMap = Map.ofEntries(
       Map.entry(
           "cubeHigh",
-          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.HIGH_CUBE)
-              .alongWith(new RunIntakeCommand(intakeSubsystem))
-              .withTimeout(1)),
+          new InstantCommand(() -> {
+            PiecePicker.toggle(true);
+            ledSubsystem.setGamePiece(GamePiece.CUBE);
+          }).andThen(
+              new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+                  Constants.ArmSetpoints.HIGH_CUBE)
+                  .alongWith(new RunIntakeCommand(intakeSubsystem))
+                  .withTimeout(1))),
       Map.entry(
           "cubeMid",
-          new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.MID_CUBE)
-              .withTimeout(1)),
+          new InstantCommand(() -> {
+            PiecePicker.toggle(true);
+            ledSubsystem.setGamePiece(GamePiece.CUBE);
+          }).andThen(
+              new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, Constants.ArmSetpoints.MID_CUBE)
+                  .withTimeout(1))),
       Map.entry(
           "extendLow",
           new MoveToSetpoint(elevatorSubsystem,
@@ -203,6 +212,7 @@ public class RobotContainer {
     autoChooser.addOption("Wall Side 2.5 Cube Blue", makeAutoBuilderCommand("WALL25BLUE", new PathConstraints(2.5, 2)));
     // autoChooser.addOption("Wall Side 2.5 Cube Red",
     // makeAutoBuilderCommand("WALL25RED", new PathConstraints(2.5, 2)));
+    autoChooser.addOption("Wall Side 3 Cube Blue", makeAutoBuilderCommand("WALL3", new PathConstraints(2.5, 2)));
 
     autoChooser.addOption("Wall Side 2.5 Cube Park Blue",
         makeAutoBuilderCommand("WALL25PARKBLUE", new PathConstraints(2.5, 2)).withTimeout(14.9)

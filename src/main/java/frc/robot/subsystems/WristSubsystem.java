@@ -42,7 +42,7 @@ public class WristSubsystem extends SubsystemBase {
 
   public WristSubsystem() {
     wristEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-    wristEncoder.configMagnetOffset(10);
+    wristEncoder.configMagnetOffset(130);
     wristMotor.setIdleMode(IdleMode.kBrake);
     wristMotor.setSmartCurrentLimit(30, 80);
     wristMotor.burnFlash();
