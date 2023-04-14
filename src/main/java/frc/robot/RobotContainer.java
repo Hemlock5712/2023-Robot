@@ -171,7 +171,8 @@ public class RobotContainer {
           new InstantCommand(() -> {
             PiecePicker.toggle(true);
             ledSubsystem.setGamePiece(GamePiece.CUBE);
-          })));
+          })),
+      Map.entry("WaitASec", new WaitCommand(1)));
 
   // private final FieldHeadingDriveCommand fieldHeadingDriveCommand = new
   // FieldHeadingDriveCommand(
@@ -232,6 +233,9 @@ public class RobotContainer {
 
     autoChooser.addOption("Human 3 Cube Blue", makeAutoBuilderCommand("HUMAN3BLUE", new PathConstraints(3, 3))
         .withTimeout(14.9).andThen(new WaitCommand(0.25).deadlineWith(new ReverseIntakeCommand(intakeSubsystem))));
+
+    autoChooser.addOption("Human 3S Cube Blue", makeAutoBuilderCommand("HUMAN3SBLUE", new PathConstraints(3, 3))
+        .withTimeout(14.9).andThen(new WaitCommand(0.25).deadlineWith(new ReverseIntakeCommand(intakeSubsystem))));
     // autoChooser.addOption("Human 3 Cube Red", makeAutoBuilderCommand("HUMAN3RED",
     // new PathConstraints(3, 3))
     // .withTimeout(14.9).andThen(new WaitCommand(0.25).deadlineWith(new
@@ -247,6 +251,8 @@ public class RobotContainer {
     // makeAutoBuilderCommand("HUMAN3CENTERRED", new PathConstraints(3, 3)));
 
     autoChooser.addOption("NO VISION", makeAutoBuilderCommand("EMERGENCY", new PathConstraints(2, 2)));
+
+    autoChooser.addOption("Middle", makeAutoBuilderCommand("middle", new PathConstraints(0.8, 1)));
 
     autoChooser.addOption("Do Nothing", Commands.none());
 
