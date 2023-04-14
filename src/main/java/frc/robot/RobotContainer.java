@@ -252,7 +252,8 @@ public class RobotContainer {
 
     autoChooser.addOption("NO VISION", makeAutoBuilderCommand("EMERGENCY", new PathConstraints(2, 2)));
 
-    autoChooser.addOption("Middle", makeAutoBuilderCommand("middle", new PathConstraints(0.8, 1)));
+    autoChooser.addOption("Middle", makeAutoBuilderCommand("middle", new PathConstraints(0.8, 1)).withTimeout(14.9)
+        .andThen(new WheelXMode(drivetrainSubsystem)));
 
     autoChooser.addOption("Do Nothing", Commands.none());
 
