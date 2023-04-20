@@ -54,15 +54,15 @@
     },
     {
       "anchorPoint": {
-        "x": 7.45,
+        "x": 7.35,
         "y": 5.45
       },
       "prevControl": {
-        "x": 7.389480637287823,
+        "x": 7.289480637287823,
         "y": 5.979833652779321
       },
       "nextControl": {
-        "x": 7.6106004090362385,
+        "x": 7.510600409036238,
         "y": 4.043978892966732
       },
       "holonomicAngle": -95.0,
@@ -165,7 +165,7 @@
         "x": 6.469566553876216,
         "y": 3.000140245723508
       },
-      "holonomicAngle": -1.0,
+      "holonomicAngle": -6.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -205,15 +205,15 @@
     {
       "anchorPoint": {
         "x": 5.816882808142841,
-        "y": 4.745091056018412
+        "y": 4.65
       },
       "prevControl": {
         "x": 6.7366656856389735,
-        "y": 4.745091056018412
+        "y": 4.65
       },
       "nextControl": {
         "x": 4.897099930646709,
-        "y": 4.745091056018412
+        "y": 4.65
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -233,8 +233,8 @@
         "y": 4.4
       },
       "prevControl": {
-        "x": 4.485594736314027,
-        "y": 4.923006028218466
+        "x": 4.30793570158569,
+        "y": 4.8212054138394
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -295,7 +295,8 @@
     {
       "position": 4.993939393939636,
       "names": [
-        "outtake"
+        "outtake",
+        "visionOff"
       ]
     },
     {
@@ -307,7 +308,8 @@
     {
       "position": 5.1,
       "names": [
-        "transit"
+        "transit",
+        "visionOff"
       ]
     },
     {
@@ -320,6 +322,24 @@
       "position": 7.9030303030307625,
       "names": [
         "extendLow"
+      ]
+    },
+    {
+      "position": 2.454545454545455,
+      "names": [
+        "visionOn"
+      ]
+    },
+    {
+      "position": 6.954545454545464,
+      "names": [
+        "visionOn"
+      ]
+    },
+    {
+      "position": 0.08181818181818182,
+      "names": [
+        "visionOff"
       ]
     }
   ]
