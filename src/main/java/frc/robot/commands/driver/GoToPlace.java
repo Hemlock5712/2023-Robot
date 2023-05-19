@@ -44,8 +44,7 @@ public class GoToPlace extends CommandBase {
     TargetPosition target = Position.getPlacementPosition().getPosition();
     Pose2d posePosition = FieldConstants.PlacementPositions.get(target);
     Node targetPosition = new Node(posePosition);
-    pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap,
-        false);
+    pathfindCommand = new PPAStar(drivetrain, poseEstimatorSystem, constraints, targetPosition, obstacles, AStarMap);
     pathfindCommand.schedule();
   }
 

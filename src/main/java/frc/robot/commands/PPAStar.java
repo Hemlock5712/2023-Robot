@@ -32,20 +32,15 @@ public class PPAStar extends CommandBase {
   private Node startPoint;
   private final List<Obstacle> obstacles;
   private VisGraph AStarMap;
-  private boolean singleSubstation;
-  private Rotation2d SINGLE_SUBSTATION_ANGLE = Rotation2d.fromDegrees(180);
-  private Rotation2d FACE_TARGETS_OFFSET = Rotation2d.fromDegrees(180);
-  private Rotation2d FACE_TARGETS_SCORING = Rotation2d.fromDegrees(180);
 
   public PPAStar(DrivetrainSubsystem d, PoseEstimatorSubsystem p, PathConstraints constraints, Node finalPosition,
-      List<Obstacle> obstacles, VisGraph AStarMap, boolean singleSubstation) {
+      List<Obstacle> obstacles, VisGraph AStarMap) {
     this.driveSystem = d;
     this.poseEstimatorSystem = p;
     this.constraints = constraints;
     this.obstacles = obstacles;
     this.finalPosition = finalPosition;
     this.AStarMap = AStarMap;
-    this.singleSubstation = singleSubstation;
     AStarMap.addNode(finalPosition);
     for (int i = 0; i < AStarMap.getNodeSize(); i++) {
       Node endNode = AStarMap.getNode(i);
@@ -58,35 +53,62 @@ public class PPAStar extends CommandBase {
   // Pre-schedule setup code.
   @Override
   public void initialize() {
-    VisGraph tempGraph = AStarMap;
+
+    /*
+     * Add starting position to map
+     */
+
+    //Create the starting position
+    //Because of the map this year and we only want to create one field we need to flip over the y axis
     if (Constants.DrivetrainConstants.alliance == Alliance.Blue) {
+      //This is non flipped
       startPoint = new Node(poseEstimatorSystem.getCurrentPose());
     } else {
+      //Flips of y axis
       Pose2d flippedY = new Pose2d(poseEstimatorSystem.getCurrentPose().getX(),
           FieldConstants.FIELD_WIDTH_METERS - poseEstimatorSystem.getCurrentPose().getY(),
           poseEstimatorSystem.getCurrentPose().getRotation());
       startPoint = new Node(flippedY);
     }
+
+    //What will be our trajectory for path planner to follow
     PathPlannerTrajectory trajectory;
     List<Node> fullPath = new ArrayList<Node>();
 
-    tempGraph.addNode(startPoint);
-    for (int i = 0; i < tempGraph.getNodeSize(); i++) {
-      Node endNode = tempGraph.getNode(i);
-      tempGraph.addEdge(new Edge(startPoint, endNode), obstacles);
-    }
-    fullPath = tempGraph.findPath(startPoint, finalPosition);
+    //Adds start point (current position on the field)
+    AStarMap.addNode(startPoint);
 
+    /*
+     * START OF FINDING PATH
+     */
+
+    //Connects our starting point to all other nodes on the field (this does check for obstacles)
+    for (int i = 0; i < AStarMap.getNodeSize(); i++) {
+      Node endNode = AStarMap.getNode(i);
+      AStarMap.addEdge(new Edge(startPoint, endNode), obstacles);
+    }
+    //Finds the path using A*
+    fullPath = AStarMap.findPath(startPoint, finalPosition);
+
+    //If a path is not valid that is most likely because the starting point is inside of an obstacle
+    //Runs the same code as above only with smaller obstacles
     if (fullPath == null) {
-      for (int i = 0; i < tempGraph.getNodeSize(); i++) {
-        Node endNode = tempGraph.getNode(i);
-        tempGraph.addEdge(new Edge(startPoint, endNode), FieldConstants.shortObstacles);
+      for (int i = 0; i < AStarMap.getNodeSize(); i++) {
+        Node endNode = AStarMap.getNode(i);
+        AStarMap.addEdge(new Edge(startPoint, endNode), FieldConstants.shortObstacles);
       }
-      fullPath = tempGraph.findPath(startPoint, finalPosition);
+      fullPath = AStarMap.findPath(startPoint, finalPosition);
+
+      //Returns if no path is found
       if (fullPath == null) {
         return;
       }
     }
+
+
+    /*
+    * 
+    */
 
     // Gets speed of robot
     var chassisSpeeds = driveSystem.getChassisSpeeds();
@@ -94,6 +116,8 @@ public class PPAStar extends CommandBase {
         poseEstimatorSystem.getCurrentPose().getRotation());
     var robotSpeeds = FieldOrientedDriveCommand.getRobotSpeeds(fieldSpeeds, chassisSpeeds);
     double startingSpeed = Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+
+    //Gets heading that the robot needs to go to reach first point
     Rotation2d heading = new Rotation2d(fullPath.get(1).getX() -
         startPoint.getX(),
         fullPath.get(1).getY() - startPoint.getY());
@@ -101,9 +125,12 @@ public class PPAStar extends CommandBase {
     ArrayList<PathPoint> fullPathPoints = new ArrayList<PathPoint>();
 
     Rotation2d finalHol = finalPosition.getHolRot();
-    if (singleSubstation) {
-      finalHol = SINGLE_SUBSTATION_ANGLE;
-    }
+
+    /*
+     * Takes our path found above and sends it to an ArrayList of Path Planner Points. Also adds in midpoints
+     * I would recommend commenting out addMidPoints at first when first testing code
+     */
+
     // Find path between points
     for (int i = 0; i < fullPath.size(); i++) {
       if (i == 0) {
@@ -121,20 +148,11 @@ public class PPAStar extends CommandBase {
       }
 
       else {
-        // Change allianceFinal.getHolRot() to null if you want it to turn smoothly over
-        // path. (Needs more testing)
-        Rotation2d tempHol = FACE_TARGETS_OFFSET;
-        if (singleSubstation) {
-          finalHol = SINGLE_SUBSTATION_ANGLE;
-        }
-        if (fullPath.get(i).getX() <= 5.40 + 0.1) {
-          tempHol = FACE_TARGETS_SCORING;
-        }
         heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
             fullPath.get(i + 1).getY() - fullPath.get(i).getY());
         fullPathPoints.add(new PathPoint(new Translation2d(fullPath.get(i).getX(), fullPath.get(i).getY()),
             heading,
-            tempHol));
+            null));
         addMidPoints(fullPathPoints, fullPath, i, finalHol);
       }
     }
@@ -167,10 +185,14 @@ public class PPAStar extends CommandBase {
     driveSystem.stop();
   }
 
+
+  //Adds MidPoints so that Bezier curve doesn't curve into obstacle
   public void addMidPoints(ArrayList<PathPoint> fullPathPoints, List<Node> fullPath, int i, Rotation2d midPointHol) {
     double distance = Math.hypot(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
         fullPath.get(i + 1).getY() - fullPath.get(i).getY());
 
+    // Adjust distance / x to have more or less midpoints lower the x the more
+    // midpoints
     int midpoints = (int) Math.floor(distance / 1);
 
     Rotation2d heading = new Rotation2d(fullPath.get(i + 1).getX() - fullPath.get(i).getX(),
