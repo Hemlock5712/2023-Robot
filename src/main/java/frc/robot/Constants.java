@@ -251,7 +251,7 @@ public final class Constants {
     public static PIDConstants translationConstants = new PIDConstants(X_kP, X_kI, X_kD);
     public static PIDConstants rotationConstants = new PIDConstants(THETA_kP, THETA_kI, THETA_kD);
 
-    public static                                  PIDController translationController = new PIDController(X_kP, X_kI, X_kD);
+    public static PIDController translationController = new PIDController(X_kP, X_kI, X_kD);
     public static PIDController strafeController = new PIDController(Y_kP, Y_kI, Y_kD);
     public static PIDController thetaController = new PIDController(THETA_kP, THETA_kI, THETA_kD);
 
@@ -442,7 +442,10 @@ public final class Constants {
     // ArmSetpoint(0, -.06, 45);
     public static final ArmSetpoint STARTING_CONFIG = new ArmSetpoint(71, 0, -106);
 
-    public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(-4, 0, -10);
+    public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(0, 0, -45);
+    public static final ArmSetpoint GROUND_CONE_LAY_DOWN_PICKUP = new ArmSetpoint(-20, 0.15, 12);
+
+    public static final ArmSetpoint DOUBLE_SUB_PICKUP = new ArmSetpoint(55, 0.25, -90);
   }
 
 }

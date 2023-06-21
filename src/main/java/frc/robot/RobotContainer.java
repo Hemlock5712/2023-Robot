@@ -354,6 +354,12 @@ public class RobotContainer {
     controller2.back().and(controller2.start()).whileTrue(new MoveToSetpoint(elevatorSubsystem, extensionSubsystem,
         wristSubsystem, Constants.ArmSetpoints.STARTING_CONFIG));
 
+    controller2.pov(0).whileTrue(new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+        Constants.ArmSetpoints.DOUBLE_SUB_PICKUP));
+    controller2.pov(180).whileTrue(new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+        Constants.ArmSetpoints.GROUND_CONE_PICKUP));
+    controller2.pov(90).whileTrue(new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
+        Constants.ArmSetpoints.GROUND_CONE_LAY_DOWN_PICKUP));
     // Drive to Point stuff beyond this point
     // controller2.pov(0).whileTrue(new NextNode(Direction.Up));
     // controller2.pov(90).whileTrue(new NextNode(Direction.Right));
