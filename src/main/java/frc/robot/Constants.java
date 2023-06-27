@@ -436,6 +436,7 @@ public final class Constants {
      */
     // public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP =
     // XYACalulator.Calulator(-.2, 2, 34);
+    
     // WAS 34 AT MIDLAND
     public static final ArmSetpoint SINGLE_SUBSTATION_PICKUP = new ArmSetpoint(0, -.06, 45);
     // public static final ArmSetpoint TEST_SINGLE_SUBSTATION_PICKUP = new
@@ -443,9 +444,9 @@ public final class Constants {
     public static final ArmSetpoint STARTING_CONFIG = new ArmSetpoint(71, 0, -106);
 
     public static final ArmSetpoint GROUND_CONE_PICKUP = new ArmSetpoint(0, 0, -45);
-    public static final ArmSetpoint GROUND_CONE_LAY_DOWN_PICKUP = new ArmSetpoint(-20, 0.15, 12);
+    public static final ArmSetpoint GROUND_CONE_LAY_DOWN_PICKUP = new ArmSetpoint(-20, 0.17, 12);
 
-    public static final ArmSetpoint DOUBLE_SUB_PICKUP = new ArmSetpoint(55, 0.25, -90);
+    public static final ArmSetpoint DOUBLE_SUB_PICKUP = new ArmSetpoint(58, 0.11, -70);
   }
 
 }
