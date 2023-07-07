@@ -48,8 +48,9 @@ public class FieldOrientedDriveCommand extends CommandBase {
       MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * 0.4,
       MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
   private static ProfiledPIDController thetaController;
+  private static ProfiledPIDController thetaDoubleController;
 
-  private Trigger isAligningTrigger;
+  private Trigger isAligningSingleSubTrigger;
   private Trigger isEvadingTrigger;
 
   private static double TARGET_ANGELE = 1.5708;
@@ -73,19 +74,22 @@ public class FieldOrientedDriveCommand extends CommandBase {
       DoubleSupplier translationXSupplier,
       DoubleSupplier translationYSupplier,
       DoubleSupplier rotationSupplier,
-      Trigger isAligningTrigger,
+      Trigger isAligningSingleSubTrigger,
       Trigger isEvadingTrigger) {
     this.drivetrainSubsystem = drivetrainSubsystem;
     this.robotAngleSupplier = robotAngleSupplier;
     this.translationXSupplier = translationXSupplier;
     this.translationYSupplier = translationYSupplier;
     this.rotationSupplier = rotationSupplier;
-    this.isAligningTrigger = isAligningTrigger;
+    this.isAligningSingleSubTrigger = isAligningSingleSubTrigger;
     this.isEvadingTrigger = isEvadingTrigger;
 
     thetaController = new ProfiledPIDController(THETA_kP, THETA_kI, THETA_kD, DEFAULT_OMEGA_CONSTRAINTS);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(THETA_TOLERANCE);
+    thetaDoubleController = new ProfiledPIDController(THETA_kP, THETA_kI, THETA_kD, DEFAULT_OMEGA_CONSTRAINTS);
+    thetaDoubleController.enableContinuousInput(-Math.PI, Math.PI);
+    thetaDoubleController.setTolerance(THETA_TOLERANCE);
 
     addRequirements(drivetrainSubsystem);
   }
@@ -100,6 +104,7 @@ public class FieldOrientedDriveCommand extends CommandBase {
       ALLIANCE_SPECIFIC = TARGET_ANGELE;
     }
     thetaController.setGoal(ALLIANCE_SPECIFIC);
+    thetaDoubleController.setGoal(0);
 
     // Calculate field relative speeds
     var chassisSpeeds = drivetrainSubsystem.getChassisSpeeds();
@@ -115,7 +120,7 @@ public class FieldOrientedDriveCommand extends CommandBase {
   @Override
   public void execute() {
     var robotPose = robotAngleSupplier.get();
-    if (isAligningTrigger.getAsBoolean()) {
+    if (isAligningSingleSubTrigger.getAsBoolean() && !drivetrainSubsystem.isDoubleSub()) {
       var omegaSpeed = thetaController.calculate(robotPose.getRadians());
       if (thetaController.atGoal()) {
         omegaSpeed = 0;
@@ -130,6 +135,15 @@ public class FieldOrientedDriveCommand extends CommandBase {
               translateYRateLimiter.calculate(translationYSupplier.getAsDouble())),
           rotationRateLimiter.calculate(rotationSupplier.getAsDouble()),
           robotAngleSupplier.get());
+    } else if (isAligningSingleSubTrigger.getAsBoolean() && drivetrainSubsystem.isDoubleSub()) {
+      var omegaSpeed = thetaDoubleController.calculate(robotPose.getRadians());
+      if (thetaDoubleController.atGoal()) {
+        omegaSpeed = 0;
+      }
+      drivetrainSubsystem.drive(
+          ChassisSpeeds.fromFieldRelativeSpeeds(translateXRateLimiter.calculate(translationXSupplier.getAsDouble()),
+              translateYRateLimiter.calculate(translationYSupplier.getAsDouble()), omegaSpeed,
+              robotAngleSupplier.get()));
     } else {
       drivetrainSubsystem.drive(
           ChassisSpeeds.fromFieldRelativeSpeeds(

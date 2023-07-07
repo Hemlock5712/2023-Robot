@@ -346,7 +346,8 @@ public class RobotContainer {
         .whileTrue(new ParallelDeadlineGroup(new MoveSpacerAngle(2, spacerSubsystem),
             new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem, new ArmSetpoint(20, -0.06, 45)))
             .andThen(
-                new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem)));
+                new SingleSubstation(elevatorSubsystem, extensionSubsystem, wristSubsystem, intakeSubsystem))
+            .alongWith(new InstantCommand(() -> drivetrainSubsystem.setDoubleSubMode(false))));
 
     controller2.y().whileTrue(new HighPlace(elevatorSubsystem,
         extensionSubsystem, wristSubsystem));
@@ -355,7 +356,10 @@ public class RobotContainer {
         wristSubsystem, Constants.ArmSetpoints.STARTING_CONFIG));
 
     controller2.pov(0).whileTrue(new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
-        Constants.ArmSetpoints.DOUBLE_SUB_PICKUP));
+        Constants.ArmSetpoints.DOUBLE_SUB_PICKUP).withTimeout(1.5).alongWith(new InstantCommand(() -> {
+          drivetrainSubsystem.setDoubleSubMode(true);
+        }))
+        .alongWith(new MoveSpacerAngle(24, spacerSubsystem).withTimeout(3.0)));
     controller2.pov(180).whileTrue(new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,
         Constants.ArmSetpoints.GROUND_CONE_PICKUP));
     controller2.pov(90).whileTrue(new MoveToSetpoint(elevatorSubsystem, extensionSubsystem, wristSubsystem,

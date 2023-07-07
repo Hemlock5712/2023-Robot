@@ -71,6 +71,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private ChassisSpeeds desiredChassisSpeeds;
   private Translation2d desiredCenterOfRotation;
 
+  private boolean isDoubleSubMode = true;
+
   private static final Translation2d[] WHEEL_POSITIONS = Arrays.copyOf(Constants.DrivetrainConstants.moduleTranslations,
       Constants.DrivetrainConstants.moduleTranslations.length);
 
@@ -253,6 +255,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
    */
   private SwerveModuleState[] getModuleStates() {
     return Arrays.stream(swerveModules).map(module -> module.getState()).toArray(SwerveModuleState[]::new);
+  }
+
+  public void setDoubleSubMode(boolean isDoubleSub) {
+    isDoubleSubMode = isDoubleSub;
+  }
+
+  public boolean isDoubleSub() {
+    return isDoubleSubMode;
   }
 
   /**
