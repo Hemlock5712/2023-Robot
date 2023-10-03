@@ -46,7 +46,7 @@ public final class Constants {
 
     public static Alliance alliance = Alliance.Invalid;
 
-    public static final boolean ADD_TO_DASHBOARD = false;
+    public static final boolean ADD_TO_DASHBOARD = true;
 
     /**
      * The left-to-right distance between the drivetrain wheels
@@ -64,22 +64,26 @@ public final class Constants {
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 2;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 9;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(145.19 + 180);
+    // public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(145.19 + 180);
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -toRadians(-325.722-295.837+231.41);
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 4;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 10;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(297.42 + 180);
+    // public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(297.42 + 180);
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -toRadians(-120.84-8.66+248.112);
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 5;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 6;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(2.54 + 180);
+    // public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(2.54 + 180);
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -toRadians(177.891);
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 7;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 8;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 12;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(310.07 + 180);
+    // public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(310.07 + 180);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -toRadians(-131.748-90-14.11);
 
     public static final int PIGEON_ID = 13;
 
