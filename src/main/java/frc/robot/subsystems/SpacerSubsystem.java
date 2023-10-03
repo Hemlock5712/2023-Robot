@@ -27,8 +27,8 @@ public class SpacerSubsystem extends SubsystemBase {
   }
 
   public void setMotorVoltage(double voltage) {
-    // SpacerMotor.setVoltage(voltage);
-    SpacerMotor.setVoltage(0);
+    SpacerMotor.setVoltage(voltage);
+    // SpacerMotor.setVoltage(0);
   }
 
   @Override
@@ -36,17 +36,17 @@ public class SpacerSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  // public boolean pidPower(double angle) {
-  //   pidController.setSetpoint(angle);
-  //   double nextVoltage = pidController.calculate(SpacerMotor.getEncoder().getPosition(), angle);
-  //   // System.out.println(SpacerMotor.getEncoder().getPosition());
-  //   // System.out.println(nextVoltage);
-  //   setMotorVoltage(nextVoltage);
-  //   return Math.abs(SpacerMotor.getEncoder().getPosition() - angle) < 4;
-  // }
-
   public boolean pidPower(double angle) {
-    return true;
+    pidController.setSetpoint(angle);
+    double nextVoltage = pidController.calculate(SpacerMotor.getEncoder().getPosition(), angle);
+    // System.out.println(SpacerMotor.getEncoder().getPosition());
+    // System.out.println(nextVoltage);
+    setMotorVoltage(nextVoltage);
+    return Math.abs(SpacerMotor.getEncoder().getPosition() - angle) < 4;
   }
+
+  // public boolean pidPower(double angle) {
+  //   return true;
+  // }
 
 }
