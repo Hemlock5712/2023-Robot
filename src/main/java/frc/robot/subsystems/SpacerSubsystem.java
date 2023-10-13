@@ -28,6 +28,7 @@ public class SpacerSubsystem extends SubsystemBase {
 
   public void setMotorVoltage(double voltage) {
     SpacerMotor.setVoltage(voltage);
+    // SpacerMotor.setVoltage(0);
   }
 
   @Override
@@ -43,5 +44,9 @@ public class SpacerSubsystem extends SubsystemBase {
     setMotorVoltage(nextVoltage);
     return Math.abs(SpacerMotor.getEncoder().getPosition() - angle) < 4;
   }
+
+  // public boolean pidPower(double angle) {
+  //   return true;
+  // }
 
 }
